@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/useful_widgets.dart';
-import '../services/home_backend_functions.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -66,7 +64,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
+      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
@@ -81,9 +79,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             children: [
               Icon(Icons.menu, color: Colors.grey[600]),
               const SizedBox(width: 12),
-              Text(
-                getGreetingMessage(), // Fonction du backend
-                style: const TextStyle(
+              const Text(
+                'Good morning, Alex',
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -139,27 +137,16 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            FutureBuilder<Map<String, String>>(
-              future: getSobrietyTime(), // Fonction du backend
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(color: Colors.white);
-                }
-
-                final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
-
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _buildTimeUnit(sobrietyTime['days'] ?? '42', 'DAYS'),
-                    const SizedBox(width: 8),
-                    _buildTimeUnit(sobrietyTime['hours'] ?? '11', 'HOURS'),
-                    const SizedBox(width: 8),
-                    _buildTimeUnit(sobrietyTime['minutes'] ?? '23', 'MINUTES'),
-                  ],
-                );
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildTimeUnit('42', 'DAYS'),
+                const SizedBox(width: 8),
+                _buildTimeUnit('11', 'HOURS'),
+                const SizedBox(width: 8),
+                _buildTimeUnit('23', 'SECONDS'),
+              ],
             ),
           ],
         ),
@@ -193,39 +180,68 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   }
 
   Widget _buildStatsRow() {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: getUserStats(), // Fonction du backend
-      builder: (context, snapshot) {
-        final stats = snapshot.data ?? getDefaultStats();
+    return Row(
+      children: [
+        Expanded(child: _buildStatCard('Streak', '42', 'days')),
+        const SizedBox(width: 12),
+        Expanded(child: _buildStatCard('Money\nSaved', '\$210', '')),
+        const SizedBox(width: 12),
+        Expanded(child: _buildStatCard('Milestone', '8', 'days')),
+      ],
+    );
+  }
 
-        return Row(
-          children: [
-            Expanded(
-              child: StatCard(
-                title: 'Streak',
-                value: stats['streak'].toString(),
-                unit: 'days',
-              ),
+  Widget _buildStatCard(String title, String value, String unit) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StatCard(
-                title: 'Money\nSaved',
-                value: stats['moneySaved'],
-                unit: '',
+          ),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StatCard(
-                title: 'Milestone',
-                value: stats['milestone'].toString(),
-                unit: 'days',
-              ),
-            ),
-          ],
-        );
-      },
+              if (unit.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Text(
+                    unit,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -286,7 +302,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             _buildMoodButton('😖', 'Awful'),
             _buildMoodButton('😔', 'Sad'),
             _buildMoodButton('😐', 'Okay'),
-            _buildMoodButton('😊', 'Good', isSelected: selectedMood == 'Good'),
+            _buildMoodButton('😊', 'Good', isSelected: true),
           ],
         ),
       ],
@@ -425,26 +441,13 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       height: 52,
       child: ElevatedButton(
         onPressed: () {
-          submitDailyCheckIn(
-            // Fonction du backend
-            mood: selectedMood,
-            cravingLevel: cravingLevel,
-            journalEntry: journalController.text,
-          ).then((success) {
-            if (success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Check-in completed!'),
-                  backgroundColor: Color(0xFF00A3E0),
-                ),
-              );
-              journalController.clear();
-              setState(() {
-                selectedMood = '';
-                cravingLevel = 0.5;
-              });
-            }
-          });
+          // Action de check-in
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Check-in completed!'),
+              backgroundColor: Color(0xFF00A3E0),
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00A3E0),
@@ -463,59 +466,107 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   }
 
   Widget _buildQuoteCard() {
-    return FutureBuilder<Map<String, String>>(
-      future: getDailyQuote(), // Fonction du backend
-      builder: (context, snapshot) {
-        final quote = snapshot.data ?? getDefaultQuote();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Daily Quote',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '"The greatest glory in living lies not in never falling, but in rising every time we fall."',
+            style: TextStyle(
+              fontSize: 15,
+              fontStyle: FontStyle.italic,
+              color: Colors.grey[700],
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '— Nelson Mandela',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+  Widget _buildBottomNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              const Text(
-                'Daily Quote',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+              _buildNavItem(Icons.home, 'Home', isActive: true),
+              _buildNavItem(Icons.bar_chart, 'Progress', isActive: false),
+              _buildNavItem(
+                Icons.bookmark_border,
+                'Resources',
+                isActive: false,
               ),
-              const SizedBox(height: 16),
-              Text(
-                '"${quote['text']}"',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey[700],
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '— ${quote['author']}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[600],
-                ),
-              ),
+              _buildNavItem(Icons.people_outline, 'Community', isActive: false),
             ],
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, {required bool isActive}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
+          size: 26,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ],
     );
   }
 }
