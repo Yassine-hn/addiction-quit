@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/Home_screen.dart';
+import 'app_routes.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +33,9 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomeScreen(),
+      initialRoute: AppRoutes.home,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+      //home: HomeScreen(),
     );
   }
 }
