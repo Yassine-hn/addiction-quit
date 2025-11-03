@@ -22,20 +22,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   String selectedMood = '';
   double cravingLevel = 0.5;
   final TextEditingController journalController = TextEditingController();
-  
-  // method _onNavItemTapped added so the bottom navbar  works for navigation between screens
-  void _onNavItemTapped(int index) {
-    // Handle navigation to other screens
-    if (index == 0) {
-      // Already on home, do nothing or refresh
-    } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/resources');
-    } else if (index == 3) {
-      Navigator.pushReplacementNamed(context, '/community');
-    }
-  }
+
 
   @override
   void dispose() {
@@ -73,7 +60,6 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       ),
       bottomNavigationBar: CustomBottomNavBar(
         activeIndex: 0,
-        onItemSelected: _onNavItemTapped,
       ),
     );
   }

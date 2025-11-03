@@ -3,13 +3,26 @@ import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int activeIndex;
-  final Function(int) onItemSelected;
-
   const CustomBottomNavBar({
     super.key, 
     required this.activeIndex,
-    required this.onItemSelected,
     });
+  // method _onNavItemTapped added so the bottom navbar  works for navigation between screens
+  void _onNavItemTapped(BuildContext context, int index) {
+    // Don't navigate if already on the current screen
+    if (index == activeIndex) return;
+    
+    // Handle navigation to other screens
+    if (index == 0) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (index == 1) {
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } else if (index == 2) {
+      Navigator.pushReplacementNamed(context, '/resources');
+    } else if (index == 3) {
+      Navigator.pushReplacementNamed(context, '/community');
+    }
+  } // _onNavItemTapped
 
   @override
   Widget build(BuildContext context) {
@@ -32,27 +45,32 @@ class CustomBottomNavBar extends StatelessWidget {
             children: [
               _buildNavItem(
                 Icons.home, 
-                'Home', 
+                'Home',
+                context,
                 isActive: activeIndex == 0,
-                onTap: () => onItemSelected(0),
+                index: 0,
                 ), // _buildNavItem
               _buildNavItem(
                 Icons.bar_chart,
                 'Progress',
+                context,
                 isActive: activeIndex == 1,
-                onTap: () => onItemSelected(1), 
+                index: 1, 
               ),// _buildNavItem
               _buildNavItem(
                 Icons.bookmark_border,
                 'Resources',
+                context,
                 isActive: activeIndex == 2,
-                onTap: () => onItemSelected(2),
+                index: 2,
               ),// _buildNavItem
               _buildNavItem(
                 Icons.people_outline,
                 'Community',
+                context,
                 isActive: activeIndex == 3,
-                onTap: () => onItemSelected(3),
+                index: 3,
+                
               ),// _buildNavItem
             ],
           ),
@@ -64,11 +82,12 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget _buildNavItem(
     IconData icon, 
     String label, 
+    BuildContext context,
     {required bool isActive,
-    required VoidCallback onTap,}
+    required int index,}
     ) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _onNavItemTapped(context, index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
