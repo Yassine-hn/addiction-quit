@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import '/screens/user_profile_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'repositories/progress_repository_impl.dart';
 
@@ -26,6 +27,11 @@ class AppRoutes {
           builder: (_) => DashboardScreen(
             repository: ProgressRepositoryImpl(),
           ),
+        );
+
+        case profile:
+        return MaterialPageRoute(
+          builder: (_) => UserProfileScreen(),
         );
 
       // Add more routes here as needed

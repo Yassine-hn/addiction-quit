@@ -18,7 +18,7 @@ class CustomBottomNavBar extends StatelessWidget {
     } else if (index == 1) {
       Navigator.pushReplacementNamed(context, '/dashboard');
     } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/resources');
+      Navigator.pushReplacementNamed(context, '/profile');
     } else if (index == 3) {
       Navigator.pushReplacementNamed(context, '/community');
     }
@@ -59,7 +59,7 @@ class CustomBottomNavBar extends StatelessWidget {
               ),// _buildNavItem
               _buildNavItem(
                 Icons.bookmark_border,
-                'Resources',
+                'Profile',
                 context,
                 isActive: activeIndex == 2,
                 index: 2,
