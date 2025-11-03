@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+
 class CustomBottomNavBar extends StatelessWidget {
   final int activeIndex;
+  final Function(int) onItemSelected;
 
-  const CustomBottomNavBar({super.key, required this.activeIndex});
+  const CustomBottomNavBar({
+    super.key, 
+    required this.activeIndex,
+    required this.onItemSelected,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +30,30 @@ class CustomBottomNavBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.home, 'Home', isActive: activeIndex == 0),
+              _buildNavItem(
+                Icons.home, 
+                'Home', 
+                isActive: activeIndex == 0,
+                onTap: () => onItemSelected(0),
+                ), // _buildNavItem
               _buildNavItem(
                 Icons.bar_chart,
                 'Progress',
                 isActive: activeIndex == 1,
-              ),
+                onTap: () => onItemSelected(1), 
+              ),// _buildNavItem
               _buildNavItem(
                 Icons.bookmark_border,
                 'Resources',
                 isActive: activeIndex == 2,
-              ),
+                onTap: () => onItemSelected(2),
+              ),// _buildNavItem
               _buildNavItem(
                 Icons.people_outline,
                 'Community',
                 isActive: activeIndex == 3,
-              ),
+                onTap: () => onItemSelected(3),
+              ),// _buildNavItem
             ],
           ),
         ),
@@ -47,27 +61,35 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, {required bool isActive}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
-          size: 26,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
+  Widget _buildNavItem(
+    IconData icon, 
+    String label, 
+    {required bool isActive,
+    required VoidCallback onTap,}
+    ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
             color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            size: 26,
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
-  }
+  } // _buildNavItem
 }
 
 class StatCard extends StatelessWidget {

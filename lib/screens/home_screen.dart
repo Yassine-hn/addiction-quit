@@ -7,16 +7,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sobriety Tracker',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        useMaterial3: true,
-      ),
-      home: const DailyCheckInScreen(),
-    );
+    return const DailyCheckInScreen();
   }
 }
 
@@ -31,6 +22,20 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   String selectedMood = '';
   double cravingLevel = 0.5;
   final TextEditingController journalController = TextEditingController();
+  
+  // method _onNavItemTapped added so the bottom navbar  works for navigation between screens
+  void _onNavItemTapped(int index) {
+    // Handle navigation to other screens
+    if (index == 0) {
+      // Already on home, do nothing or refresh
+    } else if (index == 1) {
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } else if (index == 2) {
+      Navigator.pushReplacementNamed(context, '/resources');
+    } else if (index == 3) {
+      Navigator.pushReplacementNamed(context, '/community');
+    }
+  }
 
   @override
   void dispose() {
@@ -66,7 +71,10 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
+      bottomNavigationBar: CustomBottomNavBar(
+        activeIndex: 0,
+        onItemSelected: _onNavItemTapped,
+      ),
     );
   }
 
@@ -518,4 +526,5 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       },
     );
   }
-}
+
+} // _DailyCheckInScreenState
