@@ -5,6 +5,7 @@ import 'screens/home_screen.dart';
 import '/screens/user_profile_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'repositories/progress_repository_impl.dart';
+import '/screens/community_screen.dart';
 
 
 class AppRoutes {
@@ -12,7 +13,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String dashboard = '/dashboard';
   static const String profile = '/profile';
-  static const String settings = '/settings';
+  static const String community = '/community';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -32,6 +33,11 @@ class AppRoutes {
         case profile:
         return MaterialPageRoute(
           builder: (_) => UserProfileScreen(),
+        );
+
+        case community:
+        return MaterialPageRoute(
+          builder: (_) => CommunityScreen(),
         );
 
       // Add more routes here as needed
