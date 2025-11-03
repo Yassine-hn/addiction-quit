@@ -8,7 +8,7 @@ import 'repositories/progress_repository_impl.dart';
 
 class AppRoutes {
   // Route names as constants
-  static const String home = '/';
+  static const String home = '/home';
   static const String dashboard = '/dashboard';
   static const String profile = '/profile';
   static const String settings = '/settings';

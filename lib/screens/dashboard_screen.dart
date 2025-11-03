@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../models/progress_data.dart';
 import '../repositories/progress_repository.dart';
+import '../widgets/useful_widgets.dart';
 
 
 
@@ -96,6 +97,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
+      bottomNavigationBar: CustomBottomNavBar(
+        activeIndex: 1,
+      ), // CustomBottomNavBar
     );
   }
 
