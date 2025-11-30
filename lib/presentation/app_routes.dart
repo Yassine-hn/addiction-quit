@@ -31,7 +31,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => UserProfileScreen());
 
       case community:
-        return MaterialPageRoute(builder: (_) => CommunityScreen());
+        return MaterialPageRoute(builder: (_) => CommunityScreenFromModule());
       case loadingScreen:
         return MaterialPageRoute(builder: (_) => const LoadingScreen());
 

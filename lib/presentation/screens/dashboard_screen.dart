@@ -272,42 +272,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildGoalCard(Goal goal) {
-    return GestureDetector(
-      onTap: () async {
-        await widget.repository.selectGoal(goal.title);
-        _loadData();
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: goal.isSelected ? Colors.blue[50] : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: goal.isSelected ? Colors.blue[300]! : Colors.grey[200]!,
-            width: 2,
+    return SingleChildScrollView(
+      child: GestureDetector(
+        onTap: () async {
+          await widget.repository.selectGoal(goal.title);
+          _loadData();
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: goal.isSelected ? Colors.blue[50] : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: goal.isSelected ? Colors.blue[300]! : Colors.grey[200]!,
+              width: 2,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              goal.icon,
-              size: 32,
-              color: goal.isSelected ? Colors.blue[700] : Colors.grey[600],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              goal.title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: goal.isSelected
-                    ? FontWeight.w600
-                    : FontWeight.normal,
-                color: goal.isSelected ? Colors.blue[700] : Colors.grey[800],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                goal.icon,
+                size: 32,
+                color: goal.isSelected ? Colors.blue[700] : Colors.grey[600],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                goal.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: goal.isSelected
+                      ? FontWeight.w600
+                      : FontWeight.normal,
+                  color: goal.isSelected ? Colors.blue[700] : Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
