@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/useful_widgets.dart';
-import '../services/home_backend_functions.dart';
+import '../../logic/services/home_backend_functions.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,7 +22,6 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   String selectedMood = '';
   double cravingLevel = 0.5;
   final TextEditingController journalController = TextEditingController();
-
 
   @override
   void dispose() {
@@ -58,9 +57,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        activeIndex: 0,
-      ),
+      bottomNavigationBar: CustomBottomNavBar(activeIndex: 0),
     );
   }
 
@@ -512,5 +509,4 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       },
     );
   }
-
 } // _DailyCheckInScreenState

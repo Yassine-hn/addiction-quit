@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
-import '/screens/user_profile_screen.dart';
+import './screens/user_profile_screen.dart';
 import 'screens/dashboard_screen.dart';
-import 'repositories/progress_repository_impl.dart';
-import '/screens/community_screen.dart';
-import 'screens/intro_form/loading_screen.dart';
+import '../data/repositories/progress_repository_impl.dart';
+import './screens/community_screen.dart';
+import './screens/loading_screen.dart';
 
 class AppRoutes {
   // Route names as constants

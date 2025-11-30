@@ -1,18 +1,12 @@
 // dashboard_screen.dart
 import 'package:flutter/material.dart';
-import '../models/progress_data.dart';
-import '../repositories/progress_repository.dart';
-import '../widgets/useful_widgets.dart';
-
-
+import '../../data/models/progress_data.dart';
+import '../../data/repositories/progress_repository.dart';
 
 class DashboardScreen extends StatefulWidget {
   final ProgressRepository repository;
 
-  const DashboardScreen({
-    Key? key,
-    required this.repository,
-  }) : super(key: key);
+  const DashboardScreen({super.key, required this.repository});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -33,7 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final results = await Future.wait([
         widget.repository.getProgressData(),
@@ -97,9 +91,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: CustomBottomNavBar(
-        activeIndex: 1,
-      ), // CustomBottomNavBar
     );
   }
 
@@ -129,10 +120,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 4),
               Text(
                 '${_progressData!.daysStreak} Days Sober',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.white70),
               ),
             ],
           ),
@@ -147,10 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const Text(
           'Your Journey',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         Row(
@@ -198,10 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             const Text(
               'Monthly Progress',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -252,10 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 8),
             Text(
               day.day,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -271,10 +250,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const Text(
           'Select a Goal',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         GridView.builder(
@@ -325,7 +301,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: goal.isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: goal.isSelected
+                    ? FontWeight.w600
+                    : FontWeight.normal,
                 color: goal.isSelected ? Colors.blue[700] : Colors.grey[800],
               ),
             ),
@@ -335,4 +313,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-
