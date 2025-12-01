@@ -1,5 +1,5 @@
 // profile_backend_functions.dart
-import '../repositories/profile_repository.dart';
+import '../../data/repositories/profile_repository.dart';
 
 final ProfileRepository _profileRepository = ProfileRepositoryImpl();
 
@@ -36,10 +36,7 @@ Future<bool> updateUserProfile({
   required String tagline,
 }) async {
   try {
-    return await _profileRepository.updateProfile(
-      name: name,
-      tagline: tagline,
-    );
+    return await _profileRepository.updateProfile(name: name, tagline: tagline);
   } catch (e) {
     return false;
   }
@@ -47,10 +44,7 @@ Future<bool> updateUserProfile({
 
 // Default/fallback data
 Map<String, String> getDefaultUserProfile() {
-  return {
-    'name': 'Alex J.',
-    'tagline': 'Your journey to a better you',
-  };
+  return {'name': 'Alex J.', 'tagline': 'Your journey to a better you'};
 }
 
 List<Map<String, dynamic>> getDefaultAchievements() {

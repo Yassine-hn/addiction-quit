@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'app_routes.dart';
+import 'presentation/app_routes.dart';
 
+Future<bool> init_app() async {
+  return true;
+}
 
-
-void main() {
+void main() async {
+  await init_app();
   runApp(const MyApp());
 }
 
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.loadingScreen,
       onGenerateRoute: AppRoutes.onGenerateRoute,
       //home: HomeScreen(),
     );

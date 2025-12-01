@@ -1,8 +1,7 @@
 // user_profile_screen.dart
 import 'package:flutter/material.dart';
-import '../services/profile_backend_functions.dart';
+import '../../logic/services/profile_backend_functions.dart';
 import '../widgets/useful_widgets.dart';
-
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -32,9 +31,7 @@ class UserProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        activeIndex: 2,
-      ),
+      bottomNavigationBar: CustomBottomNavBar(activeIndex: 2),
     );
   }
 
@@ -96,17 +93,10 @@ class UserProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: const Color(0xFFFFE4D6),
-                  border: Border.all(
-                    color: const Color(0xFF00A3E0),
-                    width: 3,
-                  ),
+                  border: Border.all(color: const Color(0xFF00A3E0), width: 3),
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.person,
-                    size: 50,
-                    color: Color(0xFFFF8C42),
-                  ),
+                  child: Icon(Icons.person, size: 50, color: Color(0xFFFF8C42)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -121,10 +111,7 @@ class UserProfileScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 profile['tagline'] ?? 'Your journey to a better you',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -227,10 +214,7 @@ class UserProfileScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -336,10 +320,7 @@ class UserProfileScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),
