@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int activeIndex;
@@ -39,28 +40,28 @@ class CustomBottomNavBar extends StatelessWidget {
             children: [
               _buildNavItem(
                 Icons.home,
-                'Home',
+                AppLocalizations.of(context)!.home,
                 context,
                 isActive: activeIndex == 0,
                 index: 0,
               ),
               _buildNavItem(
                 Icons.dashboard,
-                'Dashboard',
+                AppLocalizations.of(context)!.dashboard,
                 context,
                 isActive: activeIndex == 1,
                 index: 1,
               ),
               _buildNavItem(
                 Icons.person,
-                'Profile',
+                AppLocalizations.of(context)!.profile,
                 context,
                 isActive: activeIndex == 2,
                 index: 2,
               ),
               _buildNavItem(
                 Icons.people_outline,
-                'Community',
+                AppLocalizations.of(context)!.community,
                 context,
                 isActive: activeIndex == 3,
                 index: 3,

@@ -1,6 +1,7 @@
 // StepFinal.dart - Enhanced version with animations
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/ValidationButton.dart';
 import '../data/user_data_service.dart';

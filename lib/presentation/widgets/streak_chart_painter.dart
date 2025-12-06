@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'dart:math';
 
 class StreakChart extends StatelessWidget {
@@ -23,7 +24,9 @@ class StreakChart extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: SizedBox(
             height: height,
-            child: const Center(child: Text('No streak data available')),
+            child: Center(
+              child: Text(AppLocalizations.of(context)!.noStreakDataAvailable),
+            ),
           ),
         ),
       );
@@ -37,9 +40,9 @@ class StreakChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Streak Chart',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              AppLocalizations.of(context)!.streakChart,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             SizedBox(

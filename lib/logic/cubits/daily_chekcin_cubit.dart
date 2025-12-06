@@ -145,7 +145,8 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
 
     // Validate that mood and craving level are selected
     if (!currentState.isValid) {
-      emit(CheckInError(message: 'Please select mood and craving level'));
+      // Note: Error message will be localized in the UI layer
+      emit(CheckInError(message: 'VALIDATION_ERROR'));
       Future.delayed(const Duration(seconds: 2), () {
         emit(currentState);
       });

@@ -1,6 +1,7 @@
 // Fonctions to implement for home_screen backend
 // Now using repositories to fetch data from database
 
+// Note: Localization is handled in UI layer, not in backend functions
 import '../../data/repositories/user_repository.dart';
 import '../../data/repositories/sobriety_repository.dart';
 import '../../data/repositories/savings_repository.dart';
@@ -80,36 +81,30 @@ Future<bool> submitDailyCheckIn({
 }
 
 /// Get personalized greeting with user name
+/// Note: This function doesn't have context, so it returns a key
+/// The actual localization should be done in the UI layer
 Future<String> getGreetingMessage() async {
   try {
     final hour = DateTime.now().hour;
-    String greeting;
+    String greetingKey;
 
     if (hour < 12) {
-      greeting = 'Good morning';
+      greetingKey = 'goodMorning';
     } else if (hour < 17) {
-      greeting = 'Good afternoon';
+      greetingKey = 'goodAfternoon';
     } else {
-      greeting = 'Good evening';
+      greetingKey = 'goodEvening';
     }
 
     // Get user name from repository
     final userName = await _userRepository.getUserName();
     final displayName = userName ?? 'User';
 
-    return '$greeting, $displayName';
+    // Return a format that can be localized in the UI
+    return '$greetingKey|$displayName';
   } catch (e) {
     print('Error getting greeting: $e');
-    final hour = DateTime.now().hour;
-    String greeting;
-    if (hour < 12) {
-      greeting = 'Good morning';
-    } else if (hour < 17) {
-      greeting = 'Good afternoon';
-    } else {
-      greeting = 'Good evening';
-    }
-    return '$greeting, User';
+    return 'goodMorning|User';
   }
 }
 

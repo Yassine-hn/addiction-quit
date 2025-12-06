@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProgressGrid extends StatelessWidget {
   final List<Map<String, dynamic>> dailySurveys;
@@ -26,9 +27,9 @@ class ProgressGrid extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Daily Survey History',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              AppLocalizations.of(context)!.dailySurveyHistory,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -86,9 +87,21 @@ class ProgressGrid extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildLegendItem(const Color(0xFF4CC9F0), 'No Slip'),
-                _buildLegendItem(const Color(0xFFF72585), 'Slipped'),
-                _buildLegendItem(Colors.grey.shade300, 'No Survey'),
+                _buildLegendItem(
+                  context,
+                  const Color(0xFF4CC9F0),
+                  AppLocalizations.of(context)!.noSlip,
+                ),
+                _buildLegendItem(
+                  context,
+                  const Color(0xFFF72585),
+                  AppLocalizations.of(context)!.slipped,
+                ),
+                _buildLegendItem(
+                  context,
+                  Colors.grey.shade300,
+                  AppLocalizations.of(context)!.noSurvey,
+                ),
               ],
             ),
           ],
@@ -97,7 +110,7 @@ class ProgressGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(Color color, String label) {
+  Widget _buildLegendItem(BuildContext context, Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

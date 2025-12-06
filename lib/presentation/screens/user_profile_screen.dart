@@ -1,6 +1,7 @@
 // user_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../../logic/services/profile_backend_functions.dart';
 import '../widgets/useful_widgets.dart';
 import '../../modules/Addiction_Form_module/screens/Step0Welcome.dart';
@@ -54,9 +55,9 @@ class UserProfileScreen extends StatelessWidget {
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.arrow_back, color: Colors.black87),
           ),
-          const Text(
-            'Profile',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.profile,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -151,9 +152,9 @@ class UserProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Previous Achievements',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.previousAchievements,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -169,7 +170,11 @@ class UserProfileScreen extends StatelessWidget {
                     _buildAchievementItem(
                       icon: _getIconFromString(achievement['icon']),
                       title: achievement['title'],
-                      date: achievement['date'],
+                      date: achievement['date'] is Map
+                          ? AppLocalizations.of(context)!.awardedOn(
+                              '${(achievement['date'] as Map)['month']} ${(achievement['date'] as Map)['day']}, ${(achievement['date'] as Map)['year']}',
+                            )
+                          : achievement['date'] as String,
                       color: const Color(0xFF00A3E0),
                     ),
                   ],
@@ -255,9 +260,9 @@ class UserProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My Journey',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.myJourney,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -273,8 +278,12 @@ class UserProfileScreen extends StatelessWidget {
                     _buildJourneyItem(
                       icon: _getIconFromString(journey['icon']),
                       title: journey['title'],
-                      subtitle: journey['subtitle'],
-                      days: journey['days'],
+                      subtitle: AppLocalizations.of(context)!.currentStreak(
+                        int.tryParse(journey['subtitle'].toString()) ?? 0,
+                      ),
+                      days: AppLocalizations.of(context)!.daysDays(
+                        int.tryParse(journey['days'].toString()) ?? 0,
+                      ),
                       color: const Color(0xFF00A3E0),
                       addictionId: journey['addiction_id'] as int?,
                       context: context,
@@ -421,22 +430,25 @@ class UserProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'New Addiction',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.newAddiction,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Start tracking a new addiction',
-                      style: TextStyle(fontSize: 14, color: Colors.white70),
+                      AppLocalizations.of(context)!.startTrackingNewAddiction,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),

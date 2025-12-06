@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class MoodTracker extends StatelessWidget {
   const MoodTracker({super.key});
@@ -13,12 +14,9 @@ class MoodTracker extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Mood Tracker',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+            Text(
+              AppLocalizations.of(context)!.moodTracker,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             // Placeholder for future mood data integration
@@ -29,22 +27,19 @@ class MoodTracker extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade300),
               ),
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.sentiment_satisfied_outlined,
                       size: 48,
                       color: Colors.grey,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Mood tracking coming soon',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                      AppLocalizations.of(context)!.moodTrackingComingSoon,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -56,4 +51,3 @@ class MoodTracker extends StatelessWidget {
     );
   }
 }
-

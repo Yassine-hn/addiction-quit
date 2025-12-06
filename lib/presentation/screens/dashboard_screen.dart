@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../../logic/cubit/dashboard_cubit.dart';
 import '../../logic/cubit/dashboard_state.dart';
 import '../../data/repositories/milestone_repository.dart';
@@ -29,7 +30,7 @@ class DashboardScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F9FA),
         appBar: AppBar(
-          title: const Text('Dashboard'),
+          title: Text(AppLocalizations.of(context)!.dashboard),
           backgroundColor: const Color(0xFF4361EE),
           foregroundColor: Colors.white,
           elevation: 0,
@@ -61,7 +62,7 @@ class DashboardScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -147,9 +148,12 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Icon(Icons.flag_outlined, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
-              const Text(
-                'No Active Milestone',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              Text(
+                AppLocalizations.of(context)!.noActiveMilestone,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -158,7 +162,7 @@ class DashboardScreen extends StatelessWidget {
                   backgroundColor: const Color(0xFF4361EE),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Start New Milestone'),
+                child: Text(AppLocalizations.of(context)!.startNewMilestone),
               ),
             ],
           ),
@@ -209,7 +213,9 @@ class DashboardScreen extends StatelessWidget {
 
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to create milestone')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.unableToCreateMilestone),
+        ),
       );
       return;
     }
@@ -220,20 +226,24 @@ class DashboardScreen extends StatelessWidget {
         onMilestoneSelected: (targetDays) async {
           try {
             final milestoneRepo = MilestoneRepositoryImpl();
-            final title = _getMilestoneTitle(targetDays);
+            final l10n = AppLocalizations.of(context)!;
+            final title = _getMilestoneTitle(context, targetDays);
             await milestoneRepo.createMilestone(addictionId, targetDays, title);
 
             // Reload dashboard data
             if (context.mounted) {
               context.read<DashboardCubit>().loadDashboardData();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Milestone "$title" started!')),
+                SnackBar(content: Text(l10n.milestoneStarted(title))),
               );
             }
           } catch (e) {
             if (context.mounted) {
+              final l10n = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error creating milestone: $e')),
+                SnackBar(
+                  content: Text(l10n.errorCreatingMilestone(e.toString())),
+                ),
               );
             }
           }
@@ -242,15 +252,16 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  String _getMilestoneTitle(int days) {
-    if (days == 1) return '1 Day Milestone';
-    if (days == 7) return '1 Week Milestone';
-    if (days == 14) return '2 Weeks Milestone';
-    if (days == 30) return '1 Month Milestone';
-    if (days == 60) return '2 Months Milestone';
-    if (days == 90) return '3 Months Milestone';
-    if (days == 180) return '6 Months Milestone';
-    if (days == 365) return '1 Year Milestone';
-    return '$days Days Milestone';
+  String _getMilestoneTitle(BuildContext context, int days) {
+    final l10n = AppLocalizations.of(context)!;
+    if (days == 1) return l10n.oneDayMilestone;
+    if (days == 7) return l10n.oneWeekMilestone;
+    if (days == 14) return l10n.twoWeeksMilestone;
+    if (days == 30) return l10n.oneMonthMilestone;
+    if (days == 60) return l10n.twoMonthsMilestone;
+    if (days == 90) return l10n.threeMonthsMilestone;
+    if (days == 180) return l10n.sixMonthsMilestone;
+    if (days == 365) return l10n.oneYearMilestone;
+    return l10n.daysMilestone(days);
   }
 }

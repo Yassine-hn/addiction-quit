@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class AddictionsList extends StatelessWidget {
   final List<Map<String, dynamic>> addictions;
 
-  const AddictionsList({
-    super.key,
-    required this.addictions,
-  });
+  const AddictionsList({super.key, required this.addictions});
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +20,8 @@ class AddictionsList extends StatelessWidget {
                 Icon(Icons.inbox_outlined, size: 48, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
-                  'No addictions found',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                  ),
+                  AppLocalizations.of(context)!.noAddictionsFound,
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -41,10 +36,10 @@ class AddictionsList extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Text(
-            "Your Addictions",
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            AppLocalizations.of(context)!.yourAddictions,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 12),
@@ -62,18 +57,34 @@ class AddictionsList extends StatelessWidget {
     );
   }
 
-  Widget _buildAddictionCard(BuildContext context, Map<String, dynamic> addiction) {
+  Widget _buildAddictionCard(
+    BuildContext context,
+    Map<String, dynamic> addiction,
+  ) {
     final type = addiction['type'] as String? ?? 'Unknown';
     final startDateStr = addiction['start_date'] as String? ?? '';
     final streak = addiction['streak'] as int? ?? 0;
-    
+
     String formattedDate = 'N/A';
     if (startDateStr.isNotEmpty) {
       try {
         final startDate = DateTime.parse(startDateStr);
-        final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        formattedDate = '${months[startDate.month - 1]} ${startDate.day}, ${startDate.year}';
+        final months = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
+        formattedDate =
+            '${months[startDate.month - 1]} ${startDate.day}, ${startDate.year}';
       } catch (e) {
         formattedDate = startDateStr;
       }
@@ -117,17 +128,17 @@ class AddictionsList extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Started: $formattedDate',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      AppLocalizations.of(context)!.started(formattedDate),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF4CC9F0).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -159,4 +170,3 @@ class AddictionsList extends StatelessWidget {
     );
   }
 }
-

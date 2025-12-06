@@ -93,13 +93,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
                 'Nov',
                 'Dec',
               ];
-              final formattedDate =
-                  'Awarded on ${months[date.month - 1]} ${date.day}, ${date.year}';
+              // Store date parts separately for localization in UI
+              final dateParts = {
+                'month': months[date.month - 1],
+                'day': date.day,
+                'year': date.year,
+              };
 
               achievements.add({
                 'icon': 'star',
                 'title': milestone['title'] as String? ?? 'Milestone',
-                'date': formattedDate,
+                'date': dateParts, // Store as map for localization
               });
             } catch (e) {
               // Skip invalid dates
@@ -158,11 +162,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
               icon = 'smoke';
             }
 
+            // Note: Localization for subtitle and days will be done in UI layer
             journeys.add({
               'icon': icon,
               'title': type,
-              'subtitle': 'Current Streak: $streak days',
-              'days': '$days Days',
+              'subtitle': streak, // Pass streak as int for localization
+              'days': days, // Pass days as int for localization
               'addiction_id':
                   addiction['id'], // Include addiction ID for switching
             });
