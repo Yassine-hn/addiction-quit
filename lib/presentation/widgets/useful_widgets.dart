@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 
-
 class CustomBottomNavBar extends StatelessWidget {
   final int activeIndex;
-  const CustomBottomNavBar({
-    super.key, 
-    required this.activeIndex,
-    });
-  // method _onNavItemTapped added so the bottom navbar  works for navigation between screens
+  const CustomBottomNavBar({super.key, required this.activeIndex});
+
   void _onNavItemTapped(BuildContext context, int index) {
-    // Don't navigate if already on the current screen
     if (index == activeIndex) return;
-    
-    // Handle navigation to other screens
+
     if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 1) {
@@ -22,7 +16,7 @@ class CustomBottomNavBar extends StatelessWidget {
     } else if (index == 3) {
       Navigator.pushReplacementNamed(context, '/community');
     }
-  } // _onNavItemTapped
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,34 +38,33 @@ class CustomBottomNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(
-                Icons.home, 
+                Icons.home,
                 'Home',
                 context,
                 isActive: activeIndex == 0,
                 index: 0,
-                ), // _buildNavItem
+              ),
               _buildNavItem(
                 Icons.bar_chart,
                 'Progress',
                 context,
                 isActive: activeIndex == 1,
-                index: 1, 
-              ),// _buildNavItem
+                index: 1,
+              ),
               _buildNavItem(
                 Icons.bookmark_border,
                 'Profile',
                 context,
                 isActive: activeIndex == 2,
                 index: 2,
-              ),// _buildNavItem
+              ),
               _buildNavItem(
                 Icons.people_outline,
                 'Community',
                 context,
                 isActive: activeIndex == 3,
                 index: 3,
-                
-              ),// _buildNavItem
+              ),
             ],
           ),
         ),
@@ -80,12 +73,12 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 
   Widget _buildNavItem(
-    IconData icon, 
-    String label, 
-    BuildContext context,
-    {required bool isActive,
-    required int index,}
-    ) {
+    IconData icon,
+    String label,
+    BuildContext context, {
+    required bool isActive,
+    required int index,
+  }) {
     return GestureDetector(
       onTap: () => _onNavItemTapped(context, index),
       child: Column(
@@ -108,7 +101,7 @@ class CustomBottomNavBar extends StatelessWidget {
         ],
       ),
     );
-  } // _buildNavItem
+  }
 }
 
 class StatCard extends StatelessWidget {
@@ -139,6 +132,7 @@ class StatCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -148,30 +142,41 @@ class StatCard extends StatelessWidget {
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              if (unit.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    unit,
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Wrap(
+                crossAxisAlignment: WrapCrossAlignment.end,
+                spacing: 4,
+                runSpacing: 4,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
+                    ),
                   ),
-                ),
-              ],
-            ],
+                  if (unit.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      child: Text(
+                        unit,
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -219,10 +224,13 @@ class _MoodSelectorState extends State<MoodSelector> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildMoodButton('😖', 'Awful'),
-            _buildMoodButton('😔', 'Sad'),
-            _buildMoodButton('😐', 'Okay'),
-            _buildMoodButton('😊', 'Good'),
+            Flexible(child: _buildMoodButton('😖', 'Awful')),
+            const SizedBox(width: 8),
+            Flexible(child: _buildMoodButton('😔', 'Sad')),
+            const SizedBox(width: 8),
+            Flexible(child: _buildMoodButton('😐', 'Okay')),
+            const SizedBox(width: 8),
+            Flexible(child: _buildMoodButton('😊', 'Good')),
           ],
         ),
       ],
@@ -240,8 +248,8 @@ class _MoodSelectorState extends State<MoodSelector> {
         widget.onMoodSelected(label);
       },
       child: Container(
-        width: 70,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        constraints: const BoxConstraints(minWidth: 60, maxWidth: 80),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFE8F4F8) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
@@ -254,12 +262,17 @@ class _MoodSelectorState extends State<MoodSelector> {
           children: [
             Text(emoji, style: const TextStyle(fontSize: 28)),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isSelected ? const Color(0xFF00A3E0) : Colors.grey[600],
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isSelected
+                      ? const Color(0xFF00A3E0)
+                      : Colors.grey[600],
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
               ),
             ),
           ],
