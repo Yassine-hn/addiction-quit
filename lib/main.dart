@@ -1,14 +1,42 @@
+// file: main.dart (updated)
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'presentation/app_routes.dart';
-import 'modules/Addiction_Form_module/screens/Step0Welcome.dart';
+import 'modules/Addiction_Form_module/data/user_data_service.dart';
+import 'data/databases/db_helper.dart';
 
 Future<bool> init_app() async {
-  return true;
+  try {
+    // Initialize SharedPreferences
+    await SharedPreferences.getInstance();
+
+    // Initialize database
+    final dbHelper = DatabaseHelper.instance;
+    await dbHelper.database;
+
+    // Check if user already exists
+    final userExists = await UserDataService.userExists();
+
+    if (userExists) {
+      final user = await UserDataService.getCurrentUser();
+      print(
+        'App initialized. Existing user found: ${user?['name']} (ID: ${user?['id']})',
+      );
+    } else {
+      print(
+        'App initialized. No existing user found. User needs to go through onboarding.',
+      );
+    }
+
+    return true;
+  } catch (e) {
+    print('Failed to initialize app: $e');
+    return false;
+  }
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await init_app();
   runApp(const MyApp());
 }
@@ -16,23 +44,16 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var list = ["Alcohol", "Tabacoo", "Drug", "Screen", "Sugar"];
-
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Addiction Quit App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-
-      //initialRoute: AppRoutes.loadingScreen,
-      //onGenerateRoute: AppRoutes.onGenerateRoute,
-      home: BlocProvider(
-        create: (BuildContext context) => UserInfoCubit(),
-        child: WelcomeScreen(),
-      ),
+      initialRoute: AppRoutes.initial,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }

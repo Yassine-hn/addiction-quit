@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/ValidationButton.dart';
+import '../data/user_data_service.dart';
+import 'data_saving_screen.dart';
+import '../models/User_Info_model.dart';
+import '../../../presentation/app_routes.dart';
 
 class StepFinal extends StatefulWidget {
   const StepFinal({super.key});
@@ -56,15 +60,73 @@ class _StepFinalState extends State<StepFinal>
     });
   }
 
-  void _handleGetStarted() {
+  // In your form screen file
+
+  void _handleGetStarted() async {
     if (_isUsernameValid) {
       final username = _usernameController.text.trim();
-      context.read<UserInfoCubit>().updateUsername(username);
-      context.read<UserInfoCubit>().debugPrint();
-      // Here you would navigate to the main app screen
-      // Example: Navigator.pushReplacementNamed(context, '/main');
-      // Adjust based on your navigation
+      final cubit = context.read<UserInfoCubit>();
+
+      // Update username in cubit
+      cubit.updateUsername(username);
+      cubit.debugPrint();
+
+      // Create a future that handles all data saving operations
+      final savingFuture = _saveUserData(cubit.state, username);
+
+      // Navigate to transition screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DataSavingScreen(
+            savingFuture: savingFuture,
+            onComplete: () {
+              // Navigate to home screen using named route
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
+            },
+            onError: () {
+              // Navigate back to form with error message
+              Navigator.pop(context);
+              _showErrorDialog(context);
+            },
+          ),
+        ),
+      );
     }
+  }
+
+  Future<void> _saveUserData(UserInfoModel userInfo, String username) async {
+    try {
+      // 1. Get or create user ID and save to SharedPreferences
+      final userId = await UserDataService.getOrCreateUserId(username);
+
+      // 2. Create addiction instance in database
+      await UserDataService.createAddiction(userId, userInfo);
+
+      // Optional: Add a small delay to show the success animation
+      await Future.delayed(Duration(milliseconds: 500));
+    } catch (e) {
+      print('Error saving user data: $e');
+      rethrow; // Re-throw to be caught by FutureBuilder
+    }
+  }
+
+  void _showErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Save Failed'),
+        content: const Text(
+          'There was an error saving your data. Please try again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
