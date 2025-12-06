@@ -1,51 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../data/models/progress_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../logic/cubit/dashboard_cubit.dart';
+import '../../logic/cubit/dashboard_state.dart';
 import '../../data/repositories/progress_repository.dart';
 import '../widgets/useful_widgets.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends StatelessWidget {
   final ProgressRepository repository;
 
   const DashboardScreen({super.key, required this.repository});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  ProgressData? _progressData;
-  WeeklyProgress? _weeklyProgress;
-  List<Goal>? _goals;
-  bool _isLoading = true;
-  String _selectedTab = 'Progress';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final results = await Future.wait([
-        widget.repository.getProgressData(),
-        widget.repository.getWeeklyProgress(),
-        widget.repository.getAvailableGoals(),
-      ]);
-
-      setState(() {
-        _progressData = results[0] as ProgressData;
-        _weeklyProgress = results[1] as WeeklyProgress;
-        _goals = results[2] as List<Goal>;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      // Handle error
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
