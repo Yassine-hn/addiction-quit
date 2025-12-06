@@ -1,4 +1,4 @@
-// Step3PerWeek.dart
+// Step3PerWeek.dart - Alternative version with Wrap
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
@@ -20,7 +20,6 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
   @override
   void initState() {
     super.initState();
-    // Load initial value from cubit if exists
     final cubit = BlocProvider.of<UserInfoCubit>(context, listen: false);
     final currentValue = cubit.state.consumptionDayPerWeek;
 
@@ -30,9 +29,6 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
   }
 
   void _handleContinue() {
-    print(
-      "====================ENTERED HANDLE CONTINUE SCREEN 3 ====================",
-    );
     if (_selectedValue != null) {
       context.read<UserInfoCubit>().updateConsumptionDayPerWeek(
         _selectedValue!,
@@ -42,7 +38,7 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
         MaterialPageRoute(
           builder: (_) => BlocProvider.value(
             value: context.read<UserInfoCubit>(),
-            child: Step4PerDay(),
+            child: const Step4PerDay(),
           ),
         ),
       );
@@ -57,6 +53,9 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -67,60 +66,100 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title Section
-              const SectionTitle(
-                title: 'How often do you fall into your addiction per week?',
-                textAlign: TextAlign.left,
-              ),
-              const SizedBox(height: 40),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isLandscape ? 32 : 24.0,
+              vertical: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title Section
+                Text(
+                  'How often do you fall into your addiction per week?',
+                  style: TextStyle(
+                    fontSize: isLandscape ? 26 : 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 32),
 
-              // Irregular Option
-              FrequencyOption(
-                text: 'Irregularly',
-                isSelected: _selectedValue == -1,
-                onTap: () => _selectValue(-1),
-                isIrregular: true,
-              ),
-              const SizedBox(height: 24),
+                // Irregular Option
+                Container(
+                  margin: const EdgeInsets.only(bottom: 24),
+                  child: FrequencyOption(
+                    text: 'Irregularly',
+                    isSelected: _selectedValue == -1,
+                    onTap: () => _selectValue(-1),
+                    isIrregular: true,
+                  ),
+                ),
 
-              // Days Grid
-              Expanded(child: _buildDaysGrid()),
-              const SizedBox(height: 24),
+                // Days Header
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    'Select number of days:',
+                    style: TextStyle(
+                      fontSize: isLandscape ? 16 : 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
 
-              // Continue Button
-              ValidationButton(
-                label: 'Continue',
-                onPressed: () =>
-                    _selectedValue != null ? _handleContinue() : null,
-                enabled: _selectedValue != null,
-              ),
-              const SizedBox(height: 16),
-            ],
+                // Days Grid using Wrap
+                _buildDaysWrap(isLandscape),
+
+                const SizedBox(height: 40),
+
+                // Continue Button
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 24,
+                    bottom: MediaQuery.of(context).padding.bottom + 20,
+                  ),
+                  child: ValidationButton(
+                    label: 'Continue',
+                    onPressed: () =>
+                        _selectedValue != null ? _handleContinue() : null,
+                    enabled: _selectedValue != null,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildDaysGrid() {
+  Widget _buildDaysWrap(bool isLandscape) {
     const days = [1, 2, 3, 4, 5, 6, 7];
 
-    return GridView.count(
-      crossAxisCount: 4,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 1.0,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+    return Wrap(
+      spacing: isLandscape ? 12 : 16,
+      runSpacing: isLandscape ? 12 : 16,
+      alignment: WrapAlignment.start,
       children: days.map((day) {
-        return FrequencyOption(
-          text: day.toString(),
-          isSelected: _selectedValue == day,
-          onTap: () => _selectValue(day),
+        // Calculate item width based on screen size and orientation
+        final itemWidth =
+            (MediaQuery.of(context).size.width -
+                (isLandscape ? 64 : 48) - // subtract horizontal padding
+                (isLandscape ? 5 * 12 : 3 * 16)) / // subtract spacing
+            (isLandscape ? 7 : 4); // divide by number of items per row
+
+        return SizedBox(
+          width: itemWidth,
+          height: itemWidth, // Make it square
+          child: FrequencyOption(
+            text: day.toString(),
+            isSelected: _selectedValue == day,
+            onTap: () => _selectValue(day),
+          ),
         );
       }).toList(),
     );

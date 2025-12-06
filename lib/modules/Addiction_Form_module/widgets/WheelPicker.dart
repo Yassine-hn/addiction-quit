@@ -256,3 +256,226 @@ class _WheelDatePickerState extends State<WheelDatePicker> {
     super.dispose();
   }
 }
+
+// TimeWheelPicker.dart - Complete time picker with hours and minutes
+class TimeWheelPicker extends StatefulWidget {
+  final TimeOfDay initialTime;
+  final ValueChanged<TimeOfDay> onTimeChanged;
+
+  const TimeWheelPicker({
+    super.key,
+    required this.initialTime,
+    required this.onTimeChanged,
+  });
+
+  @override
+  State<TimeWheelPicker> createState() => _TimeWheelPickerState();
+}
+
+class _TimeWheelPickerState extends State<TimeWheelPicker> {
+  late FixedExtentScrollController _hourController;
+  late FixedExtentScrollController _minuteController;
+
+  late int _selectedHour;
+  late int _selectedMinute;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedHour = widget.initialTime.hour;
+    _selectedMinute = widget.initialTime.minute;
+
+    _hourController = FixedExtentScrollController(initialItem: _selectedHour);
+    _minuteController = FixedExtentScrollController(
+      initialItem: _selectedMinute,
+    );
+
+    // Notify initial value
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notifyTimeChanged();
+    });
+  }
+
+  void _notifyTimeChanged() {
+    widget.onTimeChanged(
+      TimeOfDay(hour: _selectedHour, minute: _selectedMinute),
+    );
+  }
+
+  void _onHourChanged(int index) {
+    setState(() {
+      _selectedHour = index;
+    });
+    _notifyTimeChanged();
+  }
+
+  void _onMinuteChanged(int index) {
+    setState(() {
+      _selectedMinute = index;
+    });
+    _notifyTimeChanged();
+  }
+
+  String _formatTime() {
+    final time = TimeOfDay(hour: _selectedHour, minute: _selectedMinute);
+    return time.format(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Large time display
+        Container(
+          margin: const EdgeInsets.only(bottom: 40),
+          child: Column(
+            children: [
+              Text(
+                _formatTime(),
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 9, 180),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _selectedHour < 12 ? 'Morning' : 'Afternoon',
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+
+        // Wheel pickers container
+        Container(
+          height: 200,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFEEEEEE), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // Hours (0-23)
+              Expanded(
+                child: _buildWheelColumn(
+                  controller: _hourController,
+                  label: 'HOURS',
+                  itemCount: 24,
+                  formatter: (index) => index.toString().padLeft(2, '0'),
+                  onChanged: _onHourChanged,
+                  selectedIndex: _selectedHour,
+                ),
+              ),
+
+              const VerticalDivider(
+                color: Color(0xFFEEEEEE),
+                width: 1,
+                thickness: 1,
+              ),
+
+              // Minutes (0-59)
+              Expanded(
+                child: _buildWheelColumn(
+                  controller: _minuteController,
+                  label: 'MINUTES',
+                  itemCount: 60,
+                  formatter: (index) => index.toString().padLeft(2, '0'),
+                  onChanged: _onMinuteChanged,
+                  selectedIndex: _selectedMinute,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWheelColumn({
+    required FixedExtentScrollController controller,
+    required String label,
+    required int itemCount,
+    required String Function(int) formatter,
+    required ValueChanged<int> onChanged,
+    required int selectedIndex,
+  }) {
+    return Column(
+      children: [
+        // Label
+        Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 8),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+
+        // Wheel
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification) {
+                onChanged(controller.selectedItem);
+              }
+              return true;
+            },
+            child: ListWheelScrollView.useDelegate(
+              controller: controller,
+              itemExtent: 40,
+              diameterRatio: 1000,
+              squeeze: 1.0,
+              useMagnifier: true,
+              magnification: 1.1,
+              overAndUnderCenterOpacity: 0.4,
+              physics: const FixedExtentScrollPhysics(),
+              childDelegate: ListWheelChildBuilderDelegate(
+                childCount: itemCount,
+                builder: (context, index) {
+                  final isSelected = index == selectedIndex;
+                  return Center(
+                    child: Text(
+                      formatter(index),
+                      style: TextStyle(
+                        fontSize: isSelected ? 22 : 18,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: isSelected
+                            ? const Color.fromARGB(255, 0, 9, 180)
+                            : Colors.grey[600],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _hourController.dispose();
+    _minuteController.dispose();
+    super.dispose();
+  }
+}

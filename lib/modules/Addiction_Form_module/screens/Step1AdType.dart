@@ -82,40 +82,70 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title Section
-              const SectionTitle(
-                title: 'Select Addiction',
-                subtitle: 'What type of addiction\ndo you want to quit?',
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title Section
+                          const SectionTitle(
+                            title: 'Select Addiction',
+                            subtitle:
+                                'What type of addiction\ndo you want to quit?',
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Search Section
+                          SearchBarWidget(
+                            controller: _searchController,
+                            onChanged: _filterList,
+                            hintText: 'Search for an addiction...',
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // List Section
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: _buildAddictionList(),
+                  ),
+                ],
               ),
-              const SizedBox(height: 32),
+            ),
 
-              // Search Section
-              SearchBarWidget(
-                controller: _searchController,
-                onChanged: _filterList,
-                hintText: 'Search for an addiction...',
+            // Continue Button - Fixed at bottom
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
               ),
-              const SizedBox(height: 24),
-
-              // List Section
-              Expanded(child: _buildAddictionList()),
-              const SizedBox(height: 24),
-
-              // Continue Button
-              ValidationButton(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ValidationButton(
                 label: 'Continue',
                 onPressed: () =>
                     _selectedItem != null ? _handleContinue() : null,
                 enabled: _selectedItem != null,
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -123,25 +153,26 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
 
   Widget _buildAddictionList() {
     if (_filteredList.isEmpty) {
-      return const Center(
-        child: Text(
-          'No addictions found',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Text(
+            'No addictions found',
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
         ),
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 16),
-      itemCount: _filteredList.length,
-      itemBuilder: (context, index) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
         final item = _filteredList[index];
         return AddictionListItem(
           text: item,
           isSelected: item == _selectedItem,
           onTap: () => _handleItemSelected(item),
         );
-      },
+      }, childCount: _filteredList.length),
     );
   }
 

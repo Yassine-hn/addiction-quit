@@ -39,6 +39,9 @@ class _NumberInputFieldState extends State<NumberInputField> {
     if (widget.controller.text.isNotEmpty) {
       _validateInput(widget.controller.text);
     }
+    widget.controller.addListener(() {
+      _validateInput(widget.controller.text);
+    });
   }
 
   @override

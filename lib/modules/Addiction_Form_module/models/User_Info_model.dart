@@ -8,8 +8,10 @@ class UserInfoModel {
   final String? mainMotivation;
   final String? importanceForUser;
   final String? impliedPeople;
-  final String? firstMilestone;
   final DateTime? dailyReview;
+
+  /// New field
+  final Map<String, dynamic>? moneySavedPerDay;
 
   const UserInfoModel({
     this.username,
@@ -21,8 +23,8 @@ class UserInfoModel {
     this.mainMotivation,
     this.importanceForUser,
     this.impliedPeople,
-    this.firstMilestone,
     this.dailyReview,
+    this.moneySavedPerDay,
   });
 
   UserInfoModel copyWith({
@@ -35,8 +37,8 @@ class UserInfoModel {
     String? mainMotivation,
     String? importanceForUser,
     String? impliedPeople,
-    String? firstMilestone,
     DateTime? dailyReview,
+    Map<String, dynamic>? moneySavedPerDay,
   }) {
     return UserInfoModel(
       username: username ?? this.username,
@@ -49,8 +51,8 @@ class UserInfoModel {
       mainMotivation: mainMotivation ?? this.mainMotivation,
       importanceForUser: importanceForUser ?? this.importanceForUser,
       impliedPeople: impliedPeople ?? this.impliedPeople,
-      firstMilestone: firstMilestone ?? this.firstMilestone,
       dailyReview: dailyReview ?? this.dailyReview,
+      moneySavedPerDay: moneySavedPerDay ?? this.moneySavedPerDay,
     );
   }
 
@@ -65,8 +67,10 @@ class UserInfoModel {
       'mainMotivation': mainMotivation,
       'importanceForUser': importanceForUser,
       'impliedPeople': impliedPeople,
-      'firstMilestone': firstMilestone,
       'dailyReview': dailyReview?.toIso8601String(),
+
+      /// Map saved as-is
+      'moneySavedPerDay': moneySavedPerDay,
     };
   }
 
@@ -83,10 +87,51 @@ class UserInfoModel {
       mainMotivation: map['mainMotivation'],
       importanceForUser: map['importanceForUser'],
       impliedPeople: map['impliedPeople'],
-      firstMilestone: map['firstMilestone'],
       dailyReview: map['dailyReview'] != null
           ? DateTime.parse(map['dailyReview'])
           : null,
+
+      /// Read map
+      moneySavedPerDay: map['moneySavedPerDay'] != null
+          ? Map<String, dynamic>.from(map['moneySavedPerDay'])
+          : null,
     );
+  }
+
+  /// Debug print method
+  void debugPrint() {
+    print('''
+==== UserInfoModel ====
+username: $username
+addictionType: $addictionType
+startDate: $startDate
+consumptionDayPerWeek: $consumptionDayPerWeek
+consumptionPerDay: $consumptionPerDay
+goals: $goals
+mainMotivation: $mainMotivation
+importanceForUser: $importanceForUser
+impliedPeople: $impliedPeople
+dailyReview: $dailyReview
+moneySavedPerDay: $moneySavedPerDay
+========================
+''');
+  }
+
+  @override
+  String toString() {
+    return '''
+UserInfoModel(
+  username: $username,
+  addictionType: $addictionType,
+  startDate: $startDate,
+  consumptionDayPerWeek: $consumptionDayPerWeek,
+  consumptionPerDay: $consumptionPerDay,
+  goals: $goals,
+  mainMotivation: $mainMotivation,
+  importanceForUser: $importanceForUser,
+  impliedPeople: $impliedPeople,
+  dailyReview: $dailyReview,
+  moneySavedPerDay: $moneySavedPerDay,
+)''';
   }
 }

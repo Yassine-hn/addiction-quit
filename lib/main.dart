@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
 import 'presentation/app_routes.dart';
-import 'modules/Addiction_Form_module/screens/Step1AdType.dart';
+import 'modules/Addiction_Form_module/screens/Step0Welcome.dart';
 
 Future<bool> init_app() async {
   return true;
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       //onGenerateRoute: AppRoutes.onGenerateRoute,
       home: BlocProvider(
         create: (BuildContext context) => UserInfoCubit(),
-        child: StepAddictionType(),
+        child: WelcomeScreen(),
       ),
     );
   }

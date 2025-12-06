@@ -5,7 +5,7 @@ import 'Step3PerWeek.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
-import '../widgets/WheelDatePicker.dart';
+import '../widgets/WheelPicker.dart';
 
 class Step2StartDate extends StatefulWidget {
   const Step2StartDate({super.key});
@@ -63,67 +63,89 @@ class _Step2StartDateState extends State<Step2StartDate> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title Section
-              const SectionTitle(
-                title: 'When did your journey begin?',
-                subtitle: 'Starting Date',
-              ),
-              const SizedBox(height: 40),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title Section
+                    const SectionTitle(
+                      title: 'When did your journey begin?',
+                      subtitle: 'Starting Date',
+                    ),
+                    const SizedBox(height: 40),
 
-              // Selected Date Preview
-              if (_selectedDate != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F8),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.calendar_month,
-                        color: Color.fromARGB(255, 0, 9, 180),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        _formatDate(_selectedDate!),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                    // Selected Date Preview
+                    if (_selectedDate != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(bottom: 24),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F5F8),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.calendar_month,
+                              color: Color.fromARGB(255, 0, 9, 180),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              _formatDate(_selectedDate!),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ],
 
-              // Wheel Date Picker
-              Expanded(
-                child: WheelDatePicker(
-                  initialDate: _selectedDate,
-                  onDateChanged: _onDateChanged,
-                  minDate: DateTime(1900),
-                  maxDate: DateTime.now(),
+                    // Wheel Date Picker with constrained height
+                    SizedBox(
+                      height: 300,
+                      child: WheelDatePicker(
+                        initialDate: _selectedDate,
+                        onDateChanged: _onDateChanged,
+                        minDate: DateTime(1900),
+                        maxDate: DateTime.now(),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
 
-              // Continue Button
-              ValidationButton(
+            // Continue Button - Fixed at bottom
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ValidationButton(
                 label: 'Continue',
                 onPressed: _handleContinue,
                 enabled: _selectedDate != null,
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

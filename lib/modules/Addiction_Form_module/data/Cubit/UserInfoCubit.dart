@@ -33,9 +33,28 @@ class UserInfoCubit extends Cubit<UserInfoModel> {
   void updateImpliedPeople(String? value) =>
       emit(data.copyWith(impliedPeople: value));
 
-  void updateFirstMilestone(String? value) =>
-      emit(data.copyWith(firstMilestone: value));
+  void updateMoneySavedPerDay(Map<String, dynamic>? value) {
+    if (value != null) {
+      // Validate required fields
+      if (!value.containsKey('amount') || !value.containsKey('currency')) {
+        throw ArgumentError(
+          'moneySavedPerDay must contain amount and currency',
+        );
+      }
+      // Validate amount is numeric
+      if (value['amount'] is! num) {
+        throw ArgumentError('amount must be a number');
+      }
+      // Validate currency is string
+      if (value['currency'] is! String) {
+        throw ArgumentError('currency must be a string');
+      }
+    }
+    emit(data.copyWith(moneySavedPerDay: value));
+  }
 
   void updateDailyReview(DateTime? value) =>
       emit(data.copyWith(dailyReview: value));
+
+  void debugPrint() => state.debugPrint();
 }

@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
-import '../widgets/FrequencyOption.dart';
 import '../widgets/NumberInputField.dart';
-import '../widgets/OptionTile.dart';
+import '../screens/Step5Objectives.dart';
 
 class Step4PerDay extends StatefulWidget {
   const Step4PerDay({super.key});
@@ -80,7 +79,15 @@ class _Step4PerDayState extends State<Step4PerDay> {
       final number = int.tryParse(_numberController.text);
       if (number != null) {
         context.read<UserInfoCubit>().updateConsumptionPerDay(number);
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: context.read<UserInfoCubit>(),
+              child: Step5Objectives(),
+            ),
+          ),
+        );
       }
     }
   }
