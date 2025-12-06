@@ -72,13 +72,19 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             children: [
               Icon(Icons.menu, color: Colors.grey[600]),
               const SizedBox(width: 12),
-              Text(
-                getGreetingMessage(), // Fonction du backend
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+              FutureBuilder<String>(
+                future: getGreetingMessage(), // backend function
+                builder: (context, snapshot) {
+                  final greeting = snapshot.data ?? 'Hello, User';
+                  return Text(
+                    greeting,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -185,36 +191,46 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
 
   Widget _buildStatsRow() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getUserStats(), // Fonction du backend
+      future: getSavingsStats(), // backend function
       builder: (context, snapshot) {
-        final stats = snapshot.data ?? getDefaultStats();
+        final stats = snapshot.data ?? getDefaultSavingsStats();
+        final moneySaved = stats['moneySaved'] as String?;
 
-        return Row(
-          children: [
-            Expanded(
-              child: StatCard(
-                title: 'Streak',
-                value: stats['streak'].toString(),
-                unit: 'days',
-              ),
+        // Build list of stat cards
+        final statCards = <Widget>[
+          Expanded(
+            child: StatCard(
+              title: 'Streak',
+              value: stats['streak'].toString(),
+              unit: 'days',
             ),
-            const SizedBox(width: 12),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: StatCard(
+              title: 'Time\nSaved',
+              value: stats['timeSaved'] ?? '0 min',
+              unit: '',
+            ),
+          ),
+        ];
+
+        // Only add money saved if it's not null (addiction saves money)
+        if (moneySaved != null) {
+          statCards.add(const SizedBox(width: 12));
+          statCards.add(
             Expanded(
               child: StatCard(
                 title: 'Money\nSaved',
-                value: stats['moneySaved'],
+                value: moneySaved,
                 unit: '',
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StatCard(
-                title: 'Milestone',
-                value: stats['milestone'].toString(),
-                unit: 'days',
-              ),
-            ),
-          ],
+          );
+        }
+
+        return Row(
+          children: statCards,
         );
       },
     );

@@ -106,4 +106,24 @@ class AddictionsTable {
       whereArgs: [id],
     );
   }
+
+  /// Update time saved (in minutes)
+  static Future<int> updateTimeSavedPerDay(Database db, int id, int timeSavedMinutes) async {
+    return await db.update(
+      tableName,
+      {'time_saved_per_day': timeSavedMinutes},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  /// Update money saved per day
+  static Future<int> updateMoneySavedPerDay(Database db, int id, double? moneySavedPerDay) async {
+    return await db.update(
+      tableName,
+      {'money_saved_per_day': moneySavedPerDay},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
