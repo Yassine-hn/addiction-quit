@@ -207,7 +207,7 @@ class DashboardScreen extends StatelessWidget {
     final userId = await SharedPreferencesHelper.getUserId();
     final addictionId = state.selectedAddictionId;
 
-    if (userId == null || addictionId == null) {
+    if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Unable to create milestone')),
       );
@@ -222,7 +222,7 @@ class DashboardScreen extends StatelessWidget {
             final milestoneRepo = MilestoneRepositoryImpl();
             final title = _getMilestoneTitle(targetDays);
             await milestoneRepo.createMilestone(addictionId, targetDays, title);
-            
+
             // Reload dashboard data
             if (context.mounted) {
               context.read<DashboardCubit>().loadDashboardData();

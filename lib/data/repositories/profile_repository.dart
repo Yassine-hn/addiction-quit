@@ -163,7 +163,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
               'title': type,
               'subtitle': 'Current Streak: $streak days',
               'days': '$days Days',
-              'addiction_id': addiction['id'], // Include addiction ID for switching
+              'addiction_id':
+                  addiction['id'], // Include addiction ID for switching
             });
           } catch (e) {
             // Skip invalid dates

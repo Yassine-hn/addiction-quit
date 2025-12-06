@@ -55,16 +55,18 @@ class UserDataService {
     // Check if addiction type already exists for this user
     final existingAddictions = await AddictionsTable.getByUserId(db, userId);
     final addictionType = userInfo.addictionType ?? 'unknown';
-    
+
     final duplicateExists = existingAddictions.any(
-      (addiction) => 
-          (addiction['type'] as String? ?? '').toLowerCase() == 
-          addictionType.toLowerCase() &&
+      (addiction) =>
+          (addiction['type'] as String? ?? '').toLowerCase() ==
+              addictionType.toLowerCase() &&
           (addiction['status'] as String? ?? 'active') == 'active',
     );
-    
+
     if (duplicateExists) {
-      throw Exception('An active addiction of type "$addictionType" already exists. Please choose a different type or deactivate the existing one.');
+      throw Exception(
+        'An active addiction of type "$addictionType" already exists. Please choose a different type or deactivate the existing one.',
+      );
     }
 
     // Extract money saved per day (with validation)

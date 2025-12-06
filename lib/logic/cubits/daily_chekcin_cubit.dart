@@ -38,7 +38,7 @@ class CheckInInProgress extends DailyCheckInState {
       journalEntry: journalEntry ?? this.journalEntry,
     );
   }
-  
+
   bool get isValid => selectedMood.isNotEmpty && cravingLevel > 0;
 }
 
@@ -88,7 +88,7 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
     try {
       final userId = await SharedPreferencesHelper.getUserId();
       final addictionId = await SharedPreferencesHelper.getAddictionId();
-      
+
       if (userId == null || addictionId == null) {
         emit(CheckInInProgress());
         return;

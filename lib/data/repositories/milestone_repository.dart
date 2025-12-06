@@ -13,7 +13,7 @@ abstract class MilestoneRepository {
 
   /// Create a new milestone
   Future<int> createMilestone(int addictionId, int targetDays, String title);
-  
+
   /// Check and mark completed milestones as achieved
   Future<void> checkAndMarkCompletedMilestones(int addictionId);
 }
@@ -69,7 +69,11 @@ class MilestoneRepositoryImpl implements MilestoneRepository {
   }
 
   @override
-  Future<int> createMilestone(int addictionId, int targetDays, String title) async {
+  Future<int> createMilestone(
+    int addictionId,
+    int targetDays,
+    String title,
+  ) async {
     try {
       final db = await _dbHelper.database;
       final milestoneData = {
@@ -91,7 +95,10 @@ class MilestoneRepositoryImpl implements MilestoneRepository {
   Future<void> checkAndMarkCompletedMilestones(int addictionId) async {
     try {
       final db = await _dbHelper.database;
-      final pendingMilestones = await MilestonesTable.getPending(db, addictionId);
+      final pendingMilestones = await MilestonesTable.getPending(
+        db,
+        addictionId,
+      );
       final now = DateTime.now();
 
       for (var milestone in pendingMilestones) {
