@@ -1,11 +1,42 @@
+// file: main.dart (updated)
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'presentation/app_routes.dart';
+import 'modules/Addiction_Form_module/data/user_data_service.dart';
+import 'data/databases/db_helper.dart';
 
 Future<bool> init_app() async {
-  return true;
+  try {
+    // Initialize SharedPreferences
+    await SharedPreferences.getInstance();
+
+    // Initialize database
+    final dbHelper = DatabaseHelper.instance;
+    await dbHelper.database;
+
+    // Check if user already exists
+    final userExists = await UserDataService.userExists();
+
+    if (userExists) {
+      final user = await UserDataService.getCurrentUser();
+      print(
+        'App initialized. Existing user found: ${user?['name']} (ID: ${user?['id']})',
+      );
+    } else {
+      print(
+        'App initialized. No existing user found. User needs to go through onboarding.',
+      );
+    }
+
+    return true;
+  } catch (e) {
+    print('Failed to initialize app: $e');
+    return false;
+  }
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await init_app();
   runApp(const MyApp());
 }
@@ -13,32 +44,16 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Addiction Quit App',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      initialRoute: AppRoutes.loadingScreen,
+      initialRoute: AppRoutes.initial,
       onGenerateRoute: AppRoutes.onGenerateRoute,
-      //home: HomeScreen(),
     );
   }
 }
