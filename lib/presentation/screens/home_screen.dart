@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
+import '../../logic/cubits/daily_chekcin_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DailyCheckInScreen();
+    return BlocProvider(
+      create: (context) => DailyCheckInCubit(),
+      child: const DailyCheckInScreen(),
+    );
   }
 }
 
@@ -18,14 +23,37 @@ class DailyCheckInScreen extends StatefulWidget {
   State<DailyCheckInScreen> createState() => _DailyCheckInScreenState();
 }
 
-class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
-  String selectedMood = '';
-  double cravingLevel = 0.5;
+class _DailyCheckInScreenState extends State<DailyCheckInScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController journalController = TextEditingController();
+  AnimationController? _animationController;
+  Animation<double>? _scaleAnimation;
+  Animation<double>? _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController!, curve: Curves.elasticOut),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController!,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      ),
+    );
+  }
 
   @override
   void dispose() {
     journalController.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -57,7 +85,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(activeIndex: 0),
+      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
     );
   }
 
@@ -68,26 +96,32 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Icon(Icons.menu, color: Colors.grey[600]),
-              const SizedBox(width: 12),
-              FutureBuilder<String>(
-                future: getGreetingMessage(), // backend function
-                builder: (context, snapshot) {
-                  final greeting = snapshot.data ?? 'Hello, User';
-                  return Text(
-                    greeting,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  );
-                },
-              ),
-            ],
+          Expanded(
+            child: Row(
+              children: [
+                Icon(Icons.menu, color: Colors.grey[600]),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: FutureBuilder<String>(
+                    future: getGreetingMessage(),
+                    builder: (context, snapshot) {
+                      final greeting = snapshot.data ?? 'Hello, User';
+                      return Text(
+                        greeting,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0xFFE8F4F8),
@@ -121,8 +155,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             ],
           ),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 32),
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               'You are sober for',
@@ -137,7 +172,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             ),
             const SizedBox(height: 12),
             FutureBuilder<Map<String, String>>(
-              future: getSobrietyTime(), // Fonction du backend
+              future: getSobrietyTime(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator(color: Colors.white);
@@ -145,16 +180,35 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
 
                 final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
 
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _buildTimeUnit(sobrietyTime['days'] ?? '42', 'DAYS'),
-                    const SizedBox(width: 8),
-                    _buildTimeUnit(sobrietyTime['hours'] ?? '11', 'HOURS'),
-                    const SizedBox(width: 8),
-                    _buildTimeUnit(sobrietyTime['minutes'] ?? '23', 'MINUTES'),
-                  ],
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: _buildTimeUnit(
+                            sobrietyTime['days'] ?? '42',
+                            'DAYS',
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: _buildTimeUnit(
+                            sobrietyTime['hours'] ?? '11',
+                            'HOURS',
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: _buildTimeUnit(
+                            sobrietyTime['minutes'] ?? '23',
+                            'MIN',
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             ),
@@ -166,23 +220,30 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
 
   Widget _buildTimeUnit(String value, String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            height: 1,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1,
+            ),
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[200],
-            fontWeight: FontWeight.w500,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[200],
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
@@ -191,53 +252,181 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
 
   Widget _buildStatsRow() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getSavingsStats(), // backend function
+      future: getSavingsStats(),
       builder: (context, snapshot) {
         final stats = snapshot.data ?? getDefaultSavingsStats();
         final moneySaved = stats['moneySaved'] as String?;
 
-        // Build list of stat cards
-        final statCards = <Widget>[
-          Expanded(
-            child: StatCard(
-              title: 'Streak',
-              value: stats['streak'].toString(),
-              unit: 'days',
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: StatCard(
-              title: 'Time\nSaved',
-              value: stats['timeSaved'] ?? '0 min',
-              unit: '',
-            ),
-          ),
-        ];
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final showMoneyCard = moneySaved != null;
 
-        // Only add money saved if it's not null (addiction saves money)
-        if (moneySaved != null) {
-          statCards.add(const SizedBox(width: 12));
-          statCards.add(
-            Expanded(
-              child: StatCard(
-                title: 'Money\nSaved',
-                value: moneySaved,
-                unit: '',
-              ),
-            ),
-          );
-        }
-
-        return Row(
-          children: statCards,
+            return Row(
+              children: [
+                Expanded(
+                  child: StatCard(
+                    title: 'Streak',
+                    value: stats['streak'].toString(),
+                    unit: 'days',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: StatCard(
+                    title: 'Time\nSaved',
+                    value: stats['timeSaved'] ?? '0 min',
+                    unit: '',
+                  ),
+                ),
+                if (showMoneyCard) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: StatCard(
+                      title: 'Money\nSaved',
+                      value: moneySaved,
+                      unit: '',
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         );
       },
     );
   }
 
   Widget _buildCheckInCard() {
+    return BlocConsumer<DailyCheckInCubit, DailyCheckInState>(
+      listener: (context, state) {
+        if (state is CheckInCompleted) {
+          _animationController?.forward();
+        } else if (state is CheckInError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red[600],
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 400),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(scale: animation, child: child),
+            );
+          },
+          child: state is CheckInCompleted
+              ? _buildCompletedCheckIn()
+              : _buildCheckInForm(state),
+        );
+      },
+    );
+  }
+
+  Widget _buildCompletedCheckIn() {
+    if (_scaleAnimation == null || _fadeAnimation == null) {
+      return const SizedBox();
+    }
+
     return Container(
+      key: const ValueKey('completed'),
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ScaleTransition(
+            scale: _scaleAnimation!,
+            child: FadeTransition(
+              opacity: _fadeAnimation!,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green[50],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.3),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.check_circle,
+                  size: 70,
+                  color: Colors.green[600],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          FadeTransition(
+            opacity: _fadeAnimation!,
+            child: Text(
+              'Check-In Completed!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[700],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          FadeTransition(
+            opacity: _fadeAnimation!,
+            child: Text(
+              'Great job staying on track today!',
+              style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 32),
+          FadeTransition(
+            opacity: _fadeAnimation!,
+            child: TextButton.icon(
+              onPressed: () {
+                context.read<DailyCheckInCubit>().resetCheckIn();
+                journalController.clear();
+                _animationController?.reset();
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Check In Again'),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF00A3E0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckInForm(DailyCheckInState state) {
+    final isSubmitting = state is CheckInSubmitting;
+    final currentState = state is CheckInInProgress ? state : null;
+
+    return Container(
+      key: const ValueKey('form'),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -262,19 +451,19 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          _buildMoodSection(),
+          _buildMoodSection(currentState?.selectedMood ?? ''),
           const SizedBox(height: 24),
-          _buildCravingSection(),
+          _buildCravingSection(currentState?.cravingLevel ?? 0.5),
           const SizedBox(height: 24),
           _buildJournalSection(),
           const SizedBox(height: 24),
-          _buildCheckInButton(),
+          _buildCheckInButton(isSubmitting),
         ],
       ),
     );
   }
 
-  Widget _buildMoodSection() {
+  Widget _buildMoodSection(String selectedMood) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -287,33 +476,36 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildMoodButton('😖', 'Awful'),
-            _buildMoodButton('😔', 'Sad'),
-            _buildMoodButton('😐', 'Okay'),
-            _buildMoodButton('😊', 'Good', isSelected: selectedMood == 'Good'),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Flexible(child: _buildMoodButton('😖', 'Awful', selectedMood)),
+                const SizedBox(width: 8),
+                Flexible(child: _buildMoodButton('😔', 'Sad', selectedMood)),
+                const SizedBox(width: 8),
+                Flexible(child: _buildMoodButton('😐', 'Okay', selectedMood)),
+                const SizedBox(width: 8),
+                Flexible(child: _buildMoodButton('😊', 'Good', selectedMood)),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 
-  Widget _buildMoodButton(
-    String emoji,
-    String label, {
-    bool isSelected = false,
-  }) {
+  Widget _buildMoodButton(String emoji, String label, String selectedMood) {
+    final isSelected = selectedMood == label;
+
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedMood = label;
-        });
+        context.read<DailyCheckInCubit>().updateMood(label);
       },
       child: Container(
-        width: 70,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        constraints: const BoxConstraints(minWidth: 60, maxWidth: 80),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFE8F4F8) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
@@ -323,15 +515,21 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           ),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(emoji, style: const TextStyle(fontSize: 28)),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isSelected ? const Color(0xFF00A3E0) : Colors.grey[600],
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isSelected
+                      ? const Color(0xFF00A3E0)
+                      : Colors.grey[600],
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
               ),
             ),
           ],
@@ -340,7 +538,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
     );
   }
 
-  Widget _buildCravingSection() {
+  Widget _buildCravingSection(double cravingLevel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -374,9 +572,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
                 child: Slider(
                   value: cravingLevel,
                   onChanged: (value) {
-                    setState(() {
-                      cravingLevel = value;
-                    });
+                    context.read<DailyCheckInCubit>().updateCravingLevel(value);
                   },
                 ),
               ),
@@ -413,6 +609,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           child: TextField(
             controller: journalController,
             maxLines: 4,
+            onChanged: (value) {
+              context.read<DailyCheckInCubit>().updateJournalEntry(value);
+            },
             decoration: InputDecoration(
               hintText: 'Write about your day...',
               hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
@@ -426,33 +625,18 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
     );
   }
 
-  Widget _buildCheckInButton() {
+  Widget _buildCheckInButton(bool isSubmitting) {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: () {
-          submitDailyCheckIn(
-            // Fonction du backend
-            mood: selectedMood,
-            cravingLevel: cravingLevel,
-            journalEntry: journalController.text,
-          ).then((success) {
-            if (success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Check-in completed!'),
-                  backgroundColor: Color(0xFF00A3E0),
-                ),
-              );
-              journalController.clear();
-              setState(() {
-                selectedMood = '';
-                cravingLevel = 0.5;
-              });
-            }
-          });
-        },
+        onPressed: isSubmitting
+            ? null
+            : () {
+                context.read<DailyCheckInCubit>().submitCheckIn(
+                  submitDailyCheckIn,
+                );
+              },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00A3E0),
           foregroundColor: Colors.white,
@@ -460,18 +644,28 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          disabledBackgroundColor: Colors.grey[400],
         ),
-        child: const Text(
-          'Complete Check-in',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
+        child: isSubmitting
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                'Complete Check-in',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
       ),
     );
   }
 
   Widget _buildQuoteCard() {
     return FutureBuilder<Map<String, String>>(
-      future: getDailyQuote(), // Fonction du backend
+      future: getDailyQuote(),
       builder: (context, snapshot) {
         final quote = snapshot.data ?? getDefaultQuote();
 
@@ -525,4 +719,4 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       },
     );
   }
-} // _DailyCheckInScreenState
+}
