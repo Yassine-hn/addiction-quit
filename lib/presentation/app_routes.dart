@@ -60,9 +60,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
 
       case dashboard:
-        return MaterialPageRoute(
-          builder: (_) => DashboardScreen(repository: ProgressRepositoryImpl()),
-        );
+        return MaterialPageRoute(builder: (_) => const DashboardScreen());
 
       case profile:
         return MaterialPageRoute(builder: (_) => UserProfileScreen());

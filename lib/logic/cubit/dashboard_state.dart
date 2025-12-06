@@ -11,8 +11,10 @@ class DashboardLoading extends DashboardState {}
 
 class DashboardEmpty extends DashboardState {
   final String message;
-  const DashboardEmpty({this.message = 'No active addictions found. Start one!'});
-  
+  const DashboardEmpty({
+    this.message = 'No active addictions found. Start one!',
+  });
+
   @override
   List<Object?> get props => [message];
 }
@@ -20,7 +22,7 @@ class DashboardEmpty extends DashboardState {
 class DashboardError extends DashboardState {
   final String message;
   const DashboardError(this.message);
-  
+
   @override
   List<Object?> get props => [message];
 }
@@ -28,17 +30,17 @@ class DashboardError extends DashboardState {
 class DashboardLoaded extends DashboardState {
   final int selectedAddictionId;
   final List<Map<String, dynamic>> allAddictions;
-  
+
   // Milestone Data
   final Map<String, dynamic> milestoneData;
   final double milestonePercentage;
-  
+
   // Progress Grid Data (Raw list of surveys for last X days)
   final List<Map<String, dynamic>> dailySurveys;
-  
-  // Streak Chart Data
-  final List<int> streakHistory;
-  
+
+  // Streak Chart Data (changed to Map format)
+  final List<Map<String, dynamic>> streakHistory;
+
   // Additional info for UI
   final String addictionName;
   final String moodEmoji; // Static for now as requested
@@ -49,30 +51,30 @@ class DashboardLoaded extends DashboardState {
     required this.milestoneData,
     required this.milestonePercentage,
     required this.dailySurveys,
-    required this.streakHistory,
+    required this.streakHistory, // Now List<Map<String, dynamic>>
     required this.addictionName,
     this.moodEmoji = '🙂',
   });
 
   @override
   List<Object?> get props => [
-    selectedAddictionId, 
-    allAddictions, 
-    milestoneData, 
+    selectedAddictionId,
+    allAddictions,
+    milestoneData,
     milestonePercentage,
-    dailySurveys, 
+    dailySurveys,
     streakHistory,
     addictionName,
-    moodEmoji
+    moodEmoji,
   ];
-  
+
   DashboardLoaded copyWith({
     int? selectedAddictionId,
     List<Map<String, dynamic>>? allAddictions,
     Map<String, dynamic>? milestoneData,
     double? milestonePercentage,
     List<Map<String, dynamic>>? dailySurveys,
-    List<int>? streakHistory,
+    List<Map<String, dynamic>>? streakHistory,
     String? addictionName,
     String? moodEmoji,
   }) {

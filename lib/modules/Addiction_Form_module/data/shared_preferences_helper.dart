@@ -6,6 +6,8 @@ class SharedPreferencesHelper {
   static const String _usernameKey = 'username';
   static const String _isFirstTimeKey = 'is_first_time';
   static const String _addictionIdKey = 'current_addiction_id';
+  static const String _addictionIdsKey =
+      'addiction_ids'; // List of all addiction IDs
 
   /// Get the saved user ID
   static Future<int?> getUserId() async {
@@ -61,6 +63,40 @@ class SharedPreferencesHelper {
     return await prefs.clear();
   }
 
+  /// Save addiction ID to the list of addiction IDs
+  static Future<bool> addAddictionId(int addictionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final existingIds = await getAllAddictionIds();
+    if (!existingIds.contains(addictionId)) {
+      existingIds.add(addictionId);
+      final idsString = existingIds.join(',');
+      return await prefs.setString(_addictionIdsKey, idsString);
+    }
+    return true;
+  }
+
+  /// Get all addiction IDs for the user (async version)
+  static Future<List<int>> getAllAddictionIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idsString = prefs.getString(_addictionIdsKey);
+    if (idsString == null || idsString.isEmpty) {
+      return [];
+    }
+    try {
+      return idsString.split(',').map((id) => int.parse(id)).toList();
+    } catch (e) {
+      print('Error parsing addiction IDs: $e');
+      return [];
+    }
+  }
+
+  /// Set all addiction IDs at once
+  static Future<bool> setAllAddictionIds(List<int> addictionIds) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idsString = addictionIds.join(',');
+    return await prefs.setString(_addictionIdsKey, idsString);
+  }
+
   /// Get all user preferences
   static Future<Map<String, dynamic>> getUserPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -69,6 +105,7 @@ class SharedPreferencesHelper {
       'username': prefs.getString(_usernameKey),
       'is_first_time': prefs.getBool(_isFirstTimeKey) ?? true,
       'current_addiction_id': prefs.getInt(_addictionIdKey),
+      'addiction_ids': await getAllAddictionIds(),
     };
   }
 }

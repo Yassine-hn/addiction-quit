@@ -6,6 +6,7 @@ import '../../data/repositories/sobriety_repository.dart';
 import '../../data/repositories/savings_repository.dart';
 import '../../data/repositories/check_in_repository.dart';
 import '../../data/repositories/quote_repository.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 
 // Repository instances (singleton pattern)
 final _userRepository = UserRepositoryImpl();
@@ -17,7 +18,12 @@ final _quoteRepository = QuoteRepositoryImpl();
 /// Get sobriety time for the user's primary addiction
 Future<Map<String, String>> getSobrietyTime() async {
   try {
-    return await _sobrietyRepository.getSobrietyTime();
+    final userId = await SharedPreferencesHelper.getUserId();
+    final addictionId = await SharedPreferencesHelper.getAddictionId();
+    return await _sobrietyRepository.getSobrietyTime(
+      userId: userId,
+      addictionId: addictionId,
+    );
   } catch (e) {
     print('Error getting sobriety time: $e');
     return getDefaultSobrietyTime();
@@ -27,7 +33,12 @@ Future<Map<String, String>> getSobrietyTime() async {
 /// Get user's savings statistics (streak, time saved, money saved)
 Future<Map<String, dynamic>> getSavingsStats() async {
   try {
-    return await _savingsRepository.getSavings();
+    final userId = await SharedPreferencesHelper.getUserId();
+    final addictionId = await SharedPreferencesHelper.getAddictionId();
+    return await _savingsRepository.getSavings(
+      userId: userId,
+      addictionId: addictionId,
+    );
   } catch (e) {
     print('Error getting savings stats: $e');
     return getDefaultSavingsStats();

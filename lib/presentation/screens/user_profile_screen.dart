@@ -1,7 +1,13 @@
 // user_profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/services/profile_backend_functions.dart';
 import '../widgets/useful_widgets.dart';
+import '../../modules/Addiction_Form_module/screens/Step0Welcome.dart';
+import '../../modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
+import '../../data/repositories/settings_repository.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
+import '../app_routes.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -20,6 +26,8 @@ class UserProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildProfileHeader(),
+                    const SizedBox(height: 24),
+                    _buildNewAddictionButton(context),
                     const SizedBox(height: 24),
                     _buildAchievementsSection(),
                     const SizedBox(height: 24),
@@ -268,6 +276,8 @@ class UserProfileScreen extends StatelessWidget {
                       subtitle: journey['subtitle'],
                       days: journey['days'],
                       color: const Color(0xFF00A3E0),
+                      addictionId: journey['addiction_id'] as int?,
+                      context: context,
                     ),
                   ],
                 );
@@ -285,15 +295,30 @@ class UserProfileScreen extends StatelessWidget {
     required String subtitle,
     required String days,
     required Color color,
+    int? addictionId,
+    BuildContext? context,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
+    return InkWell(
+      onTap: addictionId != null && context != null
+          ? () async {
+              // Switch to this addiction
+              final settingsRepo = SettingsRepository();
+              await settingsRepo.saveCurrentAddictionId(addictionId);
+              await SharedPreferencesHelper.saveAddictionId(addictionId);
+              
+              // Navigate to dashboard to see updated data
+              Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+            }
+          : null,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Row(
         children: [
           Container(
             width: 48,
@@ -349,5 +374,81 @@ class UserProfileScreen extends StatelessWidget {
       default:
         return Icons.star_outline;
     }
+  }
+
+  Widget _buildNewAddictionButton(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (BuildContext context) => UserInfoCubit(),
+                child: const WelcomeScreen(),
+              ),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF4361EE),
+                const Color(0xFF4361EE).withOpacity(0.8),
+              ],
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.add_circle_outline,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'New Addiction',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Start tracking a new addiction',
+                      style: TextStyle(fontSize: 14, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

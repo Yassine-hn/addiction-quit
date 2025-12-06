@@ -1,6 +1,9 @@
 // daily_checkin_cubit.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../data/repositories/check_in_repository.dart';
+import '../../data/repositories/check_in_repository_abstract.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 
 // States
 abstract class DailyCheckInState extends Equatable {
@@ -35,6 +38,8 @@ class CheckInInProgress extends DailyCheckInState {
       journalEntry: journalEntry ?? this.journalEntry,
     );
   }
+  
+  bool get isValid => selectedMood.isNotEmpty && cravingLevel > 0;
 }
 
 class CheckInSubmitting extends DailyCheckInState {
@@ -72,15 +77,37 @@ class CheckInError extends DailyCheckInState {
 
 // Cubit
 class DailyCheckInCubit extends Cubit<DailyCheckInState> {
+  final CheckInRepository _checkInRepository = CheckInRepositoryImpl();
+
   DailyCheckInCubit() : super(CheckInInitial()) {
     _checkIfAlreadyCompletedToday();
   }
 
   // Check if check-in was already completed today
-  void _checkIfAlreadyCompletedToday() {
-    // TODO: Implement check with your backend/local storage
-    // For now, we'll start fresh each time
-    emit(CheckInInProgress());
+  Future<void> _checkIfAlreadyCompletedToday() async {
+    try {
+      final userId = await SharedPreferencesHelper.getUserId();
+      final addictionId = await SharedPreferencesHelper.getAddictionId();
+      
+      if (userId == null || addictionId == null) {
+        emit(CheckInInProgress());
+        return;
+      }
+
+      final hasCheckedIn = await _checkInRepository.hasCheckedInToday(
+        userId: userId,
+        addictionId: addictionId,
+      );
+
+      if (hasCheckedIn) {
+        emit(CheckInCompleted(completedAt: DateTime.now()));
+      } else {
+        emit(CheckInInProgress());
+      }
+    } catch (e) {
+      print('Error checking if already completed: $e');
+      emit(CheckInInProgress());
+    }
   }
 
   void updateMood(String mood) {
@@ -115,6 +142,15 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
     if (state is! CheckInInProgress) return;
 
     final currentState = state as CheckInInProgress;
+
+    // Validate that mood and craving level are selected
+    if (!currentState.isValid) {
+      emit(CheckInError(message: 'Please select mood and craving level'));
+      Future.delayed(const Duration(seconds: 2), () {
+        emit(currentState);
+      });
+      return;
+    }
 
     emit(
       CheckInSubmitting(

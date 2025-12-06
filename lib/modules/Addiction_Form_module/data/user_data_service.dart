@@ -1,5 +1,4 @@
 // file: lib/modules/Addiction_Form_module/data/user_data_service.dart
-import 'package:sqflite/sqflite.dart';
 import '../../../data/databases/db_helper.dart';
 import '../../../data/databases/tables/addictions_table.dart';
 import '../../../data/databases/tables/users_table.dart';
@@ -53,6 +52,21 @@ class UserDataService {
   static Future<int> createAddiction(int userId, UserInfoModel userInfo) async {
     final db = await DatabaseHelper.instance.database;
 
+    // Check if addiction type already exists for this user
+    final existingAddictions = await AddictionsTable.getByUserId(db, userId);
+    final addictionType = userInfo.addictionType ?? 'unknown';
+    
+    final duplicateExists = existingAddictions.any(
+      (addiction) => 
+          (addiction['type'] as String? ?? '').toLowerCase() == 
+          addictionType.toLowerCase() &&
+          (addiction['status'] as String? ?? 'active') == 'active',
+    );
+    
+    if (duplicateExists) {
+      throw Exception('An active addiction of type "$addictionType" already exists. Please choose a different type or deactivate the existing one.');
+    }
+
     // Extract money saved per day (with validation)
     double? moneySavedPerDay;
     if (userInfo.moneySavedPerDay != null &&
@@ -92,6 +106,9 @@ class UserDataService {
 
     // Save the addiction ID to SharedPreferences for quick access
     await SharedPreferencesHelper.saveAddictionId(addictionId);
+
+    // Add to the list of all addiction IDs
+    await SharedPreferencesHelper.addAddictionId(addictionId);
 
     return addictionId;
   }

@@ -45,14 +45,14 @@ class CustomBottomNavBar extends StatelessWidget {
                 index: 0,
               ),
               _buildNavItem(
-                Icons.bar_chart,
-                'Progress',
+                Icons.dashboard,
+                'Dashboard',
                 context,
                 isActive: activeIndex == 1,
                 index: 1,
               ),
               _buildNavItem(
-                Icons.bookmark_border,
+                Icons.person,
                 'Profile',
                 context,
                 isActive: activeIndex == 2,

@@ -2,315 +2,255 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubit/dashboard_cubit.dart';
 import '../../logic/cubit/dashboard_state.dart';
-import '../../data/repositories/progress_repository.dart';
+import '../../data/repositories/milestone_repository.dart';
+import '../../data/repositories/daily_survey_repository.dart';
+import '../../data/repositories/addiction_repository.dart';
+import '../../data/repositories/settings_repository.dart';
+import '../widgets/milestone_circle.dart';
+import '../widgets/progress_grid.dart';
+import '../widgets/streak_chart_painter.dart';
+import '../widgets/mood_tracker.dart';
 import '../widgets/useful_widgets.dart';
+import '../widgets/milestone_selector.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 
 class DashboardScreen extends StatelessWidget {
-  final ProgressRepository repository;
-
-  const DashboardScreen({super.key, required this.repository});
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
+    return BlocProvider(
+      create: (context) => DashboardCubit(
+        milestoneRepository: MilestoneRepositoryImpl(),
+        dailySurveyRepository: DailySurveyRepositoryImpl(),
+        addictionRepository: AddictionRepositoryImpl(),
+        settingsRepository: SettingsRepository(),
+      )..loadDashboardData(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        appBar: AppBar(
+          title: const Text('Dashboard'),
+          backgroundColor: const Color(0xFF4361EE),
+          foregroundColor: Colors.white,
+          elevation: 0,
         ),
-        title: const Text(
-          'My Progress',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProgressCircle(),
-                        const SizedBox(height: 30),
-                        _buildJourneyTabs(),
-                        const SizedBox(height: 20),
-                        _buildMonthlyProgress(),
-                        const SizedBox(height: 30),
-                        _buildGoalsSection(),
-                        const SizedBox(height: 80),
-                      ],
+        body: BlocBuilder<DashboardCubit, DashboardState>(
+          builder: (context, state) {
+            if (state is DashboardLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF4361EE)),
+              );
+            } else if (state is DashboardError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.message,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<DashboardCubit>().loadDashboardData();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4361EE),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (state is DashboardEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inbox_outlined,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.message,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigation to create addiction screen
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Start New Milestone feature coming soon!',
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4361EE),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Start New Milestone'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (state is DashboardLoaded) {
+              return RefreshIndicator(
+                onRefresh: () =>
+                    context.read<DashboardCubit>().loadDashboardData(),
+                color: const Color(0xFF4361EE),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ROW 1: MILESTONE PROGRESS CIRCLE
+                      _buildMilestoneRow(context, state),
+                      const SizedBox(height: 24),
+
+                      // ROW 2: THREE EQUAL-WIDTH CARDS
+                      _buildThreeCardsRow(context, state),
+                      const SizedBox(height: 80), // Space for bottom nav
+                    ],
                   ),
                 ),
-              ],
-            ),
-      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 1),
-    );
-  }
-
-  Widget _buildProgressCircle() {
-    if (_progressData == null) return const SizedBox();
-
-    return Center(
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.blue[300],
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${_progressData!.percentage.toInt()}%',
-                style: const TextStyle(
-                  fontSize: 56,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${_progressData!.daysStreak} Days Sober',
-                style: const TextStyle(fontSize: 14, color: Colors.white70),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildJourneyTabs() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Your Journey',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 16),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildTab('Progress'),
-              const SizedBox(width: 16),
-              _buildTab('Streaks'),
-              const SizedBox(width: 16),
-              _buildTab('Mood'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTab(String title) {
-    final isSelected = _selectedTab == title;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedTab = title),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue[100] : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: isSelected ? Colors.blue[700] : Colors.grey[600],
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMonthlyProgress() {
-    if (_weeklyProgress == null) return const SizedBox();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Flexible(
-              child: Text(
-                'Monthly Progress',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                _weeklyProgress!.changePercentage,
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        SizedBox(
-          height: 180,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: _weeklyProgress!.days.map((day) {
-                  return _buildProgressBar(day);
-                }).toList(),
               );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProgressBar(DayProgress day) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              height: day.value * 1.5,
-              decoration: BoxDecoration(
-                color: day.color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            const SizedBox(height: 8),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                day.day,
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoalsSection() {
-    if (_goals == null) return const SizedBox();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Select a Goal',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 16),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            // Calculate responsive grid based on screen width
-            final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
-
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.5,
-              ),
-              itemCount: _goals!.length,
-              itemBuilder: (context, index) {
-                return _buildGoalCard(_goals![index]);
-              },
-            );
+            }
+            return const SizedBox.shrink();
           },
         ),
+        bottomNavigationBar: const CustomBottomNavBar(activeIndex: 1),
+      ),
+    );
+  }
+
+  Widget _buildMilestoneRow(BuildContext context, DashboardLoaded state) {
+    final hasMilestone = state.milestoneData.isNotEmpty;
+
+    if (!hasMilestone) {
+      return Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              Icon(Icons.flag_outlined, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              const Text(
+                'No Active Milestone',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => _showMilestoneSelector(context, state),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4361EE),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Start New Milestone'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final milestone = state.milestoneData['milestone'] as Map<String, dynamic>?;
+    final title = milestone?['title'] as String? ?? 'Milestone';
+    final daysPassed = state.milestoneData['days_passed'] as int? ?? 0;
+    final targetDays = state.milestoneData['target_days'] as int? ?? 1;
+
+    return Center(
+      child: MilestoneCircle(
+        percentage: state.milestonePercentage,
+        daysPassed: daysPassed,
+        targetDays: targetDays,
+        title: title,
+      ),
+    );
+  }
+
+  Widget _buildThreeCardsRow(BuildContext context, DashboardLoaded state) {
+    return Column(
+      children: [
+        // CARD 1: DAILY SURVEY HISTORY
+        ProgressGrid(dailySurveys: state.dailySurveys, daysToShow: 30),
+        const SizedBox(height: 16),
+        // CARD 2: STREAK CHART
+        StreakChart(
+          streakHistory: state.streakHistory,
+          height: 200,
+          lineColor: const Color(0xFF4361EE),
+        ),
+        const SizedBox(height: 16),
+        // CARD 3: MOOD TRACKER
+        const MoodTracker(),
       ],
     );
   }
 
-  Widget _buildGoalCard(Goal goal) {
-    return GestureDetector(
-      onTap: () async {
-        await widget.repository.selectGoal(goal.title);
-        _loadData();
-      },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: goal.isSelected ? Colors.blue[50] : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: goal.isSelected ? Colors.blue[300]! : Colors.grey[200]!,
-            width: 2,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Icon(
-                goal.icon,
-                size: 32,
-                color: goal.isSelected ? Colors.blue[700] : Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Flexible(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  goal.title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: goal.isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
-                    color: goal.isSelected
-                        ? Colors.blue[700]
-                        : Colors.grey[800],
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
-        ),
+  Future<void> _showMilestoneSelector(
+    BuildContext context,
+    DashboardLoaded state,
+  ) async {
+    final userId = await SharedPreferencesHelper.getUserId();
+    final addictionId = state.selectedAddictionId;
+
+    if (userId == null || addictionId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to create milestone')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => MilestoneSelector(
+        onMilestoneSelected: (targetDays) async {
+          try {
+            final milestoneRepo = MilestoneRepositoryImpl();
+            final title = _getMilestoneTitle(targetDays);
+            await milestoneRepo.createMilestone(addictionId, targetDays, title);
+            
+            // Reload dashboard data
+            if (context.mounted) {
+              context.read<DashboardCubit>().loadDashboardData();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Milestone "$title" started!')),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error creating milestone: $e')),
+              );
+            }
+          }
+        },
       ),
     );
+  }
+
+  String _getMilestoneTitle(int days) {
+    if (days == 1) return '1 Day Milestone';
+    if (days == 7) return '1 Week Milestone';
+    if (days == 14) return '2 Weeks Milestone';
+    if (days == 30) return '1 Month Milestone';
+    if (days == 60) return '2 Months Milestone';
+    if (days == 90) return '3 Months Milestone';
+    if (days == 180) return '6 Months Milestone';
+    if (days == 365) return '1 Year Milestone';
+    return '$days Days Milestone';
   }
 }
