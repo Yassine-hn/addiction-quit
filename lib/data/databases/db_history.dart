@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 /// Database migration history and version management
 class DatabaseHistory {
   // Current database version
-  static const int currentVersion = 1;
+  static const int currentVersion = 2;
   
   // Database name
   static const String databaseName = 'addiction_quit.db';
@@ -26,10 +26,22 @@ class DatabaseHistory {
       await migrateV0ToV1(db);
     }
     
-    // Future migrations
-    // if (oldVersion < 2) {
-    //   await migrateV1ToV2(db);
-    // }
+    if (oldVersion < 2) {
+      await migrateV1ToV2(db);
+    }
+  }
+  
+  /// Migration from version 1 to 2 (add time_saved_per_day and money_saved_per_day to addictions)
+  static Future<void> migrateV1ToV2(Database db) async {
+    await db.execute('''
+      ALTER TABLE addictions 
+      ADD COLUMN time_saved_per_day INTEGER DEFAULT 0
+    ''');
+    
+    await db.execute('''
+      ALTER TABLE addictions 
+      ADD COLUMN money_saved_per_day REAL
+    ''');
   }
   
   // Table creation methods
@@ -68,6 +80,8 @@ class DatabaseHistory {
         status TEXT DEFAULT 'active',
         note TEXT,
         motivation TEXT,
+        time_saved_per_day INTEGER DEFAULT 0,
+        money_saved_per_day REAL DEFAULT 0,
         created_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )
