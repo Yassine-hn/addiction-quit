@@ -56,18 +56,16 @@ class SavingsRepositoryImpl implements SavingsRepository {
   Future<int> getStreak({int? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         return 0;
       }
 
       Map<String, dynamic>? addiction;
-      
+
       if (addictionId != null) {
         addiction = await AddictionsTable.getById(db, addictionId);
       } else {
@@ -90,18 +88,16 @@ class SavingsRepositoryImpl implements SavingsRepository {
   Future<String> getTimeSaved({int? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         return '0 min';
       }
 
       Map<String, dynamic>? addiction;
-      
+
       if (addictionId != null) {
         addiction = await AddictionsTable.getById(db, addictionId);
       } else {
@@ -114,32 +110,38 @@ class SavingsRepositoryImpl implements SavingsRepository {
 
       // Get time_saved from database (in minutes)
       final timeSavedMinutes = addiction['time_saved'] as int? ?? 0;
-      
+
       // If time_saved is 0, calculate from start date
       if (timeSavedMinutes == 0) {
-        final startDateStr = addiction['counter_start_at'] as String? ?? 
-                            addiction['start_date'] as String?;
-        
+        final startDateStr =
+            addiction['counter_start_at'] as String? ??
+            addiction['start_date'] as String?;
+
         if (startDateStr != null) {
           try {
             final startDate = DateTime.parse(startDateStr);
             final now = DateTime.now();
             final difference = now.difference(startDate);
-            final calculatedMinutes = difference.inDays * 1440 + 
-                                     difference.inHours % 24 * 60 + 
-                                     difference.inMinutes % 60;
-            
+            final calculatedMinutes =
+                difference.inDays * 1440 +
+                difference.inHours % 24 * 60 +
+                difference.inMinutes % 60;
+
             // Update the database with calculated time
             final addictionId = addiction['id'] as int;
-            await AddictionsTable.updateTimeSavedPerDay(db, addictionId, calculatedMinutes);
-            
+            await AddictionsTable.updateTimeSavedPerDay(
+              db,
+              addictionId,
+              calculatedMinutes,
+            );
+
             return _formatTimeSaved(calculatedMinutes);
           } catch (e) {
             print('Error calculating time saved: $e');
           }
         }
       }
-      
+
       return _formatTimeSaved(timeSavedMinutes);
     } catch (e) {
       print('Error getting time saved: $e');
@@ -153,18 +155,16 @@ class SavingsRepositoryImpl implements SavingsRepository {
   Future<String?> getMoneySaved({int? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         return null;
       }
 
       Map<String, dynamic>? addiction;
-      
+
       if (addictionId != null) {
         addiction = await AddictionsTable.getById(db, addictionId);
       } else {
@@ -177,15 +177,16 @@ class SavingsRepositoryImpl implements SavingsRepository {
 
       // Check if money_saved_per_day is null (addiction doesn't save money)
       final moneySavedPerDay = addiction['money_saved_per_day'] as double?;
-      
+
       if (moneySavedPerDay == null) {
         return null; // This addiction doesn't save money
       }
 
       // Calculate total money saved
-      final startDateStr = addiction['counter_start_at'] as String? ?? 
-                          addiction['start_date'] as String?;
-      
+      final startDateStr =
+          addiction['counter_start_at'] as String? ??
+          addiction['start_date'] as String?;
+
       if (startDateStr == null) {
         return '\$0';
       }
@@ -195,7 +196,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
         final now = DateTime.now();
         final days = now.difference(startDate).inDays;
         final totalSaved = days * moneySavedPerDay;
-        
+
         return _formatMoneySaved(totalSaved);
       } catch (e) {
         print('Error calculating money saved: $e');
@@ -209,10 +210,19 @@ class SavingsRepositoryImpl implements SavingsRepository {
 
   /// Get all savings data (streak, time saved, money saved)
   @override
-  Future<Map<String, dynamic>> getSavings({int? userId, int? addictionId}) async {
+  Future<Map<String, dynamic>> getSavings({
+    int? userId,
+    int? addictionId,
+  }) async {
     final streak = await getStreak(userId: userId, addictionId: addictionId);
-    final timeSaved = await getTimeSaved(userId: userId, addictionId: addictionId);
-    final moneySaved = await getMoneySaved(userId: userId, addictionId: addictionId);
+    final timeSaved = await getTimeSaved(
+      userId: userId,
+      addictionId: addictionId,
+    );
+    final moneySaved = await getMoneySaved(
+      userId: userId,
+      addictionId: addictionId,
+    );
 
     return {
       'streak': streak,
@@ -221,4 +231,3 @@ class SavingsRepositoryImpl implements SavingsRepository {
     };
   }
 }
-

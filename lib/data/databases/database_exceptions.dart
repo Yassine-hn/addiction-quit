@@ -11,11 +11,9 @@ class DatabaseException implements Exception {
 }
 
 class UserCreationException extends DatabaseException {
-  UserCreationException(String message, {Object? cause})
-    : super(message, cause: cause);
+  UserCreationException(super.message, {super.cause});
 }
 
 class AddictionCreationException extends DatabaseException {
-  AddictionCreationException(String message, {Object? cause})
-    : super(message, cause: cause);
+  AddictionCreationException(super.message, {super.cause});
 }

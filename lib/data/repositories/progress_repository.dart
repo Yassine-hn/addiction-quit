@@ -1,5 +1,4 @@
 // repositories/progress_repository.dart
-import '../models/progress_data.dart';
 
 abstract class ProgressRepository {
   /// Get milestone progress (percentage, target, achieved)

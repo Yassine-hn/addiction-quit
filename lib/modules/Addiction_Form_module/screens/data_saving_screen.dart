@@ -7,11 +7,11 @@ class DataSavingScreen extends StatelessWidget {
   final VoidCallback onError;
 
   const DataSavingScreen({
-    Key? key,
+    super.key,
     required this.savingFuture,
     required this.onComplete,
     required this.onError,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

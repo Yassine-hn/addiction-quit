@@ -179,7 +179,7 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -290,7 +290,7 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         );

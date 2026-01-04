@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import '../models/progress_data.dart';
 import 'progress_repository.dart';
 import '../databases/db_helper.dart';
 import '../databases/tables/addictions_table.dart';

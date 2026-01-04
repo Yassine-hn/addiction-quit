@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
-import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
 import '../widgets/FrequencyOption.dart';
 import 'Step4PerDay.dart';

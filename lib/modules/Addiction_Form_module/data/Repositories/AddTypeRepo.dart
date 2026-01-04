@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class AddictionTypeRepo {
   List<String> dummy = [
     "Alcohol",

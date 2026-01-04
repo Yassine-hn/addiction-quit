@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../modules/community_module/community_exports.dart'; // Import entire module
-import '../widgets/useful_widgets.dart'; // Your existing widgets
+// Your existing widgets
 
 class CommunityScreenFromModule extends StatelessWidget {
   const CommunityScreenFromModule({super.key});
