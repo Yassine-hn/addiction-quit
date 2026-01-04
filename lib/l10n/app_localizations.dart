@@ -1,0 +1,638 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_ar.dart';
+import 'app_localizations_en.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('en'),
+  ];
+
+  /// The title of the application
+  ///
+  /// In en, this message translates to:
+  /// **'Addiction Quit App'**
+  String get appTitle;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @community.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get community;
+
+  /// No description provided for @welcomeAboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Aboard!'**
+  String get welcomeAboard;
+
+  /// No description provided for @welcomeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve taken the first and most important\nstep. We\'re here to support you on your\npath to a healthier life.'**
+  String get welcomeMessage;
+
+  /// No description provided for @noActiveMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'No Active Milestone'**
+  String get noActiveMilestone;
+
+  /// No description provided for @startNewMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Milestone'**
+  String get startNewMilestone;
+
+  /// No description provided for @startMyJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Start My Journey'**
+  String get startMyJourney;
+
+  /// No description provided for @selectMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Milestone'**
+  String get selectMilestone;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @milestoneStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} started!'**
+  String milestoneStarted(String title);
+
+  /// No description provided for @oneDayMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Day Milestone'**
+  String get oneDayMilestone;
+
+  /// No description provided for @oneWeekMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Week Milestone'**
+  String get oneWeekMilestone;
+
+  /// No description provided for @twoWeeksMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'2 Weeks Milestone'**
+  String get twoWeeksMilestone;
+
+  /// No description provided for @oneMonthMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Month Milestone'**
+  String get oneMonthMilestone;
+
+  /// No description provided for @twoMonthsMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'2 Months Milestone'**
+  String get twoMonthsMilestone;
+
+  /// No description provided for @threeMonthsMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'3 Months Milestone'**
+  String get threeMonthsMilestone;
+
+  /// No description provided for @sixMonthsMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'6 Months Milestone'**
+  String get sixMonthsMilestone;
+
+  /// No description provided for @oneYearMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Year Milestone'**
+  String get oneYearMilestone;
+
+  /// No description provided for @daysMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Days Milestone'**
+  String daysMilestone(int days);
+
+  /// No description provided for @dailySurveyHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Survey History'**
+  String get dailySurveyHistory;
+
+  /// No description provided for @streakChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak Chart'**
+  String get streakChart;
+
+  /// No description provided for @moodTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood Tracker'**
+  String get moodTracker;
+
+  /// No description provided for @moodTrackingComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood tracking coming soon'**
+  String get moodTrackingComingSoon;
+
+  /// No description provided for @noAddictionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No addictions found'**
+  String get noAddictionsFound;
+
+  /// No description provided for @yourAddictions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Addictions'**
+  String get yourAddictions;
+
+  /// No description provided for @started.
+  ///
+  /// In en, this message translates to:
+  /// **'Started: {date}'**
+  String started(String date);
+
+  /// No description provided for @noSlip.
+  ///
+  /// In en, this message translates to:
+  /// **'No Slip'**
+  String get noSlip;
+
+  /// No description provided for @slipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Slipped'**
+  String get slipped;
+
+  /// No description provided for @noSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'No Survey'**
+  String get noSurvey;
+
+  /// No description provided for @noStreakDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No streak data available'**
+  String get noStreakDataAvailable;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @noAddictionsFoundCreateOne.
+  ///
+  /// In en, this message translates to:
+  /// **'No addictions found. Create one to start!'**
+  String get noAddictionsFoundCreateOne;
+
+  /// No description provided for @noActiveAddictionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No active addictions found. Start one!'**
+  String get noActiveAddictionsFound;
+
+  /// No description provided for @failedToLoadDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load dashboard'**
+  String get failedToLoadDashboard;
+
+  /// No description provided for @noUserIDFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user ID found. Please login.'**
+  String get noUserIDFound;
+
+  /// No description provided for @unableToCreateMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create milestone'**
+  String get unableToCreateMilestone;
+
+  /// No description provided for @errorCreatingMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Error creating milestone: {error}'**
+  String errorCreatingMilestone(String error);
+
+  /// No description provided for @youAreSoberFor.
+  ///
+  /// In en, this message translates to:
+  /// **'You are sober for'**
+  String get youAreSoberFor;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'DAYS'**
+  String get days;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'HOURS'**
+  String get hours;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'MIN'**
+  String get minutes;
+
+  /// No description provided for @streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streak;
+
+  /// No description provided for @timeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Time\nSaved'**
+  String get timeSaved;
+
+  /// No description provided for @moneySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Money\nSaved'**
+  String get moneySaved;
+
+  /// No description provided for @daysUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get daysUnit;
+
+  /// No description provided for @yourDailyCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Daily Check-in'**
+  String get yourDailyCheckIn;
+
+  /// No description provided for @myMood.
+  ///
+  /// In en, this message translates to:
+  /// **'My Mood'**
+  String get myMood;
+
+  /// No description provided for @awful.
+  ///
+  /// In en, this message translates to:
+  /// **'Awful'**
+  String get awful;
+
+  /// No description provided for @sad.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get sad;
+
+  /// No description provided for @okay.
+  ///
+  /// In en, this message translates to:
+  /// **'Okay'**
+  String get okay;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @cravingLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving Level'**
+  String get cravingLevel;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @todayJournalOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Journal (Optional)'**
+  String get todayJournalOptional;
+
+  /// No description provided for @writeAboutYourDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Write about your day...'**
+  String get writeAboutYourDay;
+
+  /// No description provided for @completeCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Check-in'**
+  String get completeCheckIn;
+
+  /// No description provided for @checkInCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-In Completed!'**
+  String get checkInCompleted;
+
+  /// No description provided for @greatJobStayingOnTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job staying on track today!'**
+  String get greatJobStayingOnTrack;
+
+  /// No description provided for @checkInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check In Again'**
+  String get checkInAgain;
+
+  /// No description provided for @pleaseSelectMoodAndCraving.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select mood and craving level'**
+  String get pleaseSelectMoodAndCraving;
+
+  /// No description provided for @failedToSubmitCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit check-in'**
+  String get failedToSubmitCheckIn;
+
+  /// No description provided for @dailyQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Quote'**
+  String get dailyQuote;
+
+  /// No description provided for @previousAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Achievements'**
+  String get previousAchievements;
+
+  /// No description provided for @myJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'My Journey'**
+  String get myJourney;
+
+  /// No description provided for @currentStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Streak: {streak} days'**
+  String currentStreak(int streak);
+
+  /// No description provided for @timeSober.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Sober'**
+  String get timeSober;
+
+  /// No description provided for @daysDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Days'**
+  String daysDays(int days);
+
+  /// No description provided for @newAddiction.
+  ///
+  /// In en, this message translates to:
+  /// **'New Addiction'**
+  String get newAddiction;
+
+  /// No description provided for @startTrackingNewAddiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tracking a new addiction'**
+  String get startTrackingNewAddiction;
+
+  /// No description provided for @awardedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Awarded on {date}'**
+  String awardedOn(String date);
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get goodMorning;
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get goodAfternoon;
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get goodEvening;
+
+  /// No description provided for @helloUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, User'**
+  String get helloUser;
+
+  /// No description provided for @duplicateAddictionError.
+  ///
+  /// In en, this message translates to:
+  /// **'An active addiction of type \"{type}\" already exists. Please choose a different type or deactivate the existing one.'**
+  String duplicateAddictionError(String type);
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Failed'**
+  String get saveFailed;
+
+  /// No description provided for @errorSavingData.
+  ///
+  /// In en, this message translates to:
+  /// **'There was an error saving your data. Please try again.'**
+  String get errorSavingData;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'en'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

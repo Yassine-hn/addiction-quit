@@ -1,7 +1,14 @@
 // user_profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../../logic/services/profile_backend_functions.dart';
 import '../widgets/useful_widgets.dart';
+import '../../modules/Addiction_Form_module/screens/Step0Welcome.dart';
+import '../../modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
+import '../../data/repositories/settings_repository.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
+import '../app_routes.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -20,6 +27,8 @@ class UserProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildProfileHeader(),
+                    const SizedBox(height: 24),
+                    _buildNewAddictionButton(context),
                     const SizedBox(height: 24),
                     _buildAchievementsSection(),
                     const SizedBox(height: 24),
@@ -46,9 +55,9 @@ class UserProfileScreen extends StatelessWidget {
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.arrow_back, color: Colors.black87),
           ),
-          const Text(
-            'Profile',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.profile,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -143,9 +152,9 @@ class UserProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Previous Achievements',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.previousAchievements,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -161,12 +170,16 @@ class UserProfileScreen extends StatelessWidget {
                     _buildAchievementItem(
                       icon: _getIconFromString(achievement['icon']),
                       title: achievement['title'],
-                      date: achievement['date'],
+                      date: achievement['date'] is Map
+                          ? AppLocalizations.of(context)!.awardedOn(
+                              '${(achievement['date'] as Map)['month']} ${(achievement['date'] as Map)['day']}, ${(achievement['date'] as Map)['year']}',
+                            )
+                          : achievement['date'] as String,
                       color: const Color(0xFF00A3E0),
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -247,9 +260,9 @@ class UserProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My Journey',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.myJourney,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -265,13 +278,19 @@ class UserProfileScreen extends StatelessWidget {
                     _buildJourneyItem(
                       icon: _getIconFromString(journey['icon']),
                       title: journey['title'],
-                      subtitle: journey['subtitle'],
-                      days: journey['days'],
+                      subtitle: AppLocalizations.of(context)!.currentStreak(
+                        int.tryParse(journey['subtitle'].toString()) ?? 0,
+                      ),
+                      days: AppLocalizations.of(context)!.daysDays(
+                        int.tryParse(journey['days'].toString()) ?? 0,
+                      ),
                       color: const Color(0xFF00A3E0),
+                      addictionId: journey['addiction_id'] as int?,
+                      context: context,
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -285,55 +304,71 @@ class UserProfileScreen extends StatelessWidget {
     required String subtitle,
     required String days,
     required Color color,
+    int? addictionId,
+    BuildContext? context,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: addictionId != null && context != null
+          ? () async {
+              // Switch to this addiction
+              final settingsRepo = SettingsRepository();
+              await settingsRepo.saveCurrentAddictionId(addictionId);
+              await SharedPreferencesHelper.saveAddictionId(addictionId);
+
+              // Navigate to dashboard to see updated data
+              Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+            }
+          : null,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 24),
             ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            days,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+            Text(
+              days,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -349,5 +384,84 @@ class UserProfileScreen extends StatelessWidget {
       default:
         return Icons.star_outline;
     }
+  }
+
+  Widget _buildNewAddictionButton(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (BuildContext context) => UserInfoCubit(),
+                child: const WelcomeScreen(),
+              ),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF4361EE),
+                const Color(0xFF4361EE).withOpacity(0.8),
+              ],
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.add_circle_outline,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.newAddiction,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      AppLocalizations.of(context)!.startTrackingNewAddiction,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

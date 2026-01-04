@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import '../../modules/Addiction_Form_module/data/shared_preference_manager.dart';
 import '../../modules/Addiction_Form_module/data/db_service.dart';
-import '../../modules/Addiction_Form_module/models/User_info_model.dart';
 import '../../modules/Addiction_Form_module/screens/Step1AdType.dart';
 
 class MyAddictionsScreen extends StatefulWidget {

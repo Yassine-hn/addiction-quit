@@ -1,0 +1,162 @@
+{
+  "@@locale": "ar",
+  "appTitle": "تطبيق الإقلاع عن الإدمان",
+  
+  "dashboard": "لوحة التحكم",
+  "home": "الرئيسية",
+  "profile": "الملف الشخصي",
+  "community": "المجتمع",
+  
+  "welcomeAboard": "مرحباً بك!",
+  "welcomeMessage": "لقد اتخذت الخطوة الأولى والأهم.\nنحن هنا لدعمك في رحلتك\nنحو حياة أكثر صحة.",
+  
+  "noActiveMilestone": "لا يوجد معلم نشط",
+  "startNewMilestone": "بدء معلم جديد",
+  "startMyJourney": "ابدأ رحلتي",
+  "selectMilestone": "اختر المعلم",
+  "cancel": "إلغاء",
+  "milestoneStarted": "تم بدء {title}!",
+  "@milestoneStarted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "oneDayMilestone": "معلم يوم واحد",
+  "oneWeekMilestone": "معلم أسبوع واحد",
+  "twoWeeksMilestone": "معلم أسبوعين",
+  "oneMonthMilestone": "معلم شهر واحد",
+  "twoMonthsMilestone": "معلم شهرين",
+  "threeMonthsMilestone": "معلم ثلاثة أشهر",
+  "sixMonthsMilestone": "معلم ستة أشهر",
+  "oneYearMilestone": "معلم سنة واحدة",
+  "daysMilestone": "معلم {days} يوم",
+  "@daysMilestone": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "dailySurveyHistory": "تاريخ الاستطلاع اليومي",
+  "streakChart": "مخطط السلسلة",
+  "moodTracker": "تتبع المزاج",
+  "moodTrackingComingSoon": "تتبع المزاج قريباً",
+  
+  "noAddictionsFound": "لم يتم العثور على إدمانات",
+  "yourAddictions": "إدماناتك",
+  "started": "بدأ: {date}",
+  "@started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noSlip": "لم ينزلق",
+  "slipped": "انزلق",
+  "noSurvey": "لا يوجد استطلاع",
+  
+  "noStreakDataAvailable": "لا توجد بيانات سلسلة متاحة",
+  
+  "retry": "إعادة المحاولة",
+  "error": "خطأ",
+  "loading": "جاري التحميل...",
+  
+  "noAddictionsFoundCreateOne": "لم يتم العثور على إدمانات. أنشئ واحداً للبدء!",
+  "noActiveAddictionsFound": "لم يتم العثور على إدمانات نشطة. ابدأ واحداً!",
+  "failedToLoadDashboard": "فشل تحميل لوحة التحكم",
+  "noUserIDFound": "لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول.",
+  "unableToCreateMilestone": "غير قادر على إنشاء المعلم",
+  "errorCreatingMilestone": "خطأ في إنشاء المعلم: {error}",
+  "@errorCreatingMilestone": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youAreSoberFor": "أنت متيقظ منذ",
+  "days": "أيام",
+  "hours": "ساعات",
+  "minutes": "دقائق",
+  
+  "streak": "السلسلة",
+  "timeSaved": "الوقت\nالموفر",
+  "moneySaved": "المال\nالموفر",
+  "daysUnit": "أيام",
+  
+  "yourDailyCheckIn": "تسجيلك اليومي",
+  "myMood": "مزاجي",
+  "awful": "فظيع",
+  "sad": "حزين",
+  "okay": "حسناً",
+  "good": "جيد",
+  "cravingLevel": "مستوى الرغبة",
+  "low": "منخفض",
+  "high": "عالي",
+  "todayJournalOptional": "مذكرتك اليومية (اختياري)",
+  "writeAboutYourDay": "اكتب عن يومك...",
+  "completeCheckIn": "إكمال التسجيل",
+  "checkInCompleted": "تم التسجيل!",
+  "greatJobStayingOnTrack": "عمل رائع في البقاء على المسار الصحيح اليوم!",
+  "checkInAgain": "تسجيل مرة أخرى",
+  "pleaseSelectMoodAndCraving": "يرجى اختيار المزاج ومستوى الرغبة",
+  "failedToSubmitCheckIn": "فشل إرسال التسجيل",
+  
+  "dailyQuote": "اقتباس اليوم",
+  
+  "previousAchievements": "الإنجازات السابقة",
+  "myJourney": "رحلتي",
+  "currentStreak": "السلسلة الحالية: {streak} أيام",
+  "@currentStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "timeSober": "وقت اليقظة",
+  "daysDays": "{days} أيام",
+  "@daysDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "newAddiction": "إدمان جديد",
+  "startTrackingNewAddiction": "ابدأ تتبع إدمان جديد",
+  
+  "awardedOn": "تم منحه في {date}",
+  "@awardedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goodMorning": "صباح الخير",
+  "goodAfternoon": "مساء الخير",
+  "goodEvening": "مساء الخير",
+  "helloUser": "مرحباً، المستخدم",
+  
+  "duplicateAddictionError": "يوجد بالفعل إدمان نشط من نوع \"{type}\". يرجى اختيار نوع مختلف أو إلغاء تفعيل الموجود.",
+  "@duplicateAddictionError": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "saveFailed": "فشل الحفظ",
+  "errorSavingData": "حدث خطأ أثناء حفظ بياناتك. يرجى المحاولة مرة أخرى.",
+  "ok": "موافق"
+}
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
 import '../../logic/cubits/daily_chekcin_cubit.dart';
@@ -105,7 +106,27 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                   child: FutureBuilder<String>(
                     future: getGreetingMessage(),
                     builder: (context, snapshot) {
-                      final greeting = snapshot.data ?? 'Hello, User';
+                      final l10n = AppLocalizations.of(context)!;
+                      final greetingData = snapshot.data ?? 'goodMorning|User';
+                      final parts = greetingData.split('|');
+                      final greetingKey = parts[0];
+                      final userName = parts.length > 1 ? parts[1] : 'User';
+
+                      String greeting;
+                      switch (greetingKey) {
+                        case 'goodMorning':
+                          greeting = '${l10n.goodMorning}, $userName';
+                          break;
+                        case 'goodAfternoon':
+                          greeting = '${l10n.goodAfternoon}, $userName';
+                          break;
+                        case 'goodEvening':
+                          greeting = '${l10n.goodEvening}, $userName';
+                          break;
+                        default:
+                          greeting = l10n.helloUser;
+                      }
+
                       return Text(
                         greeting,
                         style: const TextStyle(
@@ -160,7 +181,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'You are sober for',
+              AppLocalizations.of(context)!.youAreSoberFor,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[100],
@@ -188,22 +209,25 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                       children: [
                         Flexible(
                           child: _buildTimeUnit(
+                            context,
                             sobrietyTime['days'] ?? '42',
-                            'DAYS',
+                            AppLocalizations.of(context)!.days,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: _buildTimeUnit(
+                            context,
                             sobrietyTime['hours'] ?? '11',
-                            'HOURS',
+                            AppLocalizations.of(context)!.hours,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: _buildTimeUnit(
+                            context,
                             sobrietyTime['minutes'] ?? '23',
-                            'MIN',
+                            AppLocalizations.of(context)!.minutes,
                           ),
                         ),
                       ],
@@ -218,7 +242,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     );
   }
 
-  Widget _buildTimeUnit(String value, String label) {
+  Widget _buildTimeUnit(BuildContext context, String value, String label) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -265,15 +289,15 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
               children: [
                 Expanded(
                   child: StatCard(
-                    title: 'Streak',
+                    title: AppLocalizations.of(context)!.streak,
                     value: stats['streak'].toString(),
-                    unit: 'days',
+                    unit: AppLocalizations.of(context)!.daysUnit,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: StatCard(
-                    title: 'Time\nSaved',
+                    title: AppLocalizations.of(context)!.timeSaved,
                     value: stats['timeSaved'] ?? '0 min',
                     unit: '',
                   ),
@@ -282,7 +306,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                   const SizedBox(width: 12),
                   Expanded(
                     child: StatCard(
-                      title: 'Money\nSaved',
+                      title: AppLocalizations.of(context)!.moneySaved,
                       value: moneySaved,
                       unit: '',
                     ),
@@ -302,9 +326,18 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
         if (state is CheckInCompleted) {
           _animationController?.forward();
         } else if (state is CheckInError) {
+          final l10n = AppLocalizations.of(context)!;
+          String errorMessage;
+          if (state.message == 'VALIDATION_ERROR') {
+            errorMessage = l10n.pleaseSelectMoodAndCraving;
+          } else if (state.message.contains('Failed')) {
+            errorMessage = l10n.failedToSubmitCheckIn;
+          } else {
+            errorMessage = state.message;
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(errorMessage),
               backgroundColor: Colors.red[600],
             ),
           );
@@ -379,7 +412,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           FadeTransition(
             opacity: _fadeAnimation!,
             child: Text(
-              'Check-In Completed!',
+              AppLocalizations.of(context)!.checkInCompleted,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -391,7 +424,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           FadeTransition(
             opacity: _fadeAnimation!,
             child: Text(
-              'Great job staying on track today!',
+              AppLocalizations.of(context)!.greatJobStayingOnTrack,
               style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
@@ -406,7 +439,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                 _animationController?.reset();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Check In Again'),
+              label: Text(AppLocalizations.of(context)!.checkInAgain),
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF00A3E0),
                 padding: const EdgeInsets.symmetric(
@@ -442,9 +475,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Your Daily Check-in',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.yourDailyCheckIn,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -467,9 +500,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'My Mood',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.myMood,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -481,13 +514,41 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Flexible(child: _buildMoodButton('😖', 'Awful', selectedMood)),
+                Flexible(
+                  child: _buildMoodButton(
+                    context,
+                    '😖',
+                    AppLocalizations.of(context)!.awful,
+                    selectedMood,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Flexible(child: _buildMoodButton('😔', 'Sad', selectedMood)),
+                Flexible(
+                  child: _buildMoodButton(
+                    context,
+                    '😔',
+                    AppLocalizations.of(context)!.sad,
+                    selectedMood,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Flexible(child: _buildMoodButton('😐', 'Okay', selectedMood)),
+                Flexible(
+                  child: _buildMoodButton(
+                    context,
+                    '😐',
+                    AppLocalizations.of(context)!.okay,
+                    selectedMood,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Flexible(child: _buildMoodButton('😊', 'Good', selectedMood)),
+                Flexible(
+                  child: _buildMoodButton(
+                    context,
+                    '😊',
+                    AppLocalizations.of(context)!.good,
+                    selectedMood,
+                  ),
+                ),
               ],
             );
           },
@@ -496,7 +557,12 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     );
   }
 
-  Widget _buildMoodButton(String emoji, String label, String selectedMood) {
+  Widget _buildMoodButton(
+    BuildContext context,
+    String emoji,
+    String label,
+    String selectedMood,
+  ) {
     final isSelected = selectedMood == label;
 
     return GestureDetector(
@@ -542,9 +608,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Craving Level',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.cravingLevel,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -554,7 +620,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
         Row(
           children: [
             Text(
-              'Low',
+              AppLocalizations.of(context)!.low,
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
             Expanded(
@@ -578,7 +644,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
               ),
             ),
             Text(
-              'High',
+              AppLocalizations.of(context)!.high,
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
           ],
@@ -591,9 +657,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Today's Journal (Optional)",
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.todayJournalOptional,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -613,7 +679,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
               context.read<DailyCheckInCubit>().updateJournalEntry(value);
             },
             decoration: InputDecoration(
-              hintText: 'Write about your day...',
+              hintText: AppLocalizations.of(context)!.writeAboutYourDay,
               hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
@@ -655,9 +721,12 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                   strokeWidth: 2,
                 ),
               )
-            : const Text(
-                'Complete Check-in',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            : Text(
+                AppLocalizations.of(context)!.completeCheckIn,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
       ),
     );
@@ -686,9 +755,9 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Daily Quote',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.dailyQuote,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,

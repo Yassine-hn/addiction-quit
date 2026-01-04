@@ -81,8 +81,12 @@ class _StepFinalState extends State<StepFinal>
           builder: (context) => DataSavingScreen(
             savingFuture: savingFuture,
             onComplete: () {
-              // Navigate to home screen using named route
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
+              // Clear navigation stack and navigate to home screen
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.home,
+                (route) => false,
+              );
             },
             onError: () {
               // Navigate back to form with error message

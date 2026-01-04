@@ -1,0 +1,165 @@
+{
+  "@@locale": "en",
+  "appTitle": "Addiction Quit App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "dashboard": "Dashboard",
+  "home": "Home",
+  "profile": "Profile",
+  "community": "Community",
+  
+  "welcomeAboard": "Welcome Aboard!",
+  "welcomeMessage": "You've taken the first and most important\nstep. We're here to support you on your\npath to a healthier life.",
+  
+  "noActiveMilestone": "No Active Milestone",
+  "startNewMilestone": "Start New Milestone",
+  "startMyJourney": "Start My Journey",
+  "selectMilestone": "Select Milestone",
+  "cancel": "Cancel",
+  "milestoneStarted": "{title} started!",
+  "@milestoneStarted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "oneDayMilestone": "1 Day Milestone",
+  "oneWeekMilestone": "1 Week Milestone",
+  "twoWeeksMilestone": "2 Weeks Milestone",
+  "oneMonthMilestone": "1 Month Milestone",
+  "twoMonthsMilestone": "2 Months Milestone",
+  "threeMonthsMilestone": "3 Months Milestone",
+  "sixMonthsMilestone": "6 Months Milestone",
+  "oneYearMilestone": "1 Year Milestone",
+  "daysMilestone": "{days} Days Milestone",
+  "@daysMilestone": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "dailySurveyHistory": "Daily Survey History",
+  "streakChart": "Streak Chart",
+  "moodTracker": "Mood Tracker",
+  "moodTrackingComingSoon": "Mood tracking coming soon",
+  
+  "noAddictionsFound": "No addictions found",
+  "yourAddictions": "Your Addictions",
+  "started": "Started: {date}",
+  "@started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noSlip": "No Slip",
+  "slipped": "Slipped",
+  "noSurvey": "No Survey",
+  
+  "noStreakDataAvailable": "No streak data available",
+  
+  "retry": "Retry",
+  "error": "Error",
+  "loading": "Loading...",
+  
+  "noAddictionsFoundCreateOne": "No addictions found. Create one to start!",
+  "noActiveAddictionsFound": "No active addictions found. Start one!",
+  "failedToLoadDashboard": "Failed to load dashboard",
+  "noUserIDFound": "No user ID found. Please login.",
+  "unableToCreateMilestone": "Unable to create milestone",
+  "errorCreatingMilestone": "Error creating milestone: {error}",
+  "@errorCreatingMilestone": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youAreSoberFor": "You are sober for",
+  "days": "DAYS",
+  "hours": "HOURS",
+  "minutes": "MIN",
+  
+  "streak": "Streak",
+  "timeSaved": "Time\nSaved",
+  "moneySaved": "Money\nSaved",
+  "daysUnit": "days",
+  
+  "yourDailyCheckIn": "Your Daily Check-in",
+  "myMood": "My Mood",
+  "awful": "Awful",
+  "sad": "Sad",
+  "okay": "Okay",
+  "good": "Good",
+  "cravingLevel": "Craving Level",
+  "low": "Low",
+  "high": "High",
+  "todayJournalOptional": "Today's Journal (Optional)",
+  "writeAboutYourDay": "Write about your day...",
+  "completeCheckIn": "Complete Check-in",
+  "checkInCompleted": "Check-In Completed!",
+  "greatJobStayingOnTrack": "Great job staying on track today!",
+  "checkInAgain": "Check In Again",
+  "pleaseSelectMoodAndCraving": "Please select mood and craving level",
+  "failedToSubmitCheckIn": "Failed to submit check-in",
+  
+  "dailyQuote": "Daily Quote",
+  
+  "previousAchievements": "Previous Achievements",
+  "myJourney": "My Journey",
+  "currentStreak": "Current Streak: {streak} days",
+  "@currentStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "timeSober": "Time Sober",
+  "daysDays": "{days} Days",
+  "@daysDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "newAddiction": "New Addiction",
+  "startTrackingNewAddiction": "Start tracking a new addiction",
+  
+  "awardedOn": "Awarded on {date}",
+  "@awardedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goodMorning": "Good morning",
+  "goodAfternoon": "Good afternoon",
+  "goodEvening": "Good evening",
+  "helloUser": "Hello, User",
+  
+  "duplicateAddictionError": "An active addiction of type \"{type}\" already exists. Please choose a different type or deactivate the existing one.",
+  "@duplicateAddictionError": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "saveFailed": "Save Failed",
+  "errorSavingData": "There was an error saving your data. Please try again.",
+  "ok": "OK"
+}
+

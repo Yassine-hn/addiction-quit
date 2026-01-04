@@ -251,8 +251,9 @@ class _Step5ObjectivesState extends State<Step5Objectives> {
     final List<String> missing = [];
 
     if (_selectedGoals.isEmpty) missing.add('select at least one goal');
-    if (_motivationController.text.trim().isEmpty)
+    if (_motivationController.text.trim().isEmpty) {
       missing.add('describe your motivation');
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

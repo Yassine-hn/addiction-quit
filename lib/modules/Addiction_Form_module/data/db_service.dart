@@ -2,9 +2,6 @@
 import 'package:sqflite/sqflite.dart';
 import '../../../data/databases/db_helper.dart';
 import '../../../data/databases/tables/addictions_table.dart';
-import '../../../data/databases/tables/users_table.dart';
-import '../../../data/databases/tables/milestones_table.dart';
-import '../../../data/databases/tables/reminders_table.dart';
 import '../../../data/databases/tables/activity_logs_table.dart';
 import '../models/User_Info_model.dart';
 import './shared_preference_manager.dart';

@@ -2,25 +2,24 @@
 import '../databases/db_helper.dart';
 import '../databases/tables/users_table.dart';
 import 'user_repository_abstract.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 
 /// Implementation of UserRepository
 class UserRepositoryImpl implements UserRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  /// Get the current active user (first active user in database)
+  /// Get the current active user (using user_id from SharedPreferences)
   @override
   Future<Map<String, dynamic>?> getCurrentUser() async {
     try {
+      // Get user ID from SharedPreferences
+      final userId = await SharedPreferencesHelper.getUserId();
+      if (userId == null) {
+        return null;
+      }
+
       final db = await _dbHelper.database;
-      final users = await UsersTable.getAll(db);
-      
-      // Get first active user or first user if no active filter
-      final activeUser = users.firstWhere(
-        (user) => (user['is_active'] as int? ?? 1) == 1,
-        orElse: () => users.isNotEmpty ? users.first : <String, dynamic>{},
-      );
-      
-      return activeUser.isNotEmpty ? activeUser : null;
+      return await UsersTable.getById(db, userId);
     } catch (e) {
       print('Error getting current user: $e');
       return null;
@@ -37,8 +36,7 @@ class UserRepositoryImpl implements UserRepository {
   /// Get current user ID
   @override
   Future<int?> getCurrentUserId() async {
-    final user = await getCurrentUser();
-    return user?['id'] as int?;
+    // Get directly from SharedPreferences for consistency
+    return await SharedPreferencesHelper.getUserId();
   }
 }
-

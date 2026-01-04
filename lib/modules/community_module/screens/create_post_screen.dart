@@ -178,7 +178,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           Switch(
             value: _isAnonymous,
             onChanged: (value) => setState(() => _isAnonymous = value),
-            activeColor: const Color(0xFF00A3E0),
+            activeThumbColor: const Color(0xFF00A3E0),
           ),
         ],
       ),

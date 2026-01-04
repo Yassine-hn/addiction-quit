@@ -1,5 +1,4 @@
 // repositories/progress_repository.dart
-import '../models/progress_data.dart';
 
 abstract class ProgressRepository {
   /// Get milestone progress (percentage, target, achieved)
@@ -7,9 +6,9 @@ abstract class ProgressRepository {
 
   /// Get daily survey history for the grid
   Future<List<Map<String, dynamic>>> getDailySurveyHistory(
-    int addictionId, 
-    DateTime startDate, 
-    DateTime endDate
+    int addictionId,
+    DateTime startDate,
+    DateTime endDate,
   );
 
   /// Get streak history for the chart

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'screens/home_screen.dart';
 import './screens/user_profile_screen.dart';
 import 'screens/dashboard_screen.dart';
-import '../data/repositories/progress_repository_impl.dart';
 import './screens/community_screen.dart';
 import './screens/loading_screen.dart';
 import '../modules/Addiction_Form_module/screens/Step0Welcome.dart';
@@ -60,9 +59,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
 
       case dashboard:
-        return MaterialPageRoute(
-          builder: (_) => DashboardScreen(repository: ProgressRepositoryImpl()),
-        );
+        return MaterialPageRoute(builder: (_) => const DashboardScreen());
 
       case profile:
         return MaterialPageRoute(builder: (_) => UserProfileScreen());

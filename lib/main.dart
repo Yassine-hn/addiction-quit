@@ -1,9 +1,12 @@
 // file: main.dart (updated)
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 Future<bool> init_app() async {
   try {
@@ -37,6 +40,7 @@ Future<bool> init_app() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await init_app();
   runApp(const MyApp());
 }
@@ -52,6 +56,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      //locale: Locale('ar', ''),
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('ar', ''), // Arabic
+      ],
       initialRoute: AppRoutes.initial,
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );

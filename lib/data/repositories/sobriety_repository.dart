@@ -46,18 +46,16 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   }) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         return {'days': '0', 'hours': '0', 'minutes': '0'};
       }
 
       Map<String, dynamic>? addiction;
-      
+
       if (addictionId != null) {
         addiction = await AddictionsTable.getById(db, addictionId);
       } else {
@@ -69,9 +67,10 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
       }
 
       // Get counter_start_at or start_date
-      final startDateStr = addiction['counter_start_at'] as String? ?? 
-                          addiction['start_date'] as String?;
-      
+      final startDateStr =
+          addiction['counter_start_at'] as String? ??
+          addiction['start_date'] as String?;
+
       if (startDateStr == null) {
         return {'days': '0', 'hours': '0', 'minutes': '0'};
       }
@@ -83,6 +82,4 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
       return {'days': '0', 'hours': '0', 'minutes': '0'};
     }
   }
-
 }
-

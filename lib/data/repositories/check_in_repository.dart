@@ -51,12 +51,10 @@ class CheckInRepositoryImpl implements CheckInRepository {
   }) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         print('Error: No user ID available for check-in');
         return false;
@@ -67,7 +65,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
         final addiction = await _getPrimaryAddiction(userId);
         addictionId = addiction?['id'] as int?;
       }
-      
+
       if (addictionId == null) {
         print('Error: No active addiction found for check-in');
         return false;
@@ -75,7 +73,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
       final today = _getCurrentDate();
       final dbMood = _mapMoodToDbValue(mood);
-      
+
       // Convert craving level (0.0-1.0) to urge level (0-10)
       final urgeLevel = (cravingLevel * 10).round();
 
@@ -107,7 +105,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
       // Update streak if not already updated today
       // (This logic can be enhanced based on your requirements)
-      
+
       return true;
     } catch (e) {
       print('Error submitting check-in: $e');
@@ -123,12 +121,10 @@ class CheckInRepositoryImpl implements CheckInRepository {
   }) async {
     try {
       final db = await _dbHelper.database;
-      
+
       // Get user ID if not provided
-      if (userId == null) {
-        userId = await _userRepository.getCurrentUserId();
-      }
-      
+      userId ??= await _userRepository.getCurrentUserId();
+
       if (userId == null) {
         return null;
       }
@@ -138,7 +134,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
         final addiction = await _getPrimaryAddiction(userId);
         addictionId = addiction?['id'] as int?;
       }
-      
+
       if (addictionId == null) {
         return null;
       }
@@ -153,10 +149,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
   /// Check if user has already checked in today
   @override
-  Future<bool> hasCheckedInToday({
-    int? userId,
-    int? addictionId,
-  }) async {
+  Future<bool> hasCheckedInToday({int? userId, int? addictionId}) async {
     final checkIn = await getTodayCheckIn(
       userId: userId,
       addictionId: addictionId,
@@ -164,4 +157,3 @@ class CheckInRepositoryImpl implements CheckInRepository {
     return checkIn != null;
   }
 }
-

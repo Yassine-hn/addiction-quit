@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import '../widgets/ValidationButton.dart';
 import 'Step1AdType.dart';
 import '../data/Cubit/UserInfoCubit.dart';
@@ -38,9 +39,9 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Welcome Aboard!',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.welcomeAboard,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 36.0,
                     fontWeight: FontWeight.bold,
@@ -48,27 +49,17 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                      height: 1.5,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "You've taken the first and most important\n",
-                      ),
-                      TextSpan(
-                        text: "step. We're here to support you on your\n",
-                      ),
-                      TextSpan(text: "path to a healthier life."),
-                    ],
+                Text(
+                  AppLocalizations.of(context)!.welcomeMessage,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 32.0),
                 ValidationButton(
-                  label: 'Start My Journey',
+                  label: AppLocalizations.of(context)!.startMyJourney,
                   onPressed: () {
                     Navigator.push(
                       context,
