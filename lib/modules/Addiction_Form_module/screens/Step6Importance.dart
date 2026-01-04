@@ -5,6 +5,7 @@ import '../data/Cubit/UserInfoCubit.dart';
 import 'selection_step_screen.dart';
 import '../models/SelectionStepConfif.dart';
 import 'Step7Inclusion.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step6Importance extends StatelessWidget {
   const Step6Importance({super.key});
@@ -16,14 +17,14 @@ class Step6Importance extends StatelessWidget {
 
     return SelectionStepScreen(
       config: SelectionStepConfig(
-        stepTitle: 'Importance',
-        screenTitle: 'Personal Importance',
-        mainQuestion: 'How much is it important for you?',
-        options: const [
-          'Just trying',
-          'It would be good',
-          'I need it',
-          'Critical',
+        stepTitle: AppLocalizations.of(context)!.importance,
+        screenTitle: AppLocalizations.of(context)!.personalImportance,
+        mainQuestion: AppLocalizations.of(context)!.howMuchIsItImportant,
+        options: [
+          AppLocalizations.of(context)!.justTrying,
+          AppLocalizations.of(context)!.itWouldBeGood,
+          AppLocalizations.of(context)!.iNeedIt,
+          AppLocalizations.of(context)!.critical,
         ],
         selectedValue: currentValue,
       ),

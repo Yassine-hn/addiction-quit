@@ -601,6 +601,492 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// No description provided for @selectAddiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Addiction'**
+  String get selectAddiction;
+
+  /// No description provided for @whatTypeOfAddiction.
+  ///
+  /// In en, this message translates to:
+  /// **'What type of addiction\ndo you want to quit?'**
+  String get whatTypeOfAddiction;
+
+  /// No description provided for @searchForAddiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for an addiction...'**
+  String get searchForAddiction;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @noAddictionsFoundText.
+  ///
+  /// In en, this message translates to:
+  /// **'No addictions found'**
+  String get noAddictionsFoundText;
+
+  /// No description provided for @whenDidYourJourneyBegin.
+  ///
+  /// In en, this message translates to:
+  /// **'When did your journey begin?'**
+  String get whenDidYourJourneyBegin;
+
+  /// No description provided for @startingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Date'**
+  String get startingDate;
+
+  /// No description provided for @howOftenPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'How often do you fall into your addiction per week?'**
+  String get howOftenPerWeek;
+
+  /// No description provided for @irregularly.
+  ///
+  /// In en, this message translates to:
+  /// **'Irregularly'**
+  String get irregularly;
+
+  /// No description provided for @selectNumberOfDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Select number of days:'**
+  String get selectNumberOfDays;
+
+  /// No description provided for @howManyTimesPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'How many times per day do you fall into\nthis addiction?'**
+  String get howManyTimesPerDay;
+
+  /// No description provided for @quickSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick selection:'**
+  String get quickSelection;
+
+  /// No description provided for @whenIFeelDeprived.
+  ///
+  /// In en, this message translates to:
+  /// **'When I feel deprived'**
+  String get whenIFeelDeprived;
+
+  /// No description provided for @sometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes'**
+  String get sometimes;
+
+  /// No description provided for @often.
+  ///
+  /// In en, this message translates to:
+  /// **'Often'**
+  String get often;
+
+  /// No description provided for @orEnterSpecificNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Or enter specific number:'**
+  String get orEnterSpecificNumber;
+
+  /// No description provided for @egFive.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 5'**
+  String get egFive;
+
+  /// No description provided for @mainGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Goals'**
+  String get mainGoals;
+
+  /// No description provided for @whatAreYourMainGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'What are your main goals?'**
+  String get whatAreYourMainGoals;
+
+  /// No description provided for @searchForGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a goal...'**
+  String get searchForGoal;
+
+  /// No description provided for @mainMotivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Motivation'**
+  String get mainMotivation;
+
+  /// No description provided for @whatMotivatesYou.
+  ///
+  /// In en, this message translates to:
+  /// **'What motivates you the most to stop?\nShare your reason...'**
+  String get whatMotivatesYou;
+
+  /// No description provided for @egHealthFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Health, family, personal growth...'**
+  String get egHealthFamily;
+
+  /// No description provided for @importance.
+  ///
+  /// In en, this message translates to:
+  /// **'Importance'**
+  String get importance;
+
+  /// No description provided for @personalImportance.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Importance'**
+  String get personalImportance;
+
+  /// No description provided for @howMuchIsItImportant.
+  ///
+  /// In en, this message translates to:
+  /// **'How much is it important\nto you?'**
+  String get howMuchIsItImportant;
+
+  /// No description provided for @justTrying.
+  ///
+  /// In en, this message translates to:
+  /// **'Just trying'**
+  String get justTrying;
+
+  /// No description provided for @itWouldBeGood.
+  ///
+  /// In en, this message translates to:
+  /// **'It would be good'**
+  String get itWouldBeGood;
+
+  /// No description provided for @iNeedIt.
+  ///
+  /// In en, this message translates to:
+  /// **'I need it'**
+  String get iNeedIt;
+
+  /// No description provided for @critical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get critical;
+
+  /// No description provided for @inclusion.
+  ///
+  /// In en, this message translates to:
+  /// **'Inclusion'**
+  String get inclusion;
+
+  /// No description provided for @peopleInvolved.
+  ///
+  /// In en, this message translates to:
+  /// **'People Involved'**
+  String get peopleInvolved;
+
+  /// No description provided for @whoIsInvolvedInYourJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is involved in your journey?'**
+  String get whoIsInvolvedInYourJourney;
+
+  /// No description provided for @justMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Just me'**
+  String get justMe;
+
+  /// No description provided for @myPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'My partner'**
+  String get myPartner;
+
+  /// No description provided for @myFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'My family'**
+  String get myFamily;
+
+  /// No description provided for @myFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'My friends'**
+  String get myFriends;
+
+  /// No description provided for @myColleagues.
+  ///
+  /// In en, this message translates to:
+  /// **'My colleagues'**
+  String get myColleagues;
+
+  /// No description provided for @aSupportGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'A support group'**
+  String get aSupportGroup;
+
+  /// No description provided for @myCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'My community'**
+  String get myCommunity;
+
+  /// No description provided for @everyoneAroundMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone around me'**
+  String get everyoneAroundMe;
+
+  /// No description provided for @financialSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial Savings'**
+  String get financialSavings;
+
+  /// No description provided for @howMuchMoneySavedPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'How much money do you think you can spare per day if you stop?'**
+  String get howMuchMoneySavedPerDay;
+
+  /// No description provided for @thisHelpsTrackFinancialProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'This helps us track your financial progress.'**
+  String get thisHelpsTrackFinancialProgress;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get enterAmount;
+
+  /// No description provided for @selectCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Select currency'**
+  String get selectCurrency;
+
+  /// No description provided for @algerianDinar.
+  ///
+  /// In en, this message translates to:
+  /// **'Algerian Dinar'**
+  String get algerianDinar;
+
+  /// No description provided for @usDollar.
+  ///
+  /// In en, this message translates to:
+  /// **'US Dollar'**
+  String get usDollar;
+
+  /// No description provided for @euro.
+  ///
+  /// In en, this message translates to:
+  /// **'Euro'**
+  String get euro;
+
+  /// No description provided for @britishPound.
+  ///
+  /// In en, this message translates to:
+  /// **'British Pound'**
+  String get britishPound;
+
+  /// No description provided for @indianRupee.
+  ///
+  /// In en, this message translates to:
+  /// **'Indian Rupee'**
+  String get indianRupee;
+
+  /// No description provided for @japaneseYen.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese Yen'**
+  String get japaneseYen;
+
+  /// No description provided for @russianRuble.
+  ///
+  /// In en, this message translates to:
+  /// **'Russian Ruble'**
+  String get russianRuble;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @dailyReviewTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Review Time'**
+  String get dailyReviewTime;
+
+  /// No description provided for @whenWouldYouLikeDailyReview.
+  ///
+  /// In en, this message translates to:
+  /// **'When would you like to\ndo your daily review?'**
+  String get whenWouldYouLikeDailyReview;
+
+  /// No description provided for @chooseTimeForReflection.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time when you can reflect quietly. We\'ll send a gentle reminder.'**
+  String get chooseTimeForReflection;
+
+  /// No description provided for @morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get morning;
+
+  /// No description provided for @afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get afternoon;
+
+  /// No description provided for @hour.
+  ///
+  /// In en, this message translates to:
+  /// **'HOUR'**
+  String get hour;
+
+  /// No description provided for @minute.
+  ///
+  /// In en, this message translates to:
+  /// **'MINUTE'**
+  String get minute;
+
+  /// No description provided for @almostThere.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost There!'**
+  String get almostThere;
+
+  /// No description provided for @readyToBegin.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to begin your\ntransformation'**
+  String get readyToBegin;
+
+  /// No description provided for @chooseUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a username'**
+  String get chooseUsername;
+
+  /// No description provided for @egJohnDoe.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., John Doe'**
+  String get egJohnDoe;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @heroesOfTheWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Heroes of the Week'**
+  String get heroesOfTheWeek;
+
+  /// No description provided for @createPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Post'**
+  String get createPost;
+
+  /// No description provided for @post.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get post;
+
+  /// No description provided for @anonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymous;
+
+  /// No description provided for @postingToCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting to Community'**
+  String get postingToCommunity;
+
+  /// No description provided for @shareYourThoughts.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your thoughts, experiences, or ask for support...'**
+  String get shareYourThoughts;
+
+  /// No description provided for @postAnonymously.
+  ///
+  /// In en, this message translates to:
+  /// **'Post anonymously'**
+  String get postAnonymously;
+
+  /// No description provided for @yourIdentityHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity will be hidden'**
+  String get yourIdentityHidden;
+
+  /// No description provided for @popularTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular topics'**
+  String get popularTopics;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @poll.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll'**
+  String get poll;
+
+  /// No description provided for @emoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get emoji;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'{feature} feature coming soon!'**
+  String featureComingSoon(String feature);
+
+  /// No description provided for @postPublishedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Post published successfully!'**
+  String get postPublishedSuccessfully;
+
+  /// No description provided for @postPublishFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to publish post. Please try again.'**
+  String get postPublishFailed;
 }
 
 class _AppLocalizationsDelegate

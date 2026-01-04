@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/community_backend_functions.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -29,9 +30,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           icon: const Icon(Icons.close, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Create Post',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.createPost,
+          style: const TextStyle(
             color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -43,7 +44,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ? null
                 : () => _publishPost(),
             child: Text(
-              'Post',
+              AppLocalizations.of(context)!.post,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -101,7 +102,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _isAnonymous ? 'Anonymous' : 'Alex',
+              _isAnonymous ? AppLocalizations.of(context)!.anonymous : 'Alex',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -109,7 +110,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
             Text(
-              'Posting to Community',
+              AppLocalizations.of(context)!.postingToCommunity,
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
           ],
@@ -127,7 +128,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       onChanged: (value) => setState(() {}),
       style: const TextStyle(fontSize: 16, color: Colors.black87, height: 1.5),
       decoration: InputDecoration(
-        hintText: 'Share your thoughts, experiences, or ask for support...',
+        hintText: AppLocalizations.of(context)!.shareYourThoughts,
         hintStyle: TextStyle(
           fontSize: 16,
           color: Colors.grey[400],
@@ -159,9 +160,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Post anonymously',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.postAnonymously,
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
@@ -169,7 +170,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Your identity will be hidden',
+                  AppLocalizations.of(context)!.yourIdentityHidden,
                   style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
@@ -190,7 +191,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular topics',
+          AppLocalizations.of(context)!.popularTopics,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -250,11 +251,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _buildToolbarButton(Icons.image_outlined, 'Photo'),
+          _buildToolbarButton(Icons.image_outlined, AppLocalizations.of(context)!.photo),
           const SizedBox(width: 20),
-          _buildToolbarButton(Icons.poll_outlined, 'Poll'),
+          _buildToolbarButton(Icons.poll_outlined, AppLocalizations.of(context)!.poll),
           const SizedBox(width: 20),
-          _buildToolbarButton(Icons.emoji_emotions_outlined, 'Emoji'),
+          _buildToolbarButton(Icons.emoji_emotions_outlined, AppLocalizations.of(context)!.emoji),
         ],
       ),
     );
@@ -265,7 +266,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$label feature coming soon!'),
+            content: Text(AppLocalizations.of(context)!.featureComingSoon(label)),
             backgroundColor: const Color(0xFF00A3E0),
             duration: const Duration(seconds: 1),
           ),
@@ -292,10 +293,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         Navigator.pop(context);
         Future.delayed(const Duration(milliseconds: 300), () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Post published successfully!'),
-              backgroundColor: Color(0xFF00A3E0),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.postPublishedSuccessfully),
+              backgroundColor: const Color(0xFF00A3E0),
+              duration: const Duration(seconds: 2),
             ),
           );
         });

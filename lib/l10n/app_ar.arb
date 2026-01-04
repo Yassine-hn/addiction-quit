@@ -157,6 +157,105 @@
   
   "saveFailed": "فشل الحفظ",
   "errorSavingData": "حدث خطأ أثناء حفظ بياناتك. يرجى المحاولة مرة أخرى.",
-  "ok": "موافق"
+  "ok": "موافق",
+  
+  "selectAddiction": "اختر الإدمان",
+  "whatTypeOfAddiction": "ما نوع الإدمان\nالذي تريد الإقلاع عنه؟",
+  "searchForAddiction": "ابحث عن إدمان...",
+  "continueLabel": "متابعة",
+  "noAddictionsFoundText": "لم يتم العثور على إدمانات",
+  
+  "whenDidYourJourneyBegin": "متى بدأت رحلتك؟",
+  "startingDate": "تاريخ البداية",
+  
+  "howOftenPerWeek": "كم مرة تقع في إدمانك في الأسبوع؟",
+  "irregularly": "بشكل غير منتظم",
+  "selectNumberOfDays": "اختر عدد الأيام:",
+  
+  "howManyTimesPerDay": "كم مرة في اليوم تقع في\nهذا الإدمان؟",
+  "quickSelection": "اختيار سريع:",
+  "whenIFeelDeprived": "عندما أشعر بالحرمان",
+  "sometimes": "أحياناً",
+  "often": "غالباً",
+  "orEnterSpecificNumber": "أو أدخل رقماً محدداً:",
+  "egFive": "مثلاً، 5",
+  
+  "mainGoals": "الأهداف الرئيسية",
+  "whatAreYourMainGoals": "ما هي أهدافك الرئيسية؟",
+  "searchForGoal": "ابحث عن هدف...",
+  "mainMotivation": "الدافع الرئيسي",
+  "whatMotivatesYou": "ما الذي يحفزك أكثر للتوقف؟\nشارك سببك...",
+  "egHealthFamily": "مثلاً، الصحة، الأسرة، النمو الشخصي...",
+  
+  "importance": "الأهمية",
+  "personalImportance": "الأهمية الشخصية",
+  "howMuchIsItImportant": "ما مدى أهميته\nبالنسبة لك؟",
+  "justTrying": "مجرد محاولة",
+  "itWouldBeGood": "سيكون جيداً",
+  "iNeedIt": "أحتاجه",
+  "critical": "حرج",
+  
+  "inclusion": "المشاركة",
+  "peopleInvolved": "الأشخاص المشاركون",
+  "whoIsInvolvedInYourJourney": "من يشارك في رحلتك؟",
+  "justMe": "أنا فقط",
+  "myPartner": "شريكي",
+  "myFamily": "عائلتي",
+  "myFriends": "أصدقائي",
+  "myColleagues": "زملائي",
+  "aSupportGroup": "مجموعة دعم",
+  "myCommunity": "مجتمعي",
+  "everyoneAroundMe": "الجميع من حولي",
+  
+  "financialSavings": "التوفير المالي",
+  "howMuchMoneySavedPerDay": "كم من المال تعتقد أنك يمكن أن توفره يومياً إذا توقفت؟",
+  "thisHelpsTrackFinancialProgress": "هذا يساعدنا على تتبع تقدمك المالي.",
+  "enterAmount": "أدخل المبلغ",
+  "selectCurrency": "اختر العملة",
+  "algerianDinar": "الدينار الجزائري",
+  "usDollar": "الدولار الأمريكي",
+  "euro": "اليورو",
+  "britishPound": "الجنيه الإسترليني",
+  "indianRupee": "الروبية الهندية",
+  "japaneseYen": "الين الياباني",
+  "russianRuble": "الروبل الروسي",
+  "other": "أخرى",
+  
+  "dailyReviewTime": "وقت المراجعة اليومية",
+  "whenWouldYouLikeDailyReview": "متى تود القيام\nبمراجعتك اليومية؟",
+  "chooseTimeForReflection": "اختر وقتاً يمكنك فيه التفكير بهدوء. سنرسل لك تذكيراً لطيفاً.",
+  "morning": "صباحاً",
+  "afternoon": "مساءً",
+  "hour": "ساعة",
+  "minute": "دقيقة",
+  
+  "almostThere": "أنت قريب!",
+  "readyToBegin": "مستعد لبدء\nتحولك",
+  "chooseUsername": "اختر اسم مستخدم",
+  "egJohnDoe": "مثلاً، أحمد محمد",
+  "getStarted": "ابدأ",
+  
+  "heroesOfTheWeek": "أبطال الأسبوع",
+  "createPost": "إنشاء منشور",
+  "post": "نشر",
+  "anonymous": "مجهول",
+  "postingToCommunity": "النشر في المجتمع",
+  "shareYourThoughts": "شارك أفكارك، تجاربك، أو اطلب الدعم...",
+  "postAnonymously": "انشر بشكل مجهول",
+  "yourIdentityHidden": "ستكون هويتك مخفية",
+  "popularTopics": "مواضيع شائعة",
+  "photo": "صورة",
+  "poll": "استطلاع",
+  "emoji": "رموز تعبيرية",
+  "featureComingSoon": "ميزة {feature} قريباً!",
+  "@featureComingSoon": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "postPublishedSuccessfully": "تم نشر المنشور بنجاح!",
+  "postPublishFailed": "فشل نشر المنشور. يرجى المحاولة مرة أخرى."
 }
 

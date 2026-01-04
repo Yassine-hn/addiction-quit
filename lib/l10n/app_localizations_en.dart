@@ -280,4 +280,258 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get selectAddiction => 'Select Addiction';
+
+  @override
+  String get whatTypeOfAddiction =>
+      'What type of addiction\ndo you want to quit?';
+
+  @override
+  String get searchForAddiction => 'Search for an addiction...';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get noAddictionsFoundText => 'No addictions found';
+
+  @override
+  String get whenDidYourJourneyBegin => 'When did your journey begin?';
+
+  @override
+  String get startingDate => 'Starting Date';
+
+  @override
+  String get howOftenPerWeek =>
+      'How often do you fall into your addiction per week?';
+
+  @override
+  String get irregularly => 'Irregularly';
+
+  @override
+  String get selectNumberOfDays => 'Select number of days:';
+
+  @override
+  String get howManyTimesPerDay =>
+      'How many times per day do you fall into\nthis addiction?';
+
+  @override
+  String get quickSelection => 'Quick selection:';
+
+  @override
+  String get whenIFeelDeprived => 'When I feel deprived';
+
+  @override
+  String get sometimes => 'Sometimes';
+
+  @override
+  String get often => 'Often';
+
+  @override
+  String get orEnterSpecificNumber => 'Or enter specific number:';
+
+  @override
+  String get egFive => 'e.g., 5';
+
+  @override
+  String get mainGoals => 'Main Goals';
+
+  @override
+  String get whatAreYourMainGoals => 'What are your main goals?';
+
+  @override
+  String get searchForGoal => 'Search for a goal...';
+
+  @override
+  String get mainMotivation => 'Main Motivation';
+
+  @override
+  String get whatMotivatesYou =>
+      'What motivates you the most to stop?\nShare your reason...';
+
+  @override
+  String get egHealthFamily => 'e.g., Health, family, personal growth...';
+
+  @override
+  String get importance => 'Importance';
+
+  @override
+  String get personalImportance => 'Personal Importance';
+
+  @override
+  String get howMuchIsItImportant => 'How much is it important\nto you?';
+
+  @override
+  String get justTrying => 'Just trying';
+
+  @override
+  String get itWouldBeGood => 'It would be good';
+
+  @override
+  String get iNeedIt => 'I need it';
+
+  @override
+  String get critical => 'Critical';
+
+  @override
+  String get inclusion => 'Inclusion';
+
+  @override
+  String get peopleInvolved => 'People Involved';
+
+  @override
+  String get whoIsInvolvedInYourJourney => 'Who is involved in your journey?';
+
+  @override
+  String get justMe => 'Just me';
+
+  @override
+  String get myPartner => 'My partner';
+
+  @override
+  String get myFamily => 'My family';
+
+  @override
+  String get myFriends => 'My friends';
+
+  @override
+  String get myColleagues => 'My colleagues';
+
+  @override
+  String get aSupportGroup => 'A support group';
+
+  @override
+  String get myCommunity => 'My community';
+
+  @override
+  String get everyoneAroundMe => 'Everyone around me';
+
+  @override
+  String get financialSavings => 'Financial Savings';
+
+  @override
+  String get howMuchMoneySavedPerDay =>
+      'How much money do you think you can spare per day if you stop?';
+
+  @override
+  String get thisHelpsTrackFinancialProgress =>
+      'This helps us track your financial progress.';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
+  String get selectCurrency => 'Select currency';
+
+  @override
+  String get algerianDinar => 'Algerian Dinar';
+
+  @override
+  String get usDollar => 'US Dollar';
+
+  @override
+  String get euro => 'Euro';
+
+  @override
+  String get britishPound => 'British Pound';
+
+  @override
+  String get indianRupee => 'Indian Rupee';
+
+  @override
+  String get japaneseYen => 'Japanese Yen';
+
+  @override
+  String get russianRuble => 'Russian Ruble';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get dailyReviewTime => 'Daily Review Time';
+
+  @override
+  String get whenWouldYouLikeDailyReview =>
+      'When would you like to\ndo your daily review?';
+
+  @override
+  String get chooseTimeForReflection =>
+      'Choose a time when you can reflect quietly. We\'ll send a gentle reminder.';
+
+  @override
+  String get morning => 'Morning';
+
+  @override
+  String get afternoon => 'Afternoon';
+
+  @override
+  String get hour => 'HOUR';
+
+  @override
+  String get minute => 'MINUTE';
+
+  @override
+  String get almostThere => 'Almost There!';
+
+  @override
+  String get readyToBegin => 'Ready to begin your\ntransformation';
+
+  @override
+  String get chooseUsername => 'Choose a username';
+
+  @override
+  String get egJohnDoe => 'e.g., John Doe';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get heroesOfTheWeek => 'Heroes of the Week';
+
+  @override
+  String get createPost => 'Create Post';
+
+  @override
+  String get post => 'Post';
+
+  @override
+  String get anonymous => 'Anonymous';
+
+  @override
+  String get postingToCommunity => 'Posting to Community';
+
+  @override
+  String get shareYourThoughts =>
+      'Share your thoughts, experiences, or ask for support...';
+
+  @override
+  String get postAnonymously => 'Post anonymously';
+
+  @override
+  String get yourIdentityHidden => 'Your identity will be hidden';
+
+  @override
+  String get popularTopics => 'Popular topics';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String get poll => 'Poll';
+
+  @override
+  String get emoji => 'Emoji';
+
+  @override
+  String featureComingSoon(String feature) {
+    return '$feature feature coming soon!';
+  }
+
+  @override
+  String get postPublishedSuccessfully => 'Post published successfully!';
+
+  @override
+  String get postPublishFailed => 'Failed to publish post. Please try again.';
 }

@@ -281,4 +281,252 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ok => 'موافق';
+
+  @override
+  String get selectAddiction => 'اختر الإدمان';
+
+  @override
+  String get whatTypeOfAddiction => 'ما نوع الإدمان\nالذي تريد الإقلاع عنه؟';
+
+  @override
+  String get searchForAddiction => 'ابحث عن إدمان...';
+
+  @override
+  String get continueLabel => 'متابعة';
+
+  @override
+  String get noAddictionsFoundText => 'لم يتم العثور على إدمانات';
+
+  @override
+  String get whenDidYourJourneyBegin => 'متى بدأت رحلتك؟';
+
+  @override
+  String get startingDate => 'تاريخ البداية';
+
+  @override
+  String get howOftenPerWeek => 'كم مرة تقع في إدمانك في الأسبوع؟';
+
+  @override
+  String get irregularly => 'بشكل غير منتظم';
+
+  @override
+  String get selectNumberOfDays => 'اختر عدد الأيام:';
+
+  @override
+  String get howManyTimesPerDay => 'كم مرة في اليوم تقع في\nهذا الإدمان؟';
+
+  @override
+  String get quickSelection => 'اختيار سريع:';
+
+  @override
+  String get whenIFeelDeprived => 'عندما أشعر بالحرمان';
+
+  @override
+  String get sometimes => 'أحياناً';
+
+  @override
+  String get often => 'غالباً';
+
+  @override
+  String get orEnterSpecificNumber => 'أو أدخل رقماً محدداً:';
+
+  @override
+  String get egFive => 'مثلاً، 5';
+
+  @override
+  String get mainGoals => 'الأهداف الرئيسية';
+
+  @override
+  String get whatAreYourMainGoals => 'ما هي أهدافك الرئيسية؟';
+
+  @override
+  String get searchForGoal => 'ابحث عن هدف...';
+
+  @override
+  String get mainMotivation => 'الدافع الرئيسي';
+
+  @override
+  String get whatMotivatesYou => 'ما الذي يحفزك أكثر للتوقف؟\nشارك سببك...';
+
+  @override
+  String get egHealthFamily => 'مثلاً، الصحة، الأسرة، النمو الشخصي...';
+
+  @override
+  String get importance => 'الأهمية';
+
+  @override
+  String get personalImportance => 'الأهمية الشخصية';
+
+  @override
+  String get howMuchIsItImportant => 'ما مدى أهميته\nبالنسبة لك؟';
+
+  @override
+  String get justTrying => 'مجرد محاولة';
+
+  @override
+  String get itWouldBeGood => 'سيكون جيداً';
+
+  @override
+  String get iNeedIt => 'أحتاجه';
+
+  @override
+  String get critical => 'حرج';
+
+  @override
+  String get inclusion => 'المشاركة';
+
+  @override
+  String get peopleInvolved => 'الأشخاص المشاركون';
+
+  @override
+  String get whoIsInvolvedInYourJourney => 'من يشارك في رحلتك؟';
+
+  @override
+  String get justMe => 'أنا فقط';
+
+  @override
+  String get myPartner => 'شريكي';
+
+  @override
+  String get myFamily => 'عائلتي';
+
+  @override
+  String get myFriends => 'أصدقائي';
+
+  @override
+  String get myColleagues => 'زملائي';
+
+  @override
+  String get aSupportGroup => 'مجموعة دعم';
+
+  @override
+  String get myCommunity => 'مجتمعي';
+
+  @override
+  String get everyoneAroundMe => 'الجميع من حولي';
+
+  @override
+  String get financialSavings => 'التوفير المالي';
+
+  @override
+  String get howMuchMoneySavedPerDay =>
+      'كم من المال تعتقد أنك يمكن أن توفره يومياً إذا توقفت؟';
+
+  @override
+  String get thisHelpsTrackFinancialProgress =>
+      'هذا يساعدنا على تتبع تقدمك المالي.';
+
+  @override
+  String get enterAmount => 'أدخل المبلغ';
+
+  @override
+  String get selectCurrency => 'اختر العملة';
+
+  @override
+  String get algerianDinar => 'الدينار الجزائري';
+
+  @override
+  String get usDollar => 'الدولار الأمريكي';
+
+  @override
+  String get euro => 'اليورو';
+
+  @override
+  String get britishPound => 'الجنيه الإسترليني';
+
+  @override
+  String get indianRupee => 'الروبية الهندية';
+
+  @override
+  String get japaneseYen => 'الين الياباني';
+
+  @override
+  String get russianRuble => 'الروبل الروسي';
+
+  @override
+  String get other => 'أخرى';
+
+  @override
+  String get dailyReviewTime => 'وقت المراجعة اليومية';
+
+  @override
+  String get whenWouldYouLikeDailyReview => 'متى تود القيام\nبمراجعتك اليومية؟';
+
+  @override
+  String get chooseTimeForReflection =>
+      'اختر وقتاً يمكنك فيه التفكير بهدوء. سنرسل لك تذكيراً لطيفاً.';
+
+  @override
+  String get morning => 'صباحاً';
+
+  @override
+  String get afternoon => 'مساءً';
+
+  @override
+  String get hour => 'ساعة';
+
+  @override
+  String get minute => 'دقيقة';
+
+  @override
+  String get almostThere => 'أنت قريب!';
+
+  @override
+  String get readyToBegin => 'مستعد لبدء\nتحولك';
+
+  @override
+  String get chooseUsername => 'اختر اسم مستخدم';
+
+  @override
+  String get egJohnDoe => 'مثلاً، أحمد محمد';
+
+  @override
+  String get getStarted => 'ابدأ';
+
+  @override
+  String get heroesOfTheWeek => 'أبطال الأسبوع';
+
+  @override
+  String get createPost => 'إنشاء منشور';
+
+  @override
+  String get post => 'نشر';
+
+  @override
+  String get anonymous => 'مجهول';
+
+  @override
+  String get postingToCommunity => 'النشر في المجتمع';
+
+  @override
+  String get shareYourThoughts => 'شارك أفكارك، تجاربك، أو اطلب الدعم...';
+
+  @override
+  String get postAnonymously => 'انشر بشكل مجهول';
+
+  @override
+  String get yourIdentityHidden => 'ستكون هويتك مخفية';
+
+  @override
+  String get popularTopics => 'مواضيع شائعة';
+
+  @override
+  String get photo => 'صورة';
+
+  @override
+  String get poll => 'استطلاع';
+
+  @override
+  String get emoji => 'رموز تعبيرية';
+
+  @override
+  String featureComingSoon(String feature) {
+    return 'ميزة $feature قريباً!';
+  }
+
+  @override
+  String get postPublishedSuccessfully => 'تم نشر المنشور بنجاح!';
+
+  @override
+  String get postPublishFailed => 'فشل نشر المنشور. يرجى المحاولة مرة أخرى.';
 }

@@ -7,6 +7,7 @@ import '../data/user_data_service.dart';
 import 'data_saving_screen.dart';
 import '../models/User_Info_model.dart';
 import '../../../presentation/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
 
 class StepFinal extends StatefulWidget {
   const StepFinal({super.key});
@@ -119,14 +120,14 @@ class _StepFinalState extends State<StepFinal>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Save Failed'),
-        content: const Text(
-          'There was an error saving your data. Please try again.',
+        title: Text(AppLocalizations.of(context)!.saveFailed),
+        content: Text(
+          AppLocalizations.of(context)!.errorSavingData,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -202,7 +203,7 @@ class _StepFinalState extends State<StepFinal>
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Welcome to your\nnew life',
+                                          AppLocalizations.of(context)!.readyToBegin,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: isLandscape ? 32 : 40,
@@ -228,7 +229,7 @@ class _StepFinalState extends State<StepFinal>
                                         SizedBox(height: isLandscape ? 16 : 24),
 
                                         Text(
-                                          'How should we call you?',
+                                          AppLocalizations.of(context)!.chooseUsername,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: isLandscape ? 20 : 22,
@@ -481,7 +482,7 @@ class _StepFinalState extends State<StepFinal>
                                             ],
                                           ),
                                           child: ValidationButton(
-                                            label: 'GET STARTED',
+                                            label: AppLocalizations.of(context)!.getStarted,
                                             onPressed: () => _isUsernameValid
                                                 ? _handleGetStarted()
                                                 : null,

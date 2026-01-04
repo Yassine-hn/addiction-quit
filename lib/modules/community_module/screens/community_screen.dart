@@ -7,6 +7,7 @@ import '../models/hero_model.dart';
 import '../models/post_model.dart';
 import 'create_post_screen.dart';
 import '../../../presentation/widgets/useful_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -51,19 +52,21 @@ class CommunityScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       color: Colors.white,
-      child: Row(
-        children: [
-          Icon(Icons.people, color: Colors.grey[800], size: 28),
-          const SizedBox(width: 12),
-          const Text(
-            'Community',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+      child: Builder(
+        builder: (context) => Row(
+          children: [
+            Icon(Icons.people, color: Colors.grey[800], size: 28),
+            const SizedBox(width: 12),
+            Text(
+              AppLocalizations.of(context)!.community,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -81,14 +84,16 @@ class CommunityScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Heroes of the Week',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Builder(
+                  builder: (context) => Text(
+                    AppLocalizations.of(context)!.heroesOfTheWeek,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               ),

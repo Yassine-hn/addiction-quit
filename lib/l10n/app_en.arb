@@ -160,6 +160,105 @@
   
   "saveFailed": "Save Failed",
   "errorSavingData": "There was an error saving your data. Please try again.",
-  "ok": "OK"
+  "ok": "OK",
+  
+  "selectAddiction": "Select Addiction",
+  "whatTypeOfAddiction": "What type of addiction\ndo you want to quit?",
+  "searchForAddiction": "Search for an addiction...",
+  "continueLabel": "Continue",
+  "noAddictionsFoundText": "No addictions found",
+  
+  "whenDidYourJourneyBegin": "When did your journey begin?",
+  "startingDate": "Starting Date",
+  
+  "howOftenPerWeek": "How often do you fall into your addiction per week?",
+  "irregularly": "Irregularly",
+  "selectNumberOfDays": "Select number of days:",
+  
+  "howManyTimesPerDay": "How many times per day do you fall into\nthis addiction?",
+  "quickSelection": "Quick selection:",
+  "whenIFeelDeprived": "When I feel deprived",
+  "sometimes": "Sometimes",
+  "often": "Often",
+  "orEnterSpecificNumber": "Or enter specific number:",
+  "egFive": "e.g., 5",
+  
+  "mainGoals": "Main Goals",
+  "whatAreYourMainGoals": "What are your main goals?",
+  "searchForGoal": "Search for a goal...",
+  "mainMotivation": "Main Motivation",
+  "whatMotivatesYou": "What motivates you the most to stop?\nShare your reason...",
+  "egHealthFamily": "e.g., Health, family, personal growth...",
+  
+  "importance": "Importance",
+  "personalImportance": "Personal Importance",
+  "howMuchIsItImportant": "How much is it important\nto you?",
+  "justTrying": "Just trying",
+  "itWouldBeGood": "It would be good",
+  "iNeedIt": "I need it",
+  "critical": "Critical",
+  
+  "inclusion": "Inclusion",
+  "peopleInvolved": "People Involved",
+  "whoIsInvolvedInYourJourney": "Who is involved in your journey?",
+  "justMe": "Just me",
+  "myPartner": "My partner",
+  "myFamily": "My family",
+  "myFriends": "My friends",
+  "myColleagues": "My colleagues",
+  "aSupportGroup": "A support group",
+  "myCommunity": "My community",
+  "everyoneAroundMe": "Everyone around me",
+  
+  "financialSavings": "Financial Savings",
+  "howMuchMoneySavedPerDay": "How much money do you think you can spare per day if you stop?",
+  "thisHelpsTrackFinancialProgress": "This helps us track your financial progress.",
+  "enterAmount": "Enter amount",
+  "selectCurrency": "Select currency",
+  "algerianDinar": "Algerian Dinar",
+  "usDollar": "US Dollar",
+  "euro": "Euro",
+  "britishPound": "British Pound",
+  "indianRupee": "Indian Rupee",
+  "japaneseYen": "Japanese Yen",
+  "russianRuble": "Russian Ruble",
+  "other": "Other",
+  
+  "dailyReviewTime": "Daily Review Time",
+  "whenWouldYouLikeDailyReview": "When would you like to\ndo your daily review?",
+  "chooseTimeForReflection": "Choose a time when you can reflect quietly. We'll send a gentle reminder.",
+  "morning": "Morning",
+  "afternoon": "Afternoon",
+  "hour": "HOUR",
+  "minute": "MINUTE",
+  
+  "almostThere": "Almost There!",
+  "readyToBegin": "Ready to begin your\ntransformation",
+  "chooseUsername": "Choose a username",
+  "egJohnDoe": "e.g., John Doe",
+  "getStarted": "Get Started",
+  
+  "heroesOfTheWeek": "Heroes of the Week",
+  "createPost": "Create Post",
+  "post": "Post",
+  "anonymous": "Anonymous",
+  "postingToCommunity": "Posting to Community",
+  "shareYourThoughts": "Share your thoughts, experiences, or ask for support...",
+  "postAnonymously": "Post anonymously",
+  "yourIdentityHidden": "Your identity will be hidden",
+  "popularTopics": "Popular topics",
+  "photo": "Photo",
+  "poll": "Poll",
+  "emoji": "Emoji",
+  "featureComingSoon": "{feature} feature coming soon!",
+  "@featureComingSoon": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "postPublishedSuccessfully": "Post published successfully!",
+  "postPublishFailed": "Failed to publish post. Please try again."
 }
 
