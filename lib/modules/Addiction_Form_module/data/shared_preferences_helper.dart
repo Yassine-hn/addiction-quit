@@ -8,6 +8,7 @@ class SharedPreferencesHelper {
   static const String _addictionIdKey = 'current_addiction_id';
   static const String _addictionIdsKey =
       'addiction_ids'; // List of all addiction IDs
+  static const String _languageKey = 'language'; // en or ar
 
   /// Get the saved user ID
   static Future<int?> getUserId() async {
@@ -107,5 +108,17 @@ class SharedPreferencesHelper {
       'current_addiction_id': prefs.getInt(_addictionIdKey),
       'addiction_ids': await getAllAddictionIds(),
     };
+  }
+
+  /// Save language preference
+  static Future<bool> saveLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(_languageKey, languageCode);
+  }
+
+  /// Get saved language preference (default: 'en')
+  static Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_languageKey) ?? 'en';
   }
 }

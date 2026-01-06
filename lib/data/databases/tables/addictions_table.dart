@@ -79,18 +79,33 @@ class AddictionsTable {
   }
 
   /// Record a slip
-  static Future<int> recordSlip(Database db, int id) async {
+  static Future<int> recordSlip(Database db, int id, {int amount = 1}) async {
     final addiction = await getById(db, id);
     if (addiction == null) return 0;
 
     final currentSlips = addiction['slips'] as int? ?? 0;
-    
+    final newSlipTotal = currentSlips + (amount <= 0 ? 1 : amount);
+
     return await db.update(
       tableName,
       {
-        'slips': currentSlips + 1,
+        'slips': newSlipTotal,
         'streak': 0,
         'last_slip_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<int> resetCounter(Database db, int id) async {
+    return await db.update(
+      tableName,
+      {
+        'counter_start_at': DateTime.now().toIso8601String(),
+        'slips': 0,
+        'streak': 0,
+        'last_slip_at': null,
       },
       where: 'id = ?',
       whereArgs: [id],

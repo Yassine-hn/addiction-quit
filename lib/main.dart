@@ -1,17 +1,24 @@
 // file: main.dart (updated)
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
+import 'logic/cubits/language_cubit.dart';
+import 'logic/cubits/auth_cubit.dart';
+import 'api/api_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future<bool> init_app() async {
   try {
     // Initialize SharedPreferences
     await SharedPreferences.getInstance();
+
+    // Initialize API service
+    ApiService().initialize();
 
     // Initialize database
     final dbHelper = DatabaseHelper.instance;
@@ -42,7 +49,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await init_app();
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => LanguageCubit()),
+        BlocProvider(create: (context) => AuthCubit(ApiService())..checkAuthStatus()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,25 +65,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Addiction Quit App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      //locale: Locale('ar', ''),
-      supportedLocales: const [
-        Locale('en', ''), // English
-        Locale('ar', ''), // Arabic
-      ],
-      initialRoute: AppRoutes.initial,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, langState) {
+        return MaterialApp(
+          title: 'Addiction Quit App',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          locale: langState.locale,
+          supportedLocales: LanguageCubit.getSupportedLocales(),
+          // Always send users through the normal app flow. If they already have
+          // a persisted (implicit) account, AppRoutes will take them to the
+          // loading/home flow; otherwise they land on onboarding without needing
+          // an explicit login.
+          initialRoute: AppRoutes.initial,
+          onGenerateRoute: AppRoutes.onGenerateRoute,
+        );
+      },
     );
   }
 }

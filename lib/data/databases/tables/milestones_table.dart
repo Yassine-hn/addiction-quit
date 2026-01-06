@@ -78,6 +78,16 @@ class MilestonesTable {
     );
   }
 
+  /// Reset milestone timer (set created_at to now)
+  static Future<int> resetCreatedAt(Database db, int id) async {
+    return await db.update(
+      tableName,
+      {'created_at': DateTime.now().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   /// Delete milestone
   static Future<int> delete(Database db, int id) async {
     return await db.delete(

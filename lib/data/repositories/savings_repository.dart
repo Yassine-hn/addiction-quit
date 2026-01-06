@@ -51,6 +51,23 @@ class SavingsRepositoryImpl implements SavingsRepository {
     return '\$${totalSaved.toStringAsFixed(0)}';
   }
 
+  int _daysSober(Map<String, dynamic> addiction) {
+    final startDateStr =
+        addiction['counter_start_at'] as String? ??
+        addiction['start_date'] as String?;
+
+    if (startDateStr == null) return 0;
+
+    try {
+      final startDate = DateTime.parse(startDateStr);
+      final now = DateTime.now();
+      final days = now.difference(startDate).inDays;
+      return days < 0 ? 0 : days;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   /// Get streak for the user's primary addiction
   @override
   Future<int> getStreak({int? userId, int? addictionId}) async {
@@ -108,41 +125,12 @@ class SavingsRepositoryImpl implements SavingsRepository {
         return '0 min';
       }
 
-      // Get time_saved from database (in minutes)
-      final timeSavedMinutes = addiction['time_saved'] as int? ?? 0;
+      // Calculate total time saved = time_saved_per_day (minutes) × days sober
+      final minutesPerDay = addiction['time_saved_per_day'] as int? ?? 0;
+      if (minutesPerDay <= 0) return '0 min';
 
-      // If time_saved is 0, calculate from start date
-      if (timeSavedMinutes == 0) {
-        final startDateStr =
-            addiction['counter_start_at'] as String? ??
-            addiction['start_date'] as String?;
-
-        if (startDateStr != null) {
-          try {
-            final startDate = DateTime.parse(startDateStr);
-            final now = DateTime.now();
-            final difference = now.difference(startDate);
-            final calculatedMinutes =
-                difference.inDays * 1440 +
-                difference.inHours % 24 * 60 +
-                difference.inMinutes % 60;
-
-            // Update the database with calculated time
-            final addictionId = addiction['id'] as int;
-            await AddictionsTable.updateTimeSavedPerDay(
-              db,
-              addictionId,
-              calculatedMinutes,
-            );
-
-            return _formatTimeSaved(calculatedMinutes);
-          } catch (e) {
-            print('Error calculating time saved: $e');
-          }
-        }
-      }
-
-      return _formatTimeSaved(timeSavedMinutes);
+      final totalMinutes = minutesPerDay * _daysSober(addiction);
+      return _formatTimeSaved(totalMinutes);
     } catch (e) {
       print('Error getting time saved: $e');
       return '0 min';

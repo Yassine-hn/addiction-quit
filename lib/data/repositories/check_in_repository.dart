@@ -5,11 +5,13 @@ import '../databases/tables/addictions_table.dart';
 import 'user_repository_abstract.dart';
 import 'user_repository.dart';
 import 'check_in_repository_abstract.dart';
+import 'milestone_repository.dart';
 
 /// Implementation of CheckInRepository
 class CheckInRepositoryImpl implements CheckInRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   final UserRepository _userRepository = UserRepositoryImpl();
+  final MilestoneRepository _milestoneRepository = MilestoneRepositoryImpl();
 
   /// Map mood labels to database values
   String _mapMoodToDbValue(String mood) {
@@ -46,6 +48,8 @@ class CheckInRepositoryImpl implements CheckInRepository {
     required String mood,
     required double cravingLevel,
     required String journalEntry,
+    required bool slipped,
+    required int slipAmount,
     int? userId,
     int? addictionId,
   }) async {
@@ -84,13 +88,16 @@ class CheckInRepositoryImpl implements CheckInRepository {
         today,
       );
 
+      final normalizedSlipAmount = slipped ? (slipAmount <= 0 ? 1 : slipAmount) : 0;
+
       final checkInData = {
         'addiction_id': addictionId,
         'date': today,
         'mood': dbMood,
         'urge_level': urgeLevel,
         'note': journalEntry.isNotEmpty ? journalEntry : null,
-        'slipped': 0,
+        'slipped': slipped ? 1 : 0,
+        'slip_amount': normalizedSlipAmount,
         'created_at': DateTime.now().toIso8601String(),
       };
 
@@ -103,8 +110,16 @@ class CheckInRepositoryImpl implements CheckInRepository {
         await DailySurveysTable.insert(db, checkInData);
       }
 
-      // Update streak if not already updated today
-      // (This logic can be enhanced based on your requirements)
+      // If slipped, increment slip counter and reset streak
+      if (slipped) {
+        await AddictionsTable.recordSlip(
+          db,
+          addictionId,
+          amount: normalizedSlipAmount,
+        );
+        // Reset milestone on slip
+        await _milestoneRepository.resetMilestoneOnSlip(addictionId);
+      }
 
       return true;
     } catch (e) {

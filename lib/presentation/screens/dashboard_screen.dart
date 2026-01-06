@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
-import '../../logic/cubit/dashboard_cubit.dart';
-import '../../logic/cubit/dashboard_state.dart';
+import '../../logic/cubits/dashboard_cubit.dart';
+import '../../logic/cubits/dashboard_state.dart';
 import '../../data/repositories/milestone_repository.dart';
 import '../../data/repositories/daily_survey_repository.dart';
 import '../../data/repositories/addiction_repository.dart';
@@ -172,16 +172,37 @@ class DashboardScreen extends StatelessWidget {
 
     final milestone = state.milestoneData['milestone'] as Map<String, dynamic>?;
     final title = milestone?['title'] as String? ?? 'Milestone';
+    final milestoneId = milestone?['id'] as int? ?? 0;
     final daysPassed = state.milestoneData['days_passed'] as int? ?? 0;
     final targetDays = state.milestoneData['target_days'] as int? ?? 1;
+    final isCompleted = state.milestonePercentage >= 100.0;
 
-    return Center(
-      child: MilestoneCircle(
-        percentage: state.milestonePercentage,
-        daysPassed: daysPassed,
-        targetDays: targetDays,
-        title: title,
-      ),
+    return Column(
+      children: [
+        Center(
+          child: MilestoneCircle(
+            percentage: state.milestonePercentage,
+            daysPassed: daysPassed,
+            targetDays: targetDays,
+            title: title,
+          ),
+        ),
+        if (isCompleted) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _handleClaimReward(context, state, milestoneId),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[600],
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.star),
+              label: const Text('Claim Reward'),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -202,6 +223,34 @@ class DashboardScreen extends StatelessWidget {
         const MoodTracker(),
       ],
     );
+  }
+
+  Future<void> _handleClaimReward(
+    BuildContext context,
+    DashboardLoaded state,
+    int milestoneId,
+  ) async {
+    final success = await context.read<DashboardCubit>().claimMilestoneReward(milestoneId);
+
+    if (success) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Congratulations! Reward claimed!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to claim reward'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _showMilestoneSelector(

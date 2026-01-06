@@ -1,6 +1,7 @@
 // milestone_repository.dart
 import '../databases/db_helper.dart';
 import '../databases/tables/milestones_table.dart';
+import '../databases/tables/users_table.dart';
 
 abstract class MilestoneRepository {
   /// Calculate milestone progress percentage
@@ -15,6 +16,12 @@ abstract class MilestoneRepository {
 
   /// Check and mark completed milestones as achieved
   Future<void> checkAndMarkCompletedMilestones(int addictionId);
+
+  /// Reset milestone on slip (restart created_at)
+  Future<void> resetMilestoneOnSlip(int addictionId);
+
+  /// Claim reward and mark milestone as achieved
+  Future<bool> claimMilestoneReward(int userId, int milestoneId);
 }
 
 class MilestoneRepositoryImpl implements MilestoneRepository {
@@ -114,6 +121,55 @@ class MilestoneRepositoryImpl implements MilestoneRepository {
       }
     } catch (e) {
       print('Error checking completed milestones: $e');
+    }
+  }
+
+  @override
+  Future<void> resetMilestoneOnSlip(int addictionId) async {
+    try {
+      final db = await _dbHelper.database;
+      final pendingMilestones = await MilestonesTable.getPending(
+        db,
+        addictionId,
+      );
+
+      // Reset all pending milestones created_at to now
+      for (var milestone in pendingMilestones) {
+        final milestoneId = milestone['id'] as int;
+        await MilestonesTable.resetCreatedAt(db, milestoneId);
+      }
+    } catch (e) {
+      print('Error resetting milestone on slip: $e');
+    }
+  }
+
+  @override
+  Future<bool> claimMilestoneReward(int userId, int milestoneId) async {
+    try {
+      final db = await _dbHelper.database;
+      final milestone = await MilestonesTable.getById(db, milestoneId);
+
+      if (milestone == null || milestone['achieved_at'] != null) {
+        return false; // Already achieved or doesn't exist
+      }
+
+      // Get reward points (default 0)
+      final rewardPoints = milestone['reward_points'] as int? ?? 0;
+
+      // Mark as achieved
+      await MilestonesTable.markAsAchieved(db, milestoneId);
+
+      // Update user score
+      final user = await UsersTable.getById(db, userId);
+      if (user != null) {
+        final currentScore = user['score'] as int? ?? 0;
+        await UsersTable.updateScore(db, userId, currentScore + rewardPoints);
+      }
+
+      return true;
+    } catch (e) {
+      print('Error claiming milestone reward: $e');
+      return false;
     }
   }
 }

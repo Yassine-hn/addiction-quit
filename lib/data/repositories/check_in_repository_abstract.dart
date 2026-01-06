@@ -6,6 +6,8 @@ abstract class CheckInRepository {
     required String mood,
     required double cravingLevel,
     required String journalEntry,
+    required bool slipped,
+    required int slipAmount,
     int? userId,
     int? addictionId,
   });

@@ -9,6 +9,9 @@ import '../../modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 import '../app_routes.dart';
+import '../../data/storage/token_storage.dart';
+import 'login_screen.dart';
+import 'signup_screen.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -27,6 +30,8 @@ class UserProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildProfileHeader(),
+                    const SizedBox(height: 16),
+                    _buildAuthCta(context),
                     const SizedBox(height: 24),
                     _buildNewAddictionButton(context),
                     const SizedBox(height: 24),
@@ -41,6 +46,160 @@ class UserProfileScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(activeIndex: 2),
+    );
+  }
+
+  Future<Map<String, dynamic>> _getAuthStatus() async {
+    final loggedIn = await TokenStorage.isLoggedIn();
+    if (!loggedIn) return {'loggedIn': false};
+
+    final name = await TokenStorage.getUserName();
+    final email = await TokenStorage.getUserEmail();
+    return {
+      'loggedIn': true,
+      'name': name,
+      'email': email,
+    };
+  }
+
+  Widget _buildAuthCta(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _getAuthStatus(),
+      builder: (context, snapshot) {
+        final data = snapshot.data ?? {'loggedIn': false};
+        final loggedIn = data['loggedIn'] == true;
+
+        if (loggedIn) {
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00A3E0).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.verified_user,
+                      color: Color(0xFF00A3E0),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data['name'] ?? AppLocalizations.of(context)!.profile,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (data['email'] != null)
+                          Text(
+                            data['email'],
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF00C853),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF00A3E0),
+                    const Color(0xFF00A3E0).withOpacity(0.8),
+                  ],
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.lock_open,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.profile,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Sign in or create an account to sync your progress.',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Sign up'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

@@ -4,6 +4,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
 import '../../logic/cubits/daily_chekcin_cubit.dart';
+import '../../logic/cubits/language_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,10 +31,15 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
   AnimationController? _animationController;
   Animation<double>? _scaleAnimation;
   Animation<double>? _fadeAnimation;
+  late Future<Map<String, String>> _sobrietyFuture;
+  late Future<Map<String, dynamic>> _savingsFuture;
+  bool _isResetting = false;
 
   @override
   void initState() {
     super.initState();
+    _sobrietyFuture = getSobrietyTime();
+    _savingsFuture = getSavingsStats();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -56,6 +62,13 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     journalController.dispose();
     _animationController?.dispose();
     super.dispose();
+  }
+
+  void _reloadStats() {
+    setState(() {
+      _sobrietyFuture = getSobrietyTime();
+      _savingsFuture = getSavingsStats();
+    });
   }
 
   @override
@@ -143,6 +156,8 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             ),
           ),
           const SizedBox(width: 8),
+          _buildLanguageToggle(context),
+          const SizedBox(width: 8),
           const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0xFFE8F4F8),
@@ -151,6 +166,36 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
         ],
       ),
     );
+  }
+
+  Widget _buildLanguageToggle(BuildContext context) {
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, state) {
+        final isArabic = state.locale.languageCode == 'ar';
+        return GestureDetector(
+          onTap: () => context.read<LanguageCubit>().toggleLanguage(),
+          child: Container(
+            width: 40,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                isArabic ? 'ع' : 'EN',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF00A3E0),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
   }
 
   Widget _buildSobrietyCounter() {
@@ -193,13 +238,15 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             ),
             const SizedBox(height: 12),
             FutureBuilder<Map<String, String>>(
-              future: getSobrietyTime(),
+              future: _sobrietyFuture,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                final isLoading = snapshot.connectionState == ConnectionState.waiting;
+                final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
+                final slips = sobrietyTime['slips'] ?? '0';
+
+                if (isLoading && !_isResetting) {
                   return const CircularProgressIndicator(color: Colors.white);
                 }
-
-                final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
 
                 return LayoutBuilder(
                   builder: (context, constraints) {
@@ -229,6 +276,83 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                             sobrietyTime['minutes'] ?? '23',
                             AppLocalizations.of(context)!.minutes,
                           ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Slips',
+                              style: TextStyle(
+                                color: Colors.grey[200],
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              slips,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 32,
+                              child: ElevatedButton(
+                                onPressed: _isResetting
+                                    ? null
+                                    : () async {
+                                        setState(() {
+                                          _isResetting = true;
+                                        });
+                                        final success = await resetSobrietyCounter();
+                                        if (success) {
+                                          _reloadStats();
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: const Text('Counter reset successfully'),
+                                                duration: const Duration(seconds: 2),
+                                              ),
+                                            );
+                                          }
+                                        } else {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: const Text('Failed to reset counter'),
+                                                backgroundColor: Colors.red[600],
+                                              ),
+                                            );
+                                          }
+                                        }
+                                        if (mounted) {
+                                          setState(() {
+                                            _isResetting = false;
+                                          });
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white.withOpacity(0.12),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                ),
+                                child: _isResetting
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Text('Reset'),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     );
@@ -276,7 +400,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
   Widget _buildStatsRow() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getSavingsStats(),
+      future: _savingsFuture,
       builder: (context, snapshot) {
         final stats = snapshot.data ?? getDefaultSavingsStats();
         final moneySaved = stats['moneySaved'] as String?;
@@ -325,6 +449,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
       listener: (context, state) {
         if (state is CheckInCompleted) {
           _animationController?.forward();
+          _reloadStats();
         } else if (state is CheckInError) {
           final l10n = AppLocalizations.of(context)!;
           String errorMessage;
@@ -488,6 +613,11 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           const SizedBox(height: 24),
           _buildCravingSection(currentState?.cravingLevel ?? 0.5),
           const SizedBox(height: 24),
+          _buildSlipSection(
+            currentState?.slipped ?? false,
+            currentState?.slipAmount ?? 0,
+          ),
+          const SizedBox(height: 24),
           _buildJournalSection(),
           const SizedBox(height: 24),
           _buildCheckInButton(isSubmitting),
@@ -649,6 +779,88 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             ),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildSlipSection(bool slipped, int slipAmount) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Did you slip today?',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            ChoiceChip(
+              label: const Text('No'),
+              selected: !slipped,
+              onSelected: (selected) {
+                if (selected) {
+                  context.read<DailyCheckInCubit>().updateSlipped(false);
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: const Text('Yes'),
+              selected: slipped,
+              onSelected: (selected) {
+                if (selected) {
+                  context.read<DailyCheckInCubit>().updateSlipped(true);
+                }
+              },
+            ),
+          ],
+        ),
+        if (slipped) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Text(
+                'How many times?',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Slider(
+                  value: slipAmount.clamp(1, 10).toDouble(),
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  label: slipAmount.toString(),
+                  onChanged: (value) {
+                    context
+                        .read<DailyCheckInCubit>()
+                        .updateSlipAmount(value.round());
+                  },
+                ),
+              ),
+              Container(
+                width: 48,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  slipAmount.toString(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

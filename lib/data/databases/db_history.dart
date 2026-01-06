@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 /// Database migration history and version management
 class DatabaseHistory {
   // Current database version
-  static const int currentVersion = 2;
+  static const int currentVersion = 3;
   
   // Database name
   static const String databaseName = 'addiction_quit.db';
@@ -29,6 +29,10 @@ class DatabaseHistory {
     if (oldVersion < 2) {
       await migrateV1ToV2(db);
     }
+    
+    if (oldVersion < 3) {
+      await migrateV2ToV3(db);
+    }
   }
   
   /// Migration from version 1 to 2 (add time_saved_per_day and money_saved_per_day to addictions)
@@ -42,6 +46,15 @@ class DatabaseHistory {
       ALTER TABLE addictions 
       ADD COLUMN money_saved_per_day REAL
     ''');
+  }
+
+  /// Migration from version 2 to 3 (add community features: posts, comments, reactions, heroes, notifications)
+  static Future<void> migrateV2ToV3(Database db) async {
+    await _createPostsTable(db);
+    await _createCommentsTable(db);
+    await _createPostReactionsTable(db);
+    await _createHeroesTable(db);
+    await _createNotificationsTable(db);
   }
   
   // Table creation methods
@@ -168,5 +181,100 @@ class DatabaseHistory {
     
     await db.execute('CREATE INDEX idx_activity_logs_user_id ON activity_logs(user_id)');
     await db.execute('CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at)');
+  }
+
+  static Future<void> _createPostsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        image_url TEXT,
+        visibility TEXT DEFAULT 'public',
+        comment_count INTEGER DEFAULT 0,
+        reaction_count INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+    
+    await db.execute('CREATE INDEX idx_posts_user_id ON posts(user_id)');
+    await db.execute('CREATE INDEX idx_posts_visibility ON posts(visibility)');
+    await db.execute('CREATE INDEX idx_posts_created_at ON posts(created_at)');
+  }
+
+  static Future<void> _createCommentsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+    
+    await db.execute('CREATE INDEX idx_comments_post_id ON comments(post_id)');
+    await db.execute('CREATE INDEX idx_comments_user_id ON comments(user_id)');
+  }
+
+  static Future<void> _createPostReactionsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE post_reactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(post_id, user_id),
+        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+    
+    await db.execute('CREATE INDEX idx_post_reactions_post_id ON post_reactions(post_id)');
+    await db.execute('CREATE INDEX idx_post_reactions_user_id ON post_reactions(user_id)');
+  }
+
+  static Future<void> _createHeroesTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE heroes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        period_type TEXT NOT NULL,
+        period_start TEXT NOT NULL,
+        period_end TEXT NOT NULL,
+        score INTEGER DEFAULT 0,
+        rank INTEGER,
+        metric_source TEXT,
+        hero_badge_url TEXT,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+    
+    await db.execute('CREATE INDEX idx_heroes_user_id ON heroes(user_id)');
+    await db.execute('CREATE INDEX idx_heroes_period_type ON heroes(period_type)');
+  }
+
+  static Future<void> _createNotificationsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        data TEXT,
+        is_read INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+    
+    await db.execute('CREATE INDEX idx_notifications_user_id ON notifications(user_id)');
+    await db.execute('CREATE INDEX idx_notifications_is_read ON notifications(is_read)');
+    await db.execute('CREATE INDEX idx_notifications_created_at ON notifications(created_at)');
   }
 }

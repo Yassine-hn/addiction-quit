@@ -152,4 +152,26 @@ class DashboardCubit extends Cubit<DashboardState> {
       ),
     );
   }
+
+  Future<bool> claimMilestoneReward(int milestoneId) async {
+    try {
+      final userId = await SharedPreferencesHelper.getUserId();
+      if (userId == null) return false;
+
+      final success = await _milestoneRepository.claimMilestoneReward(
+        userId,
+        milestoneId,
+      );
+
+      if (success) {
+        // Reload dashboard to reflect updated score and milestone status
+        await loadDashboardData();
+      }
+
+      return success;
+    } catch (e) {
+      print('Error claiming reward: $e');
+      return false;
+    }
+  }
 }
