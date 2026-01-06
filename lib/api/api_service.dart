@@ -1,30 +1,26 @@
 import 'package:dio/dio.dart';
 import '../data/storage/token_storage.dart';
+import 'api_config.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
   ApiService._internal();
 
-  // Base URL is provided at build/run time via --dart-define.
-  // Defaults to Android emulator loopback if not provided.
-  static const String baseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:5000',
-  );
-  // Examples:
-  // - Android Emulator: http://10.0.2.2:5000
-  // - iOS Simulator:   http://localhost:5000
-  // - Device on LAN:   http://<YOUR_COMPUTER_IP>:5000
+  // Base URL from ApiConfig - supports environment switching
+  static final String baseUrl = ApiConfig.getBaseUrl();
   
   late final Dio _dio;
 
   void initialize() {
+    print('🌐 API Service initialized with baseUrl: $baseUrl');
+    print('🔧 Environment: ${ApiConfig.environment}');
+    
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 30), // Increased for Render cold starts
+        receiveTimeout: const Duration(seconds: 30),
         headers: {
           'Content-Type': 'application/json',
         },
