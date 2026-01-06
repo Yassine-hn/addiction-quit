@@ -9,7 +9,7 @@ class ApiConfig {
   /// Update this after deploying to Render
   static const String productionUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://YOUR-SERVICE-NAME.onrender.com',
+    defaultValue: 'https://addiction-quit-api.onrender.com',
   );
 
   /// Development API URLs
