@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'screens/home_screen.dart';
 import './screens/user_profile_screen.dart';
 import 'screens/dashboard_screen.dart';
-import './screens/community_screen.dart';
+import '../modules/community_module/screens/community_screen.dart';
 import './screens/loading_screen.dart';
 import '../modules/Addiction_Form_module/screens/Step0Welcome.dart';
 import '../modules/Addiction_Form_module/data/user_data_service.dart';
@@ -65,7 +65,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => UserProfileScreen());
 
       case community:
-        return MaterialPageRoute(builder: (_) => CommunityScreenFromModule());
+        return MaterialPageRoute(builder: (_) => const CommunityScreen());
 
       case loading:
         return MaterialPageRoute(builder: (_) => const LoadingScreen());

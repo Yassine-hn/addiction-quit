@@ -1,7 +1,5 @@
-// Fonctions to implement for home_screen backend
 // Now using repositories to fetch data from database
 
-// Note: Localization is handled in UI layer, not in backend functions
 import '../../data/repositories/user_repository.dart';
 import '../../data/repositories/sobriety_repository.dart';
 import '../../data/repositories/savings_repository.dart';

@@ -1,38 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Removed unused path import to avoid name conflict with `context`.
 import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
 import '../../logic/cubits/daily_chekcin_cubit.dart';
 import '../../logic/cubits/language_cubit.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DailyCheckInCubit(),
-      child: const DailyCheckInScreen(),
-    );
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class DailyCheckInScreen extends StatefulWidget {
-  const DailyCheckInScreen({super.key});
+class _HomeScreenState extends State<HomeScreen>
+  with SingleTickerProviderStateMixin { // SingleTickerProviderStateMixin Provides a Ticker (vsync) for AnimationController used in this screen's animations.
 
-  @override
-  State<DailyCheckInScreen> createState() => _DailyCheckInScreenState();
-}
-
-class _DailyCheckInScreenState extends State<DailyCheckInScreen>
-    with SingleTickerProviderStateMixin {
-  final TextEditingController journalController = TextEditingController();
+  final TextEditingController _journalController = TextEditingController();
   AnimationController? _animationController;
   Animation<double>? _scaleAnimation;
   Animation<double>? _fadeAnimation;
-  late Future<Map<String, String>> _sobrietyFuture;
-  late Future<Map<String, dynamic>> _savingsFuture;
+  late Future<Map<String, String>> _sobrietyFuture; // Holds async result for user's sobriety time (days, hours, minutes, slips)
+  late Future<Map<String, dynamic>> _savingsFuture; // Holds async result for user's savings stats (money saved, streak, time saved)
   bool _isResetting = false;
 
   @override
@@ -59,7 +49,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
   @override
   void dispose() {
-    journalController.dispose();
+    _journalController.dispose();
     _animationController?.dispose();
     super.dispose();
   }
@@ -73,33 +63,36 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildSobrietyCounter(),
-                    const SizedBox(height: 16),
-                    _buildStatsRow(),
-                    const SizedBox(height: 24),
-                    _buildCheckInCard(),
-                    const SizedBox(height: 16),
-                    _buildQuoteCard(),
-                    const SizedBox(height: 80),
-                  ],
+    return BlocProvider(
+      create: (context) => DailyCheckInCubit(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildSobrietyCounter(context),
+                      const SizedBox(height: 16),
+                      _buildStatsRow(),
+                      const SizedBox(height: 24),
+                      _buildCheckInCard(),
+                      const SizedBox(height: 16),
+                      _buildQuoteCard(),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
     );
   }
 
@@ -113,7 +106,10 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           Expanded(
             child: Row(
               children: [
-                Icon(Icons.menu, color: Colors.grey[600]),
+                GestureDetector(
+                  onTap: () => _showMenu(context),
+                  child: Icon(Icons.menu, color: Colors.grey[600]),
+                ),
                 const SizedBox(width: 12),
                 Flexible(
                   child: FutureBuilder<String>(
@@ -168,6 +164,76 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     );
   }
 
+  void _showMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ListTile(
+                leading: const Icon(Icons.login, color: Color(0xFF00A3E0)),
+                title: const Text(
+                  'Sign In',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to sign in screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Sign In screen coming soon'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person_add, color: Color(0xFF00A3E0)),
+                title: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to sign up screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Sign Up screen coming soon'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildLanguageToggle(BuildContext context) {
     return BlocBuilder<LanguageCubit, LanguageState>(
       builder: (context, state) {
@@ -196,9 +262,8 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
       },
     );
   }
-  }
-
-  Widget _buildSobrietyCounter() {
+  
+  Widget _buildSobrietyCounter(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 180,
@@ -252,32 +317,31 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                   builder: (context, constraints) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['days'] ?? '42',
-                            AppLocalizations.of(context)!.days,
-                          ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildTimeUnit(
+                              context,
+                              sobrietyTime['days'] ?? '42',
+                              AppLocalizations.of(context)!.days,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildTimeUnit(
+                              context,
+                              sobrietyTime['hours'] ?? '11',
+                              AppLocalizations.of(context)!.hours,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildTimeUnit(
+                              context,
+                              sobrietyTime['minutes'] ?? '23',
+                              AppLocalizations.of(context)!.minutes,
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['hours'] ?? '11',
-                            AppLocalizations.of(context)!.hours,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['minutes'] ?? '23',
-                            AppLocalizations.of(context)!.minutes,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 24),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -367,31 +431,25 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
   }
 
   Widget _buildTimeUnit(BuildContext context, String value, String label) {
-    return Column(
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1,
-            ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1,
           ),
         ),
-        const SizedBox(height: 4),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[200],
-              fontWeight: FontWeight.w500,
-            ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[200],
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -560,7 +618,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             child: TextButton.icon(
               onPressed: () {
                 context.read<DailyCheckInCubit>().resetCheckIn();
-                journalController.clear();
+                _journalController.clear();
                 _animationController?.reset();
               },
               icon: const Icon(Icons.refresh),
@@ -885,7 +943,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: TextField(
-            controller: journalController,
+            controller: _journalController,
             maxLines: 4,
             onChanged: (value) {
               context.read<DailyCheckInCubit>().updateJournalEntry(value);

@@ -4,6 +4,7 @@ import '../databases/tables/users_table.dart';
 import '../databases/tables/addictions_table.dart';
 import '../databases/tables/daily_surveys_table.dart';
 import '../databases/tables/milestones_table.dart';
+import '../databases/tables/posts_table.dart';
 import '../repositories/settings_repository.dart';
 
 class DatabaseSeeder {
@@ -21,6 +22,10 @@ class DatabaseSeeder {
       'name': 'Test User',
       'email': 'test@example.com',
       'password_hash': 'hash',
+      'dob': '1990-01-15',
+      'score': 150,
+      'language': 'en',
+      'is_active': 1,
       'created_at': DateTime.now().toIso8601String(),
     });
 
@@ -117,6 +122,46 @@ class DatabaseSeeder {
     // 6. Set active addiction in preferences
     await _settingsHelper.saveCurrentAddictionId(addiction1Id);
     
+    // 7. Create sample community posts
+    await _seedCommunityPosts(db, userId);
+    
     print('Seed complete!');
+  }
+
+  Future<void> _seedCommunityPosts(db, int userId) async {
+    // Create some sample posts to demonstrate the community feature
+    final posts = [
+      {
+        'user_id': userId,
+        'title': 'My Journey',
+        'content': 'Just hit my 30-day milestone! It\'s been tough, but this community has been a huge help. Thank you all for the support.',
+        'visibility': 'public',
+        'comment_count': 5,
+        'reaction_count': 42,
+        'created_at': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+      },
+      {
+        'user_id': userId,
+        'title': 'Tips',
+        'content': 'Does anyone have tips for dealing with cravings in social situations? I find weekends particularly challenging.',
+        'visibility': 'public',
+        'comment_count': 12,
+        'reaction_count': 28,
+        'created_at': DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
+      },
+      {
+        'user_id': userId,
+        'title': 'Motivation',
+        'content': 'Remember that recovery is a journey, not a destination. Each step, no matter how small, is a victory. Be kind to yourself today.',
+        'visibility': 'public',
+        'comment_count': 8,
+        'reaction_count': 67,
+        'created_at': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+      },
+    ];
+
+    for (final post in posts) {
+      await PostsTable.insert(db, post);
+    }
   }
 }

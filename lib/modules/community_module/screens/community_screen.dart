@@ -9,8 +9,29 @@ import 'create_post_screen.dart';
 import '../../../presentation/widgets/useful_widgets.dart';
 import '../../../l10n/app_localizations.dart';
 
-class CommunityScreen extends StatelessWidget {
+class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
+
+  @override
+  State<CommunityScreen> createState() => _CommunityScreenState();
+}
+
+class _CommunityScreenState extends State<CommunityScreen> {
+  Future<List<PostModel>>? _postsFuture;
+  Future<List<HeroModel>>? _heroesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    setState(() {
+      _postsFuture = getCommunityPosts();
+      _heroesFuture = getHeroesOfWeek();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +58,23 @@ class CommunityScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: CustomFloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CreatePostScreen()),
           );
+          
+          if (result == true && mounted) {
+            // Refresh posts after creating a new one
+            _loadData();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Post published successfully'),
+                backgroundColor: Color(0xFF00A3E0),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
         },
       ),
       bottomNavigationBar: const CustomBottomNavBar(activeIndex: 3),
@@ -73,7 +106,7 @@ class CommunityScreen extends StatelessWidget {
 
   Widget _buildHeroesSection() {
     return FutureBuilder<List<HeroModel>>(
-      future: getHeroesOfWeek(),
+      future: _heroesFuture,
       builder: (context, snapshot) {
         final heroes = snapshot.data ?? getDefaultHeroes();
 
@@ -121,15 +154,38 @@ class CommunityScreen extends StatelessWidget {
 
   Widget _buildPostsList() {
     return FutureBuilder<List<PostModel>>(
-      future: getCommunityPosts(),
+      future: _postsFuture,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
         final posts = snapshot.data ?? getDefaultPosts();
+
+        if (posts.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Center(
+              child: Text(
+                'No posts yet. Be the first to share!',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ),
+          );
+        }
 
         return Column(
           children: posts.map((post) {
             return Column(
               children: [
-                CommunityPost(post: post),
+                CommunityPost(
+                  post: post,
+                  onLike: () => _handleLike(post),
+                  onRefresh: _loadData,
+                ),
                 const SizedBox(height: 8),
               ],
             );
@@ -137,5 +193,14 @@ class CommunityScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _handleLike(PostModel post) async {
+    if (post.id == null) return;
+    
+    final success = await likePost(post.id!);
+    if (success && mounted) {
+      _loadData();
+    }
   }
 }

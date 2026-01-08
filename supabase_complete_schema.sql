@@ -250,6 +250,286 @@ CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);
 CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC);
 
 -- =====================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- =====================================================
+
+-- Enable RLS on all tables
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE addictions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE surveys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE milestones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE post_reactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE heroes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- =====================================================
+-- RLS POLICIES: USERS
+-- =====================================================
+CREATE POLICY "Users can view own profile"
+    ON users FOR SELECT
+    USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile"
+    ON users FOR UPDATE
+    USING (auth.uid() = id);
+
+CREATE POLICY "Users can view public profiles"
+    ON users FOR SELECT
+    USING (is_active = true);
+
+-- =====================================================
+-- RLS POLICIES: ADDICTIONS
+-- =====================================================
+CREATE POLICY "Users can view own addictions"
+    ON addictions FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own addictions"
+    ON addictions FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own addictions"
+    ON addictions FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own addictions"
+    ON addictions FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: SURVEYS
+-- =====================================================
+CREATE POLICY "Users can view own surveys"
+    ON surveys FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = surveys.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can insert own surveys"
+    ON surveys FOR INSERT
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = surveys.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can update own surveys"
+    ON surveys FOR UPDATE
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = surveys.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can delete own surveys"
+    ON surveys FOR DELETE
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = surveys.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+-- =====================================================
+-- RLS POLICIES: MILESTONES
+-- =====================================================
+CREATE POLICY "Users can view own milestones"
+    ON milestones FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = milestones.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can insert own milestones"
+    ON milestones FOR INSERT
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = milestones.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can update own milestones"
+    ON milestones FOR UPDATE
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = milestones.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can delete own milestones"
+    ON milestones FOR DELETE
+    USING (
+        EXISTS (
+            SELECT 1 FROM addictions
+            WHERE addictions.id = milestones.addiction_id
+            AND addictions.user_id = auth.uid()
+        )
+    );
+
+-- =====================================================
+-- RLS POLICIES: REMINDERS
+-- =====================================================
+CREATE POLICY "Users can view own reminders"
+    ON reminders FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own reminders"
+    ON reminders FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own reminders"
+    ON reminders FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own reminders"
+    ON reminders FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: ACTIVITY_LOGS
+-- =====================================================
+CREATE POLICY "Users can view own activity logs"
+    ON activity_logs FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own activity logs"
+    ON activity_logs FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: POSTS
+-- =====================================================
+CREATE POLICY "Users can view public posts"
+    ON posts FOR SELECT
+    USING (visibility = 'public');
+
+CREATE POLICY "Users can view own posts"
+    ON posts FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own posts"
+    ON posts FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own posts"
+    ON posts FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own posts"
+    ON posts FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: COMMENTS
+-- =====================================================
+CREATE POLICY "Users can view comments on public posts"
+    ON comments FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM posts
+            WHERE posts.id = comments.post_id
+            AND posts.visibility = 'public'
+        )
+    );
+
+CREATE POLICY "Users can view own comments"
+    ON comments FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert comments on public posts"
+    ON comments FOR INSERT
+    WITH CHECK (
+        auth.uid() = user_id AND
+        EXISTS (
+            SELECT 1 FROM posts
+            WHERE posts.id = comments.post_id
+            AND posts.visibility = 'public'
+        )
+    );
+
+CREATE POLICY "Users can update own comments"
+    ON comments FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own comments"
+    ON comments FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: POST_REACTIONS
+-- =====================================================
+CREATE POLICY "Users can view reactions on public posts"
+    ON post_reactions FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM posts
+            WHERE posts.id = post_reactions.post_id
+            AND posts.visibility = 'public'
+        )
+    );
+
+CREATE POLICY "Users can insert own reactions"
+    ON post_reactions FOR INSERT
+    WITH CHECK (
+        auth.uid() = user_id AND
+        EXISTS (
+            SELECT 1 FROM posts
+            WHERE posts.id = post_reactions.post_id
+            AND posts.visibility = 'public'
+        )
+    );
+
+CREATE POLICY "Users can delete own reactions"
+    ON post_reactions FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
+-- RLS POLICIES: HEROES
+-- =====================================================
+CREATE POLICY "All users can view heroes"
+    ON heroes FOR SELECT
+    USING (true);
+
+CREATE POLICY "System can insert heroes"
+    ON heroes FOR INSERT
+    WITH CHECK (true); -- This should be restricted to admin/system role in production
+
+-- =====================================================
+-- RLS POLICIES: NOTIFICATIONS
+-- =====================================================
+CREATE POLICY "Users can view own notifications"
+    ON notifications FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own notifications"
+    ON notifications FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own notifications"
+    ON notifications FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- =====================================================
 -- HELPER FUNCTIONS
 -- =====================================================
 
@@ -428,9 +708,41 @@ JOIN users u ON u.id = p.user_id
 WHERE p.visibility = 'public'
 ORDER BY p.created_at DESC;
 
+-- Grant access to views
+GRANT SELECT ON addiction_stats TO authenticated;
+GRANT SELECT ON user_stats TO authenticated;
+GRANT SELECT ON community_feed TO authenticated;
+
+-- =====================================================
+-- SEED DATA (Optional - for testing)
+-- =====================================================
+-- Uncomment the following to insert sample data for testing
+
+/*
+-- Insert a test user
+INSERT INTO users (id, name, email, password_hash, dob, score, bio)
+VALUES (
+    uuid_generate_v4(),
+    'Test User',
+    'test@example.com',
+    crypt('password123', gen_salt('bf')),
+    '1990-01-01',
+    100,
+    'This is a test user for development'
+) ON CONFLICT (email) DO NOTHING;
+
+-- Note: Replace uuid_generate_v4() with the actual user_id when inserting related data
+*/
+
 -- =====================================================
 -- COMPLETION MESSAGE
 -- =====================================================
 -- Database schema created successfully!
--- All tables, indexes, triggers, and views are now in place.
+-- All tables, indexes, RLS policies, triggers, and views are now in place.
+-- 
+-- Next steps:
+-- 1. Configure Supabase Authentication (if not already done)
+-- 2. Test the API endpoints with your Flutter app
+-- 3. Adjust RLS policies as needed for your security requirements
+-- 4. Set up real-time subscriptions if needed
 -- =====================================================

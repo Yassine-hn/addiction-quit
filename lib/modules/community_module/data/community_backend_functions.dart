@@ -8,6 +8,7 @@ Future<List<HeroModel>> getHeroesOfWeek() async {
   try {
     return await _communityRepository.fetchHeroesOfWeek();
   } catch (e) {
+    print('Error getting heroes: $e');
     return getDefaultHeroes();
   }
 }
@@ -16,34 +17,35 @@ Future<List<PostModel>> getCommunityPosts() async {
   try {
     return await _communityRepository.fetchCommunityPosts();
   } catch (e) {
+    print('Error getting posts: $e');
     return getDefaultPosts();
   }
 }
 
 Future<bool> createPost({
   required String content,
-  required bool isAnonymous,
 }) async {
   try {
     return await _communityRepository.createPost(
       content: content,
-      isAnonymous: isAnonymous,
     );
   } catch (e) {
+    print('Error creating post: $e');
     return false;
   }
 }
 
-Future<bool> likePost(String postId) async {
+Future<bool> likePost(int postId) async {
   try {
     return await _communityRepository.likePost(postId);
   } catch (e) {
+    print('Error liking post: $e');
     return false;
   }
 }
 
 Future<bool> commentOnPost({
-  required String postId,
+  required int postId,
   required String comment,
 }) async {
   try {
@@ -52,49 +54,30 @@ Future<bool> commentOnPost({
       comment: comment,
     );
   } catch (e) {
+    print('Error commenting on post: $e');
     return false;
   }
 }
 
 List<HeroModel> getDefaultHeroes() {
   return [
-    HeroModel(name: 'Maria', days: 42, imageUrl: 'assets/images/maria.jpg'),
-    HeroModel(name: 'David', days: 85, imageUrl: 'assets/images/david.jpg'),
-    HeroModel(name: 'Sophie', days: 61, imageUrl: 'assets/images/sophie.jpg'),
-    HeroModel(name: 'Chen', days: 76, imageUrl: 'assets/images/chen.jpg'),
+    HeroModel(name: 'Maria', days: 42, imageUrl: 'assets/images/default_avatar.png'),
+    HeroModel(name: 'David', days: 85, imageUrl: 'assets/images/default_avatar.png'),
+    HeroModel(name: 'Sophie', days: 61, imageUrl: 'assets/images/default_avatar.png'),
+    HeroModel(name: 'Chen', days: 76, imageUrl: 'assets/images/default_avatar.png'),
   ];
 }
 
 List<PostModel> getDefaultPosts() {
   return [
     PostModel(
-      authorName: 'Dr. Emily Carter',
-      authorImage: 'assets/images/emily.jpg',
-      timeAgo: '2 hours ago',
+      authorName: 'Welcome',
+      authorImage: 'assets/images/default_avatar.png',
+      timeAgo: 'Just now',
       content:
-          'Remember that recovery is a journey, not a destination. Each step, no matter how small, is a victory. Be kind to yourself today. #Motivation #ExpertAdvice',
-      likes: 125,
-      comments: 18,
-      badge: 'Expert',
-    ),
-    PostModel(
-      authorName: 'John S.',
-      authorImage: 'assets/images/john.jpg',
-      timeAgo: '7 hours ago',
-      content:
-          'Just hit my 30-day milestone. It\'s been tough, but this community has been a huge help. Thank you all for the support. We can do this!',
-      likes: 247,
-      comments: 42,
-      badge: null,
-    ),
-    PostModel(
-      authorName: 'Sarah K.',
-      authorImage: 'assets/images/sarah.jpg',
-      timeAgo: '1 day ago',
-      content:
-          'Feeling a bit down today, but reading everyone\'s stories is really inspiring. Does anyone have tips for dealing with cravings in social situations?',
-      likes: 98,
-      comments: 27,
+          'Welcome to the community! Share your journey and support others in their recovery.',
+      likes: 0,
+      comments: 0,
       badge: null,
     ),
   ];

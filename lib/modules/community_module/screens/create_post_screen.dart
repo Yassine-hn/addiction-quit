@@ -11,7 +11,7 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _postController = TextEditingController();
-  bool _isAnonymous = false;
+  bool _isPublishing = false;
 
   @override
   void dispose() {
@@ -39,21 +39,30 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: _postController.text.isEmpty
-                ? null
-                : () => _publishPost(),
-            child: Text(
-              AppLocalizations.of(context)!.post,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: _postController.text.isEmpty
-                    ? Colors.grey[400]
-                    : const Color(0xFF00A3E0),
-              ),
-            ),
-          ),
+          _isPublishing
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : TextButton(
+                  onPressed: _postController.text.isEmpty
+                      ? null
+                      : () => _publishPost(),
+                  child: Text(
+                    AppLocalizations.of(context)!.post,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _postController.text.isEmpty
+                          ? Colors.grey[400]
+                          : const Color(0xFF00A3E0),
+                    ),
+                  ),
+                ),
           const SizedBox(width: 8),
         ],
       ),
@@ -71,8 +80,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     const SizedBox(height: 20),
                     _buildPostInput(),
                     const SizedBox(height: 24),
-                    _buildAnonymousToggle(),
-                    const SizedBox(height: 24),
                     _buildSuggestions(),
                   ],
                 ),
@@ -88,12 +95,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget _buildUserInfo() {
     return Row(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFFE8F4F8),
+          backgroundColor: Color(0xFFE8F4F8),
           child: Icon(
-            _isAnonymous ? Icons.person_outline : Icons.person,
-            color: const Color(0xFF00A3E0),
+            Icons.person,
+            color: Color(0xFF00A3E0),
             size: 28,
           ),
         ),
@@ -101,9 +108,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _isAnonymous ? AppLocalizations.of(context)!.anonymous : 'Alex',
-              style: const TextStyle(
+            const Text(
+              'You',
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -136,52 +143,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         ),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
-      ),
-    );
-  }
-
-  Widget _buildAnonymousToggle() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.visibility_off_outlined,
-            color: Colors.grey[700],
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.postAnonymously,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  AppLocalizations.of(context)!.yourIdentityHidden,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: _isAnonymous,
-            onChanged: (value) => setState(() => _isAnonymous = value),
-            activeThumbColor: const Color(0xFF00A3E0),
-          ),
-        ],
       ),
     );
   }
@@ -282,25 +243,33 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  void _publishPost() {
+  void _publishPost() async {
     if (_postController.text.trim().isEmpty) return;
 
-    createPost(
-      content: _postController.text.trim(),
-      isAnonymous: _isAnonymous,
-    ).then((success) {
-      if (success) {
-        Navigator.pop(context);
-        Future.delayed(const Duration(milliseconds: 300), () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.postPublishedSuccessfully),
-              backgroundColor: const Color(0xFF00A3E0),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        });
-      }
+    setState(() {
+      _isPublishing = true;
     });
+
+    final success = await createPost(
+      content: _postController.text.trim(),
+    );
+
+    if (mounted) {
+      setState(() {
+        _isPublishing = false;
+      });
+
+      if (success) {
+        Navigator.pop(context, true); // Return true to indicate success
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to publish post'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 }

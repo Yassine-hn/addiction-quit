@@ -7,6 +7,7 @@ import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
+import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
 import 'logic/cubits/language_cubit.dart';
 import 'logic/cubits/auth_cubit.dart';
 import 'api/api_service.dart';
@@ -23,6 +24,22 @@ Future<bool> init_app() async {
     // Initialize database
     final dbHelper = DatabaseHelper.instance;
     await dbHelper.database;
+
+    // ============================================================================
+    // 🌱 DATABASE SEEDING - REMOVE THIS SECTION AFTER FIRST RUN
+    // ============================================================================
+    // Uncomment the lines below to seed the local database with test data.
+    // After running the app once successfully, DELETE or COMMENT OUT this entire
+    // section (lines marked with "REMOVE AFTER FIRST RUN") to prevent re-seeding
+    // on every app launch.
+    
+    // final seeder = DatabaseSeeder();                    // REMOVE AFTER FIRST RUN
+    // await seeder.seed();                                // REMOVE AFTER FIRST RUN
+    // print('✅ Local database seeded successfully!');    // REMOVE AFTER FIRST RUN
+    
+    // ============================================================================
+    // END OF SEEDING SECTION
+    // ============================================================================
 
     // Check if user already exists
     final userExists = await UserDataService.userExists();
