@@ -48,7 +48,7 @@ class CheckInInProgress extends DailyCheckInState {
   }
 
   bool get isValid {
-    final hasMood = selectedMood.isNotEmpty && cravingLevel > 0;
+    final hasMood = selectedMood.isNotEmpty;
     if (!hasMood) return false;
     if (slipped) {
       return slipAmount > 0;
@@ -235,18 +235,5 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
 
   void resetCheckIn() {
     emit(CheckInInProgress());
-  }
-
-  // Helper method to check if completed today
-  bool isCompletedToday() {
-    if (state is CheckInCompleted) {
-      final completedState = state as CheckInCompleted;
-      final now = DateTime.now();
-      final completedDate = completedState.completedAt;
-      return now.year == completedDate.year &&
-          now.month == completedDate.month &&
-          now.day == completedDate.day;
-    }
-    return false;
   }
 }

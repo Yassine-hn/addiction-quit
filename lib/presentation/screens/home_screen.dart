@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
-import '../../logic/cubits/daily_chekcin_cubit.dart';
+import '../../logic/cubits/daily_checkin_cubit.dart';
 import '../../logic/cubits/language_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,10 +24,12 @@ class _HomeScreenState extends State<HomeScreen>
   late Future<Map<String, String>> _sobrietyFuture; // Holds async result for user's sobriety time (days, hours, minutes, slips)
   late Future<Map<String, dynamic>> _savingsFuture; // Holds async result for user's savings stats (money saved, streak, time saved)
   bool _isResetting = false;
+  late DailyCheckInCubit _checkInCubit;
 
   @override
   void initState() {
     super.initState();
+    _checkInCubit = DailyCheckInCubit();
     _sobrietyFuture = getSobrietyTime();
     _savingsFuture = getSavingsStats();
     _animationController = AnimationController(
@@ -51,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     _journalController.dispose();
     _animationController?.dispose();
+    _checkInCubit.close();
     super.dispose();
   }
 
@@ -63,8 +66,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DailyCheckInCubit(),
+    return BlocProvider.value(
+      value: _checkInCubit,
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
@@ -266,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildSobrietyCounter(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 180,
+      height: 220,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(
@@ -274,158 +277,156 @@ class _HomeScreenState extends State<HomeScreen>
           fit: BoxFit.cover,
         ),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.3),
-              Colors.black.withOpacity(0.5),
-            ],
-          ),
+      foregroundDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withOpacity(0.0),
+            Colors.black.withOpacity(0.0),
+          ],
         ),
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.youAreSoberFor,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[100],
-                fontWeight: FontWeight.w500,
-                shadows: [
-                  Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            FutureBuilder<Map<String, String>>(
-              future: _sobrietyFuture,
-              builder: (context, snapshot) {
-                final isLoading = snapshot.connectionState == ConnectionState.waiting;
-                final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
-                final slips = sobrietyTime['slips'] ?? '0';
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: FutureBuilder<Map<String, String>>(
+        future: _sobrietyFuture,
+        builder: (context, snapshot) {
+          final isLoading = snapshot.connectionState == ConnectionState.waiting;
+          final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
+          final slips = sobrietyTime['slips'] ?? '0';
 
-                if (isLoading && !_isResetting) {
-                  return const CircularProgressIndicator(color: Colors.white);
-                }
+          if (isLoading && !_isResetting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
+          }
 
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Row(
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildTimeUnit(
-                              context,
-                              sobrietyTime['days'] ?? '42',
-                              AppLocalizations.of(context)!.days,
-                            ),
-                            const SizedBox(height: 8),
-                            _buildTimeUnit(
-                              context,
-                              sobrietyTime['hours'] ?? '11',
-                              AppLocalizations.of(context)!.hours,
-                            ),
-                            const SizedBox(height: 8),
-                            _buildTimeUnit(
-                              context,
-                              sobrietyTime['minutes'] ?? '23',
-                              AppLocalizations.of(context)!.minutes,
-                            ),
-                          ],
+                        Text(
+                          AppLocalizations.of(context)!.youAreSoberFor,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[100],
+                            fontWeight: FontWeight.w500,
+                            shadows: [
+                              Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 24),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Slips',
-                              style: TextStyle(
-                                color: Colors.grey[200],
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              slips,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              height: 32,
-                              child: ElevatedButton(
-                                onPressed: _isResetting
-                                    ? null
-                                    : () async {
-                                        setState(() {
-                                          _isResetting = true;
-                                        });
-                                        final success = await resetSobrietyCounter();
-                                        if (success) {
-                                          _reloadStats();
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: const Text('Counter reset successfully'),
-                                                duration: const Duration(seconds: 2),
-                                              ),
-                                            );
-                                          }
-                                        } else {
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: const Text('Failed to reset counter'),
-                                                backgroundColor: Colors.red[600],
-                                              ),
-                                            );
-                                          }
-                                        }
-                                        if (mounted) {
-                                          setState(() {
-                                            _isResetting = false;
-                                          });
-                                        }
-                                      },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withOpacity(0.12),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                ),
-                                child: _isResetting
-                                    ? const SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text('Reset'),
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: 12),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['days'] ?? '42',
+                          AppLocalizations.of(context)!.days,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['hours'] ?? '11',
+                          AppLocalizations.of(context)!.hours,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['minutes'] ?? '23',
+                          AppLocalizations.of(context)!.minutes,
                         ),
                       ],
-                    );
-                  },
-                );
-              },
-            ),
-          ],
-        ),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Slips',
+                        style: TextStyle(
+                          color: Colors.grey[200],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        slips,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 32,
+                        child: ElevatedButton(
+                          onPressed: _isResetting
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    _isResetting = true;
+                                  });
+                                  final success = await resetSobrietyCounter();
+                                  if (success) {
+                                    _reloadStats();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: const Text('Counter reset successfully'),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: const Text('Failed to reset counter'),
+                                          backgroundColor: Colors.red[600],
+                                        ),
+                                      );
+                                    }
+                                  }
+                                  if (mounted) {
+                                    setState(() {
+                                      _isResetting = false;
+                                    });
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.12),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                          child: _isResetting
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text('Reset'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -617,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen>
             opacity: _fadeAnimation!,
             child: TextButton.icon(
               onPressed: () {
-                context.read<DailyCheckInCubit>().resetCheckIn();
+                _checkInCubit.resetCheckIn();
                 _journalController.clear();
                 _animationController?.reset();
               },
@@ -755,7 +756,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return GestureDetector(
       onTap: () {
-        context.read<DailyCheckInCubit>().updateMood(label);
+        _checkInCubit.updateMood(label);
       },
       child: Container(
         constraints: const BoxConstraints(minWidth: 60, maxWidth: 80),
@@ -826,7 +827,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Slider(
                   value: cravingLevel,
                   onChanged: (value) {
-                    context.read<DailyCheckInCubit>().updateCravingLevel(value);
+                    _checkInCubit.updateCravingLevel(value);
                   },
                 ),
               ),
@@ -861,7 +862,7 @@ class _HomeScreenState extends State<HomeScreen>
               selected: !slipped,
               onSelected: (selected) {
                 if (selected) {
-                  context.read<DailyCheckInCubit>().updateSlipped(false);
+                  _checkInCubit.updateSlipped(false);
                 }
               },
             ),
@@ -871,7 +872,7 @@ class _HomeScreenState extends State<HomeScreen>
               selected: slipped,
               onSelected: (selected) {
                 if (selected) {
-                  context.read<DailyCheckInCubit>().updateSlipped(true);
+                  _checkInCubit.updateSlipped(true);
                 }
               },
             ),
@@ -894,9 +895,7 @@ class _HomeScreenState extends State<HomeScreen>
                   divisions: 9,
                   label: slipAmount.toString(),
                   onChanged: (value) {
-                    context
-                        .read<DailyCheckInCubit>()
-                        .updateSlipAmount(value.round());
+                    _checkInCubit.updateSlipAmount(value.round());
                   },
                 ),
               ),
@@ -946,7 +945,7 @@ class _HomeScreenState extends State<HomeScreen>
             controller: _journalController,
             maxLines: 4,
             onChanged: (value) {
-              context.read<DailyCheckInCubit>().updateJournalEntry(value);
+              _checkInCubit.updateJournalEntry(value);
             },
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.writeAboutYourDay,
@@ -969,7 +968,7 @@ class _HomeScreenState extends State<HomeScreen>
         onPressed: isSubmitting
             ? null
             : () {
-                context.read<DailyCheckInCubit>().submitCheckIn(
+                _checkInCubit.submitCheckIn(
                   submitDailyCheckIn,
                 );
               },

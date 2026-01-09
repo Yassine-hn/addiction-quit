@@ -64,9 +64,9 @@ CREATE INDEX IF NOT EXISTS idx_addictions_created_at ON addictions(created_at);
 CREATE INDEX IF NOT EXISTS idx_addictions_user_status ON addictions(user_id, status);
 
 -- =====================================================
--- TABLE: SURVEYS (Daily Check-ins)
+-- TABLE: DAILY_SURVEYS (Daily Check-ins)
 -- =====================================================
-CREATE TABLE IF NOT EXISTS surveys (
+CREATE TABLE IF NOT EXISTS daily_surveys (
     id SERIAL PRIMARY KEY,
     addiction_id INTEGER NOT NULL REFERENCES addictions(id) ON DELETE CASCADE,
     date DATE NOT NULL,
@@ -77,8 +77,6 @@ CREATE TABLE IF NOT EXISTS surveys (
     ),
     mood TEXT NOT NULL CHECK (mood IN ('happy', 'sad', 'anxious', 'calm', 'stressed', 'motivated', 'frustrated', 'confident')),
     urge_level INTEGER NOT NULL CHECK (urge_level >= 0 AND urge_level <= 10),
-    coping_strategy TEXT,
-    stress_level INTEGER CHECK (stress_level IS NULL OR (stress_level >= 0 AND stress_level <= 10)),
     difficulty TEXT CHECK (difficulty IS NULL OR difficulty IN ('easy', 'medium', 'hard', 'very_hard')),
     triggers TEXT, -- JSON array of trigger strings
     note TEXT,
@@ -86,11 +84,11 @@ CREATE TABLE IF NOT EXISTS surveys (
     CONSTRAINT unique_addiction_date UNIQUE(addiction_id, date)
 );
 
--- Indexes for surveys table
-CREATE INDEX IF NOT EXISTS idx_surveys_addiction_id ON surveys(addiction_id);
-CREATE INDEX IF NOT EXISTS idx_surveys_date ON surveys(date);
-CREATE INDEX IF NOT EXISTS idx_surveys_addiction_date ON surveys(addiction_id, date);
-CREATE INDEX IF NOT EXISTS idx_surveys_slipped ON surveys(slipped);
+-- Indexes for daily_surveys table
+CREATE INDEX IF NOT EXISTS idx_daily_surveys_addiction_id ON daily_surveys(addiction_id);
+CREATE INDEX IF NOT EXISTS idx_daily_surveys_date ON daily_surveys(date);
+CREATE INDEX IF NOT EXISTS idx_daily_surveys_addiction_date ON daily_surveys(addiction_id, date);
+CREATE INDEX IF NOT EXISTS idx_daily_surveys_slipped ON daily_surveys(slipped);
 
 -- =====================================================
 -- TABLE: MILESTONES
@@ -360,7 +358,6 @@ CREATE TRIGGER decrement_reaction_count_on_delete
 -- VIEWS FOR COMMON QUERIES
 -- =====================================================
 
--- View for addiction statistics
 CREATE OR REPLACE VIEW addiction_stats AS
 SELECT 
     a.id,
@@ -377,10 +374,9 @@ SELECT
     a.status,
     a.created_at
 FROM addictions a
-LEFT JOIN surveys s ON s.addiction_id = a.id
+LEFT JOIN daily_surveys s ON s.addiction_id = a.id
 GROUP BY a.id;
 
--- View for user statistics
 CREATE OR REPLACE VIEW user_stats AS
 SELECT 
     u.id,
@@ -396,7 +392,7 @@ SELECT
     u.created_at
 FROM users u
 LEFT JOIN addictions a ON a.user_id = u.id
-LEFT JOIN surveys s ON s.addiction_id = a.id
+LEFT JOIN daily_surveys s ON s.addiction_id = a.id
 LEFT JOIN milestones m ON m.addiction_id = a.id
 LEFT JOIN posts p ON p.user_id = u.id
 LEFT JOIN comments c ON c.user_id = u.id

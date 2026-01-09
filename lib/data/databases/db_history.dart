@@ -48,12 +48,8 @@ class DatabaseHistory {
     ''');
   }
 
-  /// Migration from version 2 to 3 (add community features: posts, comments, reactions, heroes, notifications)
+  /// Migration from version 2 to 3 (add notifications)
   static Future<void> migrateV2ToV3(Database db) async {
-    await _createPostsTable(db);
-    await _createCommentsTable(db);
-    await _createPostReactionsTable(db);
-    await _createHeroesTable(db);
     await _createNotificationsTable(db);
   }
   
@@ -61,18 +57,19 @@ class DatabaseHistory {
   static Future<void> _createUsersTable(Database db) async {
     await db.execute('''
       CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
         email TEXT UNIQUE,
         password_hash TEXT,
         dob TEXT,
         score INTEGER DEFAULT 0,
         avatar_url TEXT,
         bio TEXT,
-        language TEXT,
+        language TEXT DEFAULT 'en',
         last_login_at TEXT,
         is_active INTEGER DEFAULT 1,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        updated_at TEXT
       )
     ''');
   }
@@ -81,21 +78,26 @@ class DatabaseHistory {
     await db.execute('''
       CREATE TABLE addictions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        addiction_type TEXT NOT NULL,
         start_date TEXT NOT NULL,
         counter_start_at TEXT NOT NULL,
+        target_date TEXT,
         slips INTEGER DEFAULT 0,
-        goal_type TEXT NOT NULL,
-        daily_target INTEGER,
+        goal_type TEXT NOT NULL CHECK (goal_type IN ('daily','weekly','total')),
+        daily_target INTEGER CHECK (daily_target IS NULL OR daily_target >= 0),
+        weekly_target INTEGER CHECK (weekly_target IS NULL OR weekly_target >= 0),
         streak INTEGER DEFAULT 0,
         last_slip_at TEXT,
-        status TEXT DEFAULT 'active',
+        status TEXT DEFAULT 'active' CHECK (status IN ('active','paused','completed','archived')),
         note TEXT,
         motivation TEXT,
-        time_saved_per_day INTEGER DEFAULT 0,
-        money_saved_per_day REAL DEFAULT 0,
+        time_saved_per_day INTEGER NOT NULL DEFAULT 0,
+        money_saved_per_day REAL NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
+        updated_at TEXT,
+        CHECK (streak >= 0),
+        CHECK (slips >= 0),
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )
     ''');
@@ -111,16 +113,17 @@ class DatabaseHistory {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         addiction_id INTEGER NOT NULL,
         date TEXT NOT NULL,
-        slipped INTEGER DEFAULT 0,
+        slipped INTEGER NOT NULL DEFAULT 0,
         slip_amount INTEGER DEFAULT 0,
-        difficulty TEXT,
-        mood TEXT,
-        urge_level INTEGER,
+        difficulty TEXT CHECK (difficulty IN ('easy','medium','hard','very_hard')),
+        mood TEXT NOT NULL CHECK (mood IN ('happy','sad','anxious','calm','stressed','motivated','frustrated','confident')),
+        urge_level INTEGER NOT NULL CHECK (urge_level >= 0 AND urge_level <= 10),
         triggers TEXT,
         note TEXT,
         created_at TEXT NOT NULL,
         FOREIGN KEY (addiction_id) REFERENCES addictions (id) ON DELETE CASCADE,
-        UNIQUE(addiction_id, date)
+        UNIQUE(addiction_id, date),
+        CHECK ((slipped = 0 AND (slip_amount = 0 OR slip_amount IS NULL)) OR (slipped = 1 AND slip_amount > 0))
       )
     ''');
     
@@ -135,11 +138,12 @@ class DatabaseHistory {
         addiction_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         description TEXT,
-        target_value INTEGER NOT NULL,
+        target_value INTEGER NOT NULL CHECK (target_value > 0),
         achieved_at TEXT,
-        type TEXT DEFAULT 'milestone',
+        is_achieved INTEGER DEFAULT 0,
+        type TEXT DEFAULT 'milestone' CHECK (type IN ('milestone','goal','achievement')),
         icon_url TEXT,
-        reward_points INTEGER DEFAULT 0,
+        reward_points INTEGER NOT NULL DEFAULT 0 CHECK (reward_points >= 0),
         deadline TEXT,
         created_at TEXT NOT NULL,
         FOREIGN KEY (addiction_id) REFERENCES addictions (id) ON DELETE CASCADE
@@ -153,10 +157,11 @@ class DatabaseHistory {
     await db.execute('''
       CREATE TABLE reminders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
+        user_id TEXT NOT NULL,
         addiction_id INTEGER NOT NULL,
         reminder_time TEXT NOT NULL,
         repeat_daily INTEGER DEFAULT 1,
+        is_active INTEGER DEFAULT 1,
         created_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (addiction_id) REFERENCES addictions (id) ON DELETE CASCADE
@@ -165,14 +170,15 @@ class DatabaseHistory {
     
     await db.execute('CREATE INDEX idx_reminders_user_id ON reminders(user_id)');
     await db.execute('CREATE INDEX idx_reminders_addiction_id ON reminders(addiction_id)');
+    await db.execute('CREATE INDEX idx_reminders_is_active ON reminders(is_active)');
   }
   
   static Future<void> _createActivityLogsTable(Database db) async {
     await db.execute('''
       CREATE TABLE activity_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        action_type TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        action_type TEXT NOT NULL CHECK (action_type IN ('addiction_created','milestone_achieved','survey_completed','slip_recorded','goal_updated','login','logout')),
         meta TEXT,
         created_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -183,89 +189,14 @@ class DatabaseHistory {
     await db.execute('CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at)');
   }
 
-  static Future<void> _createPostsTable(Database db) async {
-    await db.execute('''
-      CREATE TABLE posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        image_url TEXT,
-        visibility TEXT DEFAULT 'public',
-        comment_count INTEGER DEFAULT 0,
-        reaction_count INTEGER DEFAULT 0,
-        created_at TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-    
-    await db.execute('CREATE INDEX idx_posts_user_id ON posts(user_id)');
-    await db.execute('CREATE INDEX idx_posts_visibility ON posts(visibility)');
-    await db.execute('CREATE INDEX idx_posts_created_at ON posts(created_at)');
-  }
-
-  static Future<void> _createCommentsTable(Database db) async {
-    await db.execute('''
-      CREATE TABLE comments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        post_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        content TEXT NOT NULL,
-        created_at TEXT NOT NULL,
-        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-    
-    await db.execute('CREATE INDEX idx_comments_post_id ON comments(post_id)');
-    await db.execute('CREATE INDEX idx_comments_user_id ON comments(user_id)');
-  }
-
-  static Future<void> _createPostReactionsTable(Database db) async {
-    await db.execute('''
-      CREATE TABLE post_reactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        post_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL,
-        UNIQUE(post_id, user_id),
-        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-    
-    await db.execute('CREATE INDEX idx_post_reactions_post_id ON post_reactions(post_id)');
-    await db.execute('CREATE INDEX idx_post_reactions_user_id ON post_reactions(user_id)');
-  }
-
-  static Future<void> _createHeroesTable(Database db) async {
-    await db.execute('''
-      CREATE TABLE heroes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        period_type TEXT NOT NULL,
-        period_start TEXT NOT NULL,
-        period_end TEXT NOT NULL,
-        score INTEGER DEFAULT 0,
-        rank INTEGER,
-        metric_source TEXT,
-        hero_badge_url TEXT,
-        created_at TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-    
-    await db.execute('CREATE INDEX idx_heroes_user_id ON heroes(user_id)');
-    await db.execute('CREATE INDEX idx_heroes_period_type ON heroes(period_type)');
-  }
-
   static Future<void> _createNotificationsTable(Database db) async {
     await db.execute('''
       CREATE TABLE notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('milestone','reminder','community','achievement','hero','system')),
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
         data TEXT,
         is_read INTEGER DEFAULT 0,
         created_at TEXT NOT NULL,

@@ -138,11 +138,3 @@ Map<String, dynamic> getDefaultSavingsStats() {
     'moneySaved': null, // null means addiction doesn't save money
   };
 }
-
-Map<String, String> getDefaultQuote() {
-  return {
-    'text':
-        'The greatest glory in living lies not in never falling, but in rising every time we fall.',
-    'author': 'Nelson Mandela',
-  };
-}
