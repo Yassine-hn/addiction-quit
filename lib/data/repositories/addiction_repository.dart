@@ -6,13 +6,13 @@ import '../databases/tables/daily_surveys_table.dart';
 abstract class AddictionRepository {
   /// Get streak history for last 30 days
   Future<List<Map<String, dynamic>>> getStreakHistory(
-    int userId,
+    Object userId,
     int addictionId,
     int days,
   );
 
   /// Get all user's addictions
-  Future<List<Map<String, dynamic>>> getAllUserAddictions(int userId);
+  Future<List<Map<String, dynamic>>> getAllUserAddictions(Object userId);
 }
 
 class AddictionRepositoryImpl implements AddictionRepository {
@@ -20,7 +20,7 @@ class AddictionRepositoryImpl implements AddictionRepository {
 
   @override
   Future<List<Map<String, dynamic>>> getStreakHistory(
-    int userId,
+    Object userId,
     int addictionId,
     int days,
   ) async {
@@ -122,7 +122,7 @@ class AddictionRepositoryImpl implements AddictionRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getAllUserAddictions(int userId) async {
+  Future<List<Map<String, dynamic>>> getAllUserAddictions(Object userId) async {
     try {
       final db = await _dbHelper.database;
       return await AddictionsTable.getByUserId(db, userId);

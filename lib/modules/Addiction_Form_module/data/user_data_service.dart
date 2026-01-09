@@ -7,7 +7,7 @@ import 'shared_preferences_helper.dart'; // Add this import
 
 class UserDataService {
   /// Get existing user ID or create a new user
-  static Future<int> getOrCreateUserId(String username) async {
+  static Future<String> getOrCreateUserId(String username) async {
     // Check if user ID exists in SharedPreferences
     final existingUserId = await SharedPreferencesHelper.getUserId();
 
@@ -49,7 +49,7 @@ class UserDataService {
   }
 
   /// Create addiction from UserInfoModel
-  static Future<int> createAddiction(int userId, UserInfoModel userInfo) async {
+  static Future<int> createAddiction(String userId, UserInfoModel userInfo) async {
     final db = await DatabaseHelper.instance.database;
 
     // Check if addiction type already exists for this user
@@ -58,9 +58,9 @@ class UserDataService {
 
     final duplicateExists = existingAddictions.any(
       (addiction) =>
-          (addiction['type'] as String? ?? '').toLowerCase() ==
-              addictionType.toLowerCase() &&
-          (addiction['status'] as String? ?? 'active') == 'active',
+        (addiction['addiction_type'] as String? ?? '').toLowerCase() ==
+          addictionType.toLowerCase() &&
+        (addiction['status'] as String? ?? 'active') == 'active',
     );
 
     if (duplicateExists) {
@@ -85,7 +85,7 @@ class UserDataService {
     // Convert UserInfoModel to addiction data
     final addictionData = {
       'user_id': userId,
-      'type': userInfo.addictionType ?? 'unknown',
+      'addiction_type': userInfo.addictionType ?? 'unknown',
       'start_date':
           userInfo.startDate?.toIso8601String() ??
           DateTime.now().toIso8601String(),
@@ -178,7 +178,7 @@ class UserDataService {
   }
 
   /// Get existing user ID (returns null if not exists)
-  static Future<int?> getExistingUserId() async {
+  static Future<String?> getExistingUserId() async {
     return await SharedPreferencesHelper.getUserId();
   }
 

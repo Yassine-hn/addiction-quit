@@ -4,7 +4,7 @@ import '../../data/databases/tables/posts_table.dart';
 
 class PostReactionsRepository {
   /// Add/toggle a reaction to a post
-  Future<bool> toggleReaction(int postId, int userId) async {
+  Future<bool> toggleReaction(int postId, Object userId) async {
     final db = await DatabaseHelper.instance.database;
     
     // Check if user already reacted
@@ -18,7 +18,7 @@ class PostReactionsRepository {
       final now = DateTime.now().toIso8601String();
       await PostReactionsTable.insert(db, {
         'post_id': postId,
-        'user_id': userId,
+        'user_id': userId.toString(),
         'created_at': now,
         'updated_at': now,
       });
@@ -38,14 +38,14 @@ class PostReactionsRepository {
   }
 
   /// Check if user has reacted to a post
-  Future<bool> hasUserReacted(int postId, int userId) async {
+  Future<bool> hasUserReacted(int postId, Object userId) async {
     final db = await DatabaseHelper.instance.database;
     final reaction = await PostReactionsTable.getUserReaction(db, postId, userId);
     return reaction != null;
   }
 
   /// Get user's reactions
-  Future<List<Map<String, dynamic>>> getUserReactions(int userId, {int? limit}) async {
+  Future<List<Map<String, dynamic>>> getUserReactions(Object userId, {int? limit}) async {
     final db = await DatabaseHelper.instance.database;
     return await PostReactionsTable.getByUserId(db, userId, limit: limit);
   }

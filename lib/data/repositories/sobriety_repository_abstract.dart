@@ -2,7 +2,7 @@
 
 /// Repository for sobriety counter
 abstract class SobrietyRepository {
-  Future<Map<String, String>> getSobrietyTime({int? userId, int? addictionId});
-  Future<bool> resetCounter({int? userId, int? addictionId});
+  Future<Map<String, String>> getSobrietyTime({String? userId, int? addictionId});
+  Future<bool> resetCounter({String? userId, int? addictionId});
 }
 

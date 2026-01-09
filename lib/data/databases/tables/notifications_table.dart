@@ -22,13 +22,13 @@ class NotificationsTable {
   /// Get all notifications for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -37,13 +37,13 @@ class NotificationsTable {
   /// Get unread notifications for a user
   static Future<List<Map<String, dynamic>>> getUnreadByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ? AND is_read = 0',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -52,14 +52,14 @@ class NotificationsTable {
   /// Get notifications of a specific type
   static Future<List<Map<String, dynamic>>> getByType(
     Database db,
-    int userId,
+    Object userId,
     String type, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ? AND type = ?',
-      whereArgs: [userId, type],
+      whereArgs: [userId.toString(), type],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -76,12 +76,12 @@ class NotificationsTable {
   }
 
   /// Mark all notifications as read for a user
-  static Future<int> markAllAsRead(Database db, int userId) async {
+  static Future<int> markAllAsRead(Database db, Object userId) async {
     return await db.update(
       tableName,
       {'is_read': 1},
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
     );
   }
 
@@ -95,19 +95,19 @@ class NotificationsTable {
   }
 
   /// Delete all notifications for a user
-  static Future<int> deleteByUserId(Database db, int userId) async {
+  static Future<int> deleteByUserId(Database db, Object userId) async {
     return await db.delete(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
     );
   }
 
   /// Count unread notifications
-  static Future<int> countUnread(Database db, int userId) async {
+  static Future<int> countUnread(Database db, Object userId) async {
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM $tableName WHERE user_id = ? AND is_read = 0',
-      [userId],
+      [userId.toString()],
     );
     return Sqflite.firstIntValue(result) ?? 0;
   }

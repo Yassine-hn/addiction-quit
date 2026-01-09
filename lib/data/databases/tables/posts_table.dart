@@ -22,13 +22,13 @@ class PostsTable {
   /// Get all posts for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );

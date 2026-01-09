@@ -22,13 +22,13 @@ class HeroesTable {
   /// Get hero entries for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -102,10 +102,10 @@ class HeroesTable {
   }
 
   /// Get user's highest rank in a period type
-  static Future<int?> getUserRank(Database db, int userId, String periodType) async {
+  static Future<int?> getUserRank(Database db, Object userId, String periodType) async {
     final result = await db.rawQuery(
       'SELECT rank FROM $tableName WHERE user_id = ? AND period_type = ? ORDER BY created_at DESC LIMIT 1',
-      [userId, periodType],
+      [userId.toString(), periodType],
     );
     if (result.isNotEmpty) {
       return result.first['rank'] as int?;

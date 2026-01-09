@@ -22,13 +22,13 @@ class ActivityLogsTable {
   /// Get all activity logs for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -37,13 +37,13 @@ class ActivityLogsTable {
   /// Get activity logs by type
   static Future<List<Map<String, dynamic>>> getByType(
     Database db,
-    int userId,
+    Object userId,
     String actionType,
   ) async {
     return await db.query(
       tableName,
       where: 'user_id = ? AND action_type = ?',
-      whereArgs: [userId, actionType],
+      whereArgs: [userId.toString(), actionType],
       orderBy: 'created_at DESC',
     );
   }
@@ -51,14 +51,14 @@ class ActivityLogsTable {
   /// Get activity logs in date range
   static Future<List<Map<String, dynamic>>> getByDateRange(
     Database db,
-    int userId,
+    Object userId,
     String startDate,
     String endDate,
   ) async {
     return await db.query(
       tableName,
       where: 'user_id = ? AND created_at BETWEEN ? AND ?',
-      whereArgs: [userId, startDate, endDate],
+      whereArgs: [userId.toString(), startDate, endDate],
       orderBy: 'created_at DESC',
     );
   }
@@ -84,12 +84,12 @@ class ActivityLogsTable {
   /// Log an action
   static Future<int> logAction(
     Database db,
-    int userId,
+    Object userId,
     String actionType,
     String? meta,
   ) async {
     return await insert(db, {
-      'user_id': userId,
+      'user_id': userId.toString(),
       'action_type': actionType,
       'meta': meta,
       'created_at': DateTime.now().toIso8601String(),

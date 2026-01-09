@@ -115,12 +115,13 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ROW 1: MILESTONE PROGRESS CIRCLE
-                      _buildMilestoneRow(context, state),
+                      _buildMilestoneCard(context, state),
                       const SizedBox(height: 24),
-
-                      // ROW 2: THREE EQUAL-WIDTH CARDS
-                      _buildThreeCardsRow(context, state),
+                      _buildProgressGridCard(context, state),
+                      const SizedBox(height: 16),
+                      _buildStreakChartCard(context, state),
+                      const SizedBox(height: 16),
+                      _buildMoodTrackerCard(context, state),
                       const SizedBox(height: 80), // Space for bottom nav
                     ],
                   ),
@@ -135,7 +136,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMilestoneRow(BuildContext context, DashboardLoaded state) {
+  Widget _buildMilestoneCard(BuildContext context, DashboardLoaded state) {
     final hasMilestone = state.milestoneData.isNotEmpty;
 
     if (!hasMilestone) {
@@ -206,22 +207,40 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildThreeCardsRow(BuildContext context, DashboardLoaded state) {
-    return Column(
-      children: [
-        // CARD 1: DAILY SURVEY HISTORY
-        ProgressGrid(dailySurveys: state.dailySurveys, daysToShow: 30),
-        const SizedBox(height: 16),
-        // CARD 2: STREAK CHART
-        StreakChart(
+  Widget _buildProgressGridCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ProgressGrid(dailySurveys: state.dailySurveys, daysToShow: 30),
+      ),
+    );
+  }
+
+  Widget _buildStreakChartCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: StreakChart(
           streakHistory: state.streakHistory,
           height: 200,
           lineColor: const Color(0xFF4361EE),
         ),
-        const SizedBox(height: 16),
-        // CARD 3: MOOD TRACKER
-        const MoodTracker(),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildMoodTrackerCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: const MoodTracker(),
+      ),
     );
   }
 
@@ -257,10 +276,10 @@ class DashboardScreen extends StatelessWidget {
     BuildContext context,
     DashboardLoaded state,
   ) async {
-    final userId = await SharedPreferencesHelper.getUserId();
     final addictionId = state.selectedAddictionId;
 
-    if (userId == null) {
+    // Validate addictionId
+    if (addictionId <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.unableToCreateMilestone),
@@ -272,12 +291,31 @@ class DashboardScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => MilestoneSelector(
-        onMilestoneSelected: (targetDays) async {
+        onMilestoneSelected: (targetDays, rewardPoints) async {
           try {
             final milestoneRepo = MilestoneRepositoryImpl();
             final l10n = AppLocalizations.of(context)!;
             final title = _getMilestoneTitle(context, targetDays);
-            await milestoneRepo.createMilestone(addictionId, targetDays, title);
+
+            // Check for existing pending milestone
+            final existingMilestone = await milestoneRepo.getCurrentMilestone(addictionId);
+            if (existingMilestone != null) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('You already have an active milestone. Complete or reset it first.'),
+                  ),
+                );
+              }
+              return;
+            }
+
+            await milestoneRepo.createMilestone(
+              addictionId,
+              targetDays,
+              title,
+              rewardPoints,
+            );
 
             // Reload dashboard data
             if (context.mounted) {
@@ -303,14 +341,47 @@ class DashboardScreen extends StatelessWidget {
 
   String _getMilestoneTitle(BuildContext context, int days) {
     final l10n = AppLocalizations.of(context)!;
-    if (days == 1) return l10n.oneDayMilestone;
-    if (days == 7) return l10n.oneWeekMilestone;
-    if (days == 14) return l10n.twoWeeksMilestone;
-    if (days == 30) return l10n.oneMonthMilestone;
-    if (days == 60) return l10n.twoMonthsMilestone;
-    if (days == 90) return l10n.threeMonthsMilestone;
-    if (days == 180) return l10n.sixMonthsMilestone;
-    if (days == 365) return l10n.oneYearMilestone;
-    return l10n.daysMilestone(days);
+    switch (days) {
+      case 1:
+        return l10n.milestone1Day;
+      case 3:
+        return l10n.milestone3Days;
+      case 7:
+        return l10n.milestone7Days;
+      case 14:
+        return l10n.milestone14Days;
+      case 21:
+        return l10n.milestone21Days;
+      case 30:
+        return l10n.milestone30Days;
+      case 40:
+        return l10n.milestone40Days;
+      case 50:
+        return l10n.milestone50Days;
+      case 60:
+        return l10n.milestone60Days;
+      case 75:
+        return l10n.milestone75Days;
+      case 90:
+        return l10n.milestone90Days;
+      case 100:
+        return l10n.milestone100Days;
+      case 120:
+        return l10n.milestone120Days;
+      case 150:
+        return l10n.milestone150Days;
+      case 180:
+        return l10n.milestone180Days;
+      case 200:
+        return l10n.milestone200Days;
+      case 250:
+        return l10n.milestone250Days;
+      case 300:
+        return l10n.milestone300Days;
+      case 365:
+        return l10n.milestone365Days;
+      default:
+        return l10n.daysMilestone(days);
+    }
   }
 }

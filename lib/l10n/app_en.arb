@@ -259,6 +259,26 @@
     }
   },
   "postPublishedSuccessfully": "Post published successfully!",
-  "postPublishFailed": "Failed to publish post. Please try again."
+  "postPublishFailed": "Failed to publish post. Please try again.",
+  
+  "milestone1Day": "Day 1 – First Step",
+  "milestone3Days": "Day 3 – Early Momentum",
+  "milestone7Days": "Day 7 – First Week",
+  "milestone14Days": "Day 14 – Fortnight Checkpoint",
+  "milestone21Days": "Day 21 – Habit Builder",
+  "milestone30Days": "Day 30 – First Month",
+  "milestone40Days": "Day 40 – Steady Streak",
+  "milestone50Days": "Day 50 – Midway Motivation",
+  "milestone60Days": "Day 60 – Two Months Strong",
+  "milestone75Days": "Day 75 – Persistence Reward",
+  "milestone90Days": "Day 90 – Quarter Milestone",
+  "milestone100Days": "Day 100 – Century Marker",
+  "milestone120Days": "Day 120 – Four-Month Achievement",
+  "milestone150Days": "Day 150 – Streak Recognition",
+  "milestone180Days": "Day 180 – Half-Year Hero",
+  "milestone200Days": "Day 200 – Beyond the Horizon",
+  "milestone250Days": "Day 250 – Almost There",
+  "milestone300Days": "Day 300 – Nine-Month Triumph",
+  "milestone365Days": "Day 365 – One Year Victory"
 }
 

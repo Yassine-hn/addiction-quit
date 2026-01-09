@@ -36,7 +36,7 @@ class DatabaseSeeder {
     final start1 = DateTime.now().subtract(const Duration(days: 30));
     final addiction1Id = await AddictionsTable.insert(db, {
       'user_id': userId,
-      'type': 'No Alcohol',
+      'addiction_type': 'No Alcohol',
       'start_date': start1.toIso8601String(),
       'counter_start_at': start1.toIso8601String(),
       'goal_type': 'abstinence',
@@ -50,7 +50,7 @@ class DatabaseSeeder {
     final start2 = DateTime.now().subtract(const Duration(days: 5));
     final addiction2Id = await AddictionsTable.insert(db, {
       'user_id': userId,
-      'type': 'Quit Smoking',
+      'addiction_type': 'Quit Smoking',
       'start_date': start2.toIso8601String(),
       'counter_start_at': start2.toIso8601String(),
       'goal_type': 'abstinence',
@@ -128,7 +128,7 @@ class DatabaseSeeder {
     print('Seed complete!');
   }
 
-  Future<void> _seedCommunityPosts(db, int userId) async {
+  Future<void> _seedCommunityPosts(db, String userId) async {
     // Create some sample posts to demonstrate the community feature
     final posts = [
       {

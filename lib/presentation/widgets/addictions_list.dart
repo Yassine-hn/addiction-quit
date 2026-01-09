@@ -61,7 +61,7 @@ class AddictionsList extends StatelessWidget {
     BuildContext context,
     Map<String, dynamic> addiction,
   ) {
-    final type = addiction['type'] as String? ?? 'Unknown';
+    final type = addiction['addiction_type'] as String? ?? 'Unknown';
     final startDateStr = addiction['start_date'] as String? ?? '';
     final streak = addiction['streak'] as int? ?? 0;
 

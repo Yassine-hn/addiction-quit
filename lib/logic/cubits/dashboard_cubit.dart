@@ -96,12 +96,12 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   Future<void> _loadAddictionData(
-    int userId,
+    String userId,
     int addictionId,
     List<Map<String, dynamic>> allAddictions,
   ) async {
     final addiction = allAddictions.firstWhere((a) => a['id'] == addictionId);
-    final addictionName = addiction['type'] as String;
+    final addictionName = addiction['addiction_type'] as String? ?? '';
 
     // Check and mark completed milestones first
     await _milestoneRepository.checkAndMarkCompletedMilestones(addictionId);

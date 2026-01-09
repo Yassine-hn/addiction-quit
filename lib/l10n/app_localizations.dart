@@ -1087,6 +1087,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to publish post. Please try again.'**
   String get postPublishFailed;
+
+  /// No description provided for @milestone1Day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 1 – First Step'**
+  String get milestone1Day;
+
+  /// No description provided for @milestone3Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 3 – Early Momentum'**
+  String get milestone3Days;
+
+  /// No description provided for @milestone7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 7 – First Week'**
+  String get milestone7Days;
+
+  /// No description provided for @milestone14Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 14 – Fortnight Checkpoint'**
+  String get milestone14Days;
+
+  /// No description provided for @milestone21Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 21 – Habit Builder'**
+  String get milestone21Days;
+
+  /// No description provided for @milestone30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 30 – First Month'**
+  String get milestone30Days;
+
+  /// No description provided for @milestone40Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 40 – Steady Streak'**
+  String get milestone40Days;
+
+  /// No description provided for @milestone50Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 50 – Midway Motivation'**
+  String get milestone50Days;
+
+  /// No description provided for @milestone60Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 60 – Two Months Strong'**
+  String get milestone60Days;
+
+  /// No description provided for @milestone75Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 75 – Persistence Reward'**
+  String get milestone75Days;
+
+  /// No description provided for @milestone90Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 90 – Quarter Milestone'**
+  String get milestone90Days;
+
+  /// No description provided for @milestone100Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 100 – Century Marker'**
+  String get milestone100Days;
+
+  /// No description provided for @milestone120Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 120 – Four-Month Achievement'**
+  String get milestone120Days;
+
+  /// No description provided for @milestone150Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 150 – Streak Recognition'**
+  String get milestone150Days;
+
+  /// No description provided for @milestone180Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 180 – Half-Year Hero'**
+  String get milestone180Days;
+
+  /// No description provided for @milestone200Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 200 – Beyond the Horizon'**
+  String get milestone200Days;
+
+  /// No description provided for @milestone250Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 250 – Almost There'**
+  String get milestone250Days;
+
+  /// No description provided for @milestone300Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 300 – Nine-Month Triumph'**
+  String get milestone300Days;
+
+  /// No description provided for @milestone365Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 365 – One Year Victory'**
+  String get milestone365Days;
 }
 
 class _AppLocalizationsDelegate

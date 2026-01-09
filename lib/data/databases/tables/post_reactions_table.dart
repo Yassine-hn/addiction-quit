@@ -37,12 +37,12 @@ class PostReactionsTable {
   static Future<Map<String, dynamic>?> getUserReaction(
     Database db,
     int postId,
-    int userId,
+    Object userId,
   ) async {
     final results = await db.query(
       tableName,
       where: 'post_id = ? AND user_id = ?',
-      whereArgs: [postId, userId],
+      whereArgs: [postId, userId.toString()],
       limit: 1,
     );
     return results.isNotEmpty ? results.first : null;
@@ -51,13 +51,13 @@ class PostReactionsTable {
   /// Get all reactions by a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     int? limit,
   }) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'created_at DESC',
       limit: limit,
     );
@@ -76,12 +76,12 @@ class PostReactionsTable {
   static Future<int> deleteUserReaction(
     Database db,
     int postId,
-    int userId,
+    Object userId,
   ) async {
     return await db.delete(
       tableName,
       where: 'post_id = ? AND user_id = ?',
-      whereArgs: [postId, userId],
+      whereArgs: [postId, userId.toString()],
     );
   }
 

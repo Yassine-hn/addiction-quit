@@ -21,7 +21,7 @@ extension UserInfoModelDBExtension on UserInfoModel {
 
     return {
       'user_id': userId,
-      'type': addictionType,
+      'addiction_type': addictionType,
       'start_date': startDate?.toIso8601String(),
       'counter_start_at': startDate?.toIso8601String(),
       'slips': 0,

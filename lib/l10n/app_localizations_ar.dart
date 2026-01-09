@@ -529,4 +529,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get postPublishFailed => 'فشل نشر المنشور. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get milestone1Day => 'اليوم 1 – الخطوة الأولى';
+
+  @override
+  String get milestone3Days => 'اليوم 3 – زخم مبكر';
+
+  @override
+  String get milestone7Days => 'اليوم 7 – الأسبوع الأول';
+
+  @override
+  String get milestone14Days => 'اليوم 14 – نقطة تفتيش أسبوعين';
+
+  @override
+  String get milestone21Days => 'اليوم 21 – بناء العادة';
+
+  @override
+  String get milestone30Days => 'اليوم 30 – الشهر الأول';
+
+  @override
+  String get milestone40Days => 'اليوم 40 – سلسلة ثابتة';
+
+  @override
+  String get milestone50Days => 'اليوم 50 – تحفيز منتصف الطريق';
+
+  @override
+  String get milestone60Days => 'اليوم 60 – شهران قويان';
+
+  @override
+  String get milestone75Days => 'اليوم 75 – مكافأة المثابرة';
+
+  @override
+  String get milestone90Days => 'اليوم 90 – معلم ربع السنة';
+
+  @override
+  String get milestone100Days => 'اليوم 100 – علامة المائة';
+
+  @override
+  String get milestone120Days => 'اليوم 120 – إنجاز أربعة أشهر';
+
+  @override
+  String get milestone150Days => 'اليوم 150 – تقدير السلسلة';
+
+  @override
+  String get milestone180Days => 'اليوم 180 – بطل نصف العام';
+
+  @override
+  String get milestone200Days => 'اليوم 200 – ما وراء الأفق';
+
+  @override
+  String get milestone250Days => 'اليوم 250 – أوشكت على الوصول';
+
+  @override
+  String get milestone300Days => 'اليوم 300 – انتصار تسعة أشهر';
+
+  @override
+  String get milestone365Days => 'اليوم 365 – انتصار سنة واحدة';
 }

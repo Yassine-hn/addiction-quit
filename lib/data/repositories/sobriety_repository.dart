@@ -11,7 +11,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   final UserRepository _userRepository = UserRepositoryImpl();
 
   /// Get the primary active addiction for a user
-  Future<Map<String, dynamic>?> _getPrimaryAddiction(int userId) async {
+  Future<Map<String, dynamic>?> _getPrimaryAddiction(Object userId) async {
     try {
       final db = await _dbHelper.database;
       final addictions = await AddictionsTable.getActiveByUserId(db, userId);
@@ -41,7 +41,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   /// Get sobriety time for the user's primary addiction
   @override
   Future<Map<String, String>> getSobrietyTime({
-    int? userId,
+    String? userId,
     int? addictionId,
   }) async {
     try {
@@ -86,7 +86,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   }
 
   /// Reset counter_start_at and slips/streak for the active addiction
-  Future<bool> resetCounter({int? userId, int? addictionId}) async {
+  Future<bool> resetCounter({String? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
       userId ??= await _userRepository.getCurrentUserId();

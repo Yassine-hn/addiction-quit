@@ -10,16 +10,27 @@ class SharedPreferencesHelper {
       'addiction_ids'; // List of all addiction IDs
   static const String _languageKey = 'language'; // en or ar
 
-  /// Get the saved user ID
-  static Future<int?> getUserId() async {
+  /// Get the saved user ID as string (migrates legacy int to string)
+  static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_userIdKey);
+
+    final storedString = prefs.getString(_userIdKey);
+    if (storedString != null) return storedString;
+
+    final legacyInt = prefs.getInt(_userIdKey);
+    if (legacyInt != null) {
+      final migrated = legacyInt.toString();
+      await prefs.setString(_userIdKey, migrated);
+      return migrated;
+    }
+
+    return null;
   }
 
-  /// Save user ID
-  static Future<bool> saveUserId(int userId) async {
+  /// Save user ID (store as string)
+  static Future<bool> saveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.setInt(_userIdKey, userId);
+    return await prefs.setString(_userIdKey, userId);
   }
 
   /// Save username

@@ -22,11 +22,14 @@ class AddictionsTable {
   /// Get all addictions for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     String? status,
   }) async {
+    // user_id is stored as TEXT; normalize to string to avoid type mismatches
+    final userIdArg = userId.toString();
+
     String? whereClause = 'user_id = ?';
-    List<dynamic> whereArgs = [userId];
+    List<dynamic> whereArgs = [userIdArg];
 
     if (status != null) {
       whereClause += ' AND status = ?';
@@ -44,7 +47,7 @@ class AddictionsTable {
   /// Get active addictions for a user
   static Future<List<Map<String, dynamic>>> getActiveByUserId(
     Database db,
-    int userId,
+    Object userId,
   ) async {
     return await getByUserId(db, userId, status: 'active');
   }

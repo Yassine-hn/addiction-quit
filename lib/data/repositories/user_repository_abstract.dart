@@ -4,6 +4,6 @@
 abstract class UserRepository {
   Future<Map<String, dynamic>?> getCurrentUser();
   Future<String?> getUserName();
-  Future<int?> getCurrentUserId();
+  Future<String?> getCurrentUserId();
 }
 

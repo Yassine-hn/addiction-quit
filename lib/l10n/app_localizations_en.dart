@@ -534,4 +534,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postPublishFailed => 'Failed to publish post. Please try again.';
+
+  @override
+  String get milestone1Day => 'Day 1 – First Step';
+
+  @override
+  String get milestone3Days => 'Day 3 – Early Momentum';
+
+  @override
+  String get milestone7Days => 'Day 7 – First Week';
+
+  @override
+  String get milestone14Days => 'Day 14 – Fortnight Checkpoint';
+
+  @override
+  String get milestone21Days => 'Day 21 – Habit Builder';
+
+  @override
+  String get milestone30Days => 'Day 30 – First Month';
+
+  @override
+  String get milestone40Days => 'Day 40 – Steady Streak';
+
+  @override
+  String get milestone50Days => 'Day 50 – Midway Motivation';
+
+  @override
+  String get milestone60Days => 'Day 60 – Two Months Strong';
+
+  @override
+  String get milestone75Days => 'Day 75 – Persistence Reward';
+
+  @override
+  String get milestone90Days => 'Day 90 – Quarter Milestone';
+
+  @override
+  String get milestone100Days => 'Day 100 – Century Marker';
+
+  @override
+  String get milestone120Days => 'Day 120 – Four-Month Achievement';
+
+  @override
+  String get milestone150Days => 'Day 150 – Streak Recognition';
+
+  @override
+  String get milestone180Days => 'Day 180 – Half-Year Hero';
+
+  @override
+  String get milestone200Days => 'Day 200 – Beyond the Horizon';
+
+  @override
+  String get milestone250Days => 'Day 250 – Almost There';
+
+  @override
+  String get milestone300Days => 'Day 300 – Nine-Month Triumph';
+
+  @override
+  String get milestone365Days => 'Day 365 – One Year Victory';
 }

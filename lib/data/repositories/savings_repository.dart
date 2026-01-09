@@ -11,7 +11,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
   final UserRepository _userRepository = UserRepositoryImpl();
 
   /// Get the primary active addiction for a user
-  Future<Map<String, dynamic>?> _getPrimaryAddiction(int userId) async {
+  Future<Map<String, dynamic>?> _getPrimaryAddiction(Object userId) async {
     try {
       final db = await _dbHelper.database;
       final addictions = await AddictionsTable.getActiveByUserId(db, userId);
@@ -70,7 +70,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
 
   /// Get streak for the user's primary addiction
   @override
-  Future<int> getStreak({int? userId, int? addictionId}) async {
+  Future<int> getStreak({Object? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
 
@@ -102,7 +102,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
 
   /// Get time saved for the user's primary addiction
   @override
-  Future<String> getTimeSaved({int? userId, int? addictionId}) async {
+  Future<String> getTimeSaved({Object? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
 
@@ -140,7 +140,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
   /// Get money saved for the user's primary addiction
   /// Returns null if the addiction doesn't save money (money_saved_per_day is null)
   @override
-  Future<String?> getMoneySaved({int? userId, int? addictionId}) async {
+  Future<String?> getMoneySaved({Object? userId, int? addictionId}) async {
     try {
       final db = await _dbHelper.database;
 
@@ -199,7 +199,7 @@ class SavingsRepositoryImpl implements SavingsRepository {
   /// Get all savings data (streak, time saved, money saved)
   @override
   Future<Map<String, dynamic>> getSavings({
-    int? userId,
+    Object? userId,
     int? addictionId,
   }) async {
     final streak = await getStreak(userId: userId, addictionId: addictionId);

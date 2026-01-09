@@ -256,6 +256,26 @@
     }
   },
   "postPublishedSuccessfully": "تم نشر المنشور بنجاح!",
-  "postPublishFailed": "فشل نشر المنشور. يرجى المحاولة مرة أخرى."
+  "postPublishFailed": "فشل نشر المنشور. يرجى المحاولة مرة أخرى.",
+  
+  "milestone1Day": "اليوم 1 – الخطوة الأولى",
+  "milestone3Days": "اليوم 3 – زخم مبكر",
+  "milestone7Days": "اليوم 7 – الأسبوع الأول",
+  "milestone14Days": "اليوم 14 – نقطة تفتيش أسبوعين",
+  "milestone21Days": "اليوم 21 – بناء العادة",
+  "milestone30Days": "اليوم 30 – الشهر الأول",
+  "milestone40Days": "اليوم 40 – سلسلة ثابتة",
+  "milestone50Days": "اليوم 50 – تحفيز منتصف الطريق",
+  "milestone60Days": "اليوم 60 – شهران قويان",
+  "milestone75Days": "اليوم 75 – مكافأة المثابرة",
+  "milestone90Days": "اليوم 90 – معلم ربع السنة",
+  "milestone100Days": "اليوم 100 – علامة المائة",
+  "milestone120Days": "اليوم 120 – إنجاز أربعة أشهر",
+  "milestone150Days": "اليوم 150 – تقدير السلسلة",
+  "milestone180Days": "اليوم 180 – بطل نصف العام",
+  "milestone200Days": "اليوم 200 – ما وراء الأفق",
+  "milestone250Days": "اليوم 250 – أوشكت على الوصول",
+  "milestone300Days": "اليوم 300 – انتصار تسعة أشهر",
+  "milestone365Days": "اليوم 365 – انتصار سنة واحدة"
 }
 
