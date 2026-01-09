@@ -1,4 +1,4 @@
-// user_profile_screen.dart
+// profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
@@ -210,10 +210,7 @@ class UserProfileScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, color: Colors.black87),
-          ),
+          const SizedBox(width: 24),
           Text(
             AppLocalizations.of(context)!.profile,
             style: const TextStyle(

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'screens/home_screen.dart';
-import './screens/user_profile_screen.dart';
+import './screens/profile_screen.dart';
 import 'screens/dashboard_screen.dart';
 import '../modules/community_module/screens/community_screen.dart';
 import './screens/loading_screen.dart';
