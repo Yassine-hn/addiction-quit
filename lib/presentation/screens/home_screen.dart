@@ -154,8 +154,6 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           const SizedBox(width: 8),
-          _buildLanguageToggle(context),
-          const SizedBox(width: 8),
           const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0xFFE8F4F8),
@@ -188,10 +186,11 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
               const SizedBox(height: 24),
+              // Notifications
               ListTile(
-                leading: const Icon(Icons.login, color: Color(0xFF00A3E0)),
+                leading: const Icon(Icons.notifications, color: Color(0xFF00A3E0)),
                 title: const Text(
-                  'Sign In',
+                  'Notifications',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -199,19 +198,14 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to sign in screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Sign In screen coming soon'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/notifications');
                 },
               ),
+              // Parameters
               ListTile(
-                leading: const Icon(Icons.person_add, color: Color(0xFF00A3E0)),
+                leading: const Icon(Icons.settings, color: Color(0xFF00A3E0)),
                 title: const Text(
-                  'Sign Up',
+                  'Parameters',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -219,13 +213,51 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to sign up screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Sign Up screen coming soon'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/parameters');
+                },
+              ),
+              // Language
+              ListTile(
+                leading: const Icon(Icons.language, color: Color(0xFF00A3E0)),
+                title: const Text(
+                  'Language',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  _showLanguageDialog(context);
+                },
+              ),
+              const Divider(height: 20),
+              // About
+              ListTile(
+                leading: const Icon(Icons.info, color: Color(0xFF00A3E0)),
+                title: const Text(
+                  'About',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/about');
+                },
+              ),
+              // Logout
+              ListTile(
+                leading: const Icon(Icons.logout, color: Color(0xFF00A3E0)),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  _showLogoutConfirmationDialog(context);
                 },
               ),
               const SizedBox(height: 16),
@@ -236,35 +268,63 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildLanguageToggle(BuildContext context) {
-    return BlocBuilder<LanguageCubit, LanguageState>(
-      builder: (context, state) {
-        final isArabic = state.locale.languageCode == 'ar';
-        return GestureDetector(
-          onTap: () => context.read<LanguageCubit>().toggleLanguage(),
-          child: Container(
-            width: 40,
-            height: 36,
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                isArabic ? 'ع' : 'EN',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF00A3E0),
-                ),
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Language'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('English'),
+                onTap: () {
+                  context.read<LanguageCubit>().changeLanguage('en');
+                  Navigator.pop(context);
+                },
               ),
-            ),
+              ListTile(
+                title: const Text('العربية (Arabic)'),
+                onTap: () {
+                  context.read<LanguageCubit>().changeLanguage('ar');
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           ),
         );
       },
     );
   }
-  
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Logout logic will be implemented later
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildSobrietyCounter(BuildContext context) {
     return Container(
       width: double.infinity,

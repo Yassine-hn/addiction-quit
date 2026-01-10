@@ -19,20 +19,20 @@ class NotificationsRepository {
   }
 
   /// Get all notifications for a user
-  Future<List<Map<String, dynamic>>> getUserNotifications(int userId, {int? limit}) async {
+  Future<List<Map<String, dynamic>>> getUserNotifications(String userId, {int? limit}) async {
     final db = await DatabaseHelper.instance.database;
     return await NotificationsTable.getByUserId(db, userId, limit: limit);
   }
 
   /// Get unread notifications for a user
-  Future<List<Map<String, dynamic>>> getUnreadNotifications(int userId, {int? limit}) async {
+  Future<List<Map<String, dynamic>>> getUnreadNotifications(String userId, {int? limit}) async {
     final db = await DatabaseHelper.instance.database;
     return await NotificationsTable.getUnreadByUserId(db, userId, limit: limit);
   }
 
   /// Get notifications of a specific type
   Future<List<Map<String, dynamic>>> getNotificationsByType(
-    int userId,
+    String userId,
     String type, {
     int? limit,
   }) async {
@@ -53,7 +53,7 @@ class NotificationsRepository {
   }
 
   /// Mark all notifications as read
-  Future<void> markAllAsRead(int userId) async {
+  Future<void> markAllAsRead(String userId) async {
     final db = await DatabaseHelper.instance.database;
     await NotificationsTable.markAllAsRead(db, userId);
   }
@@ -65,13 +65,13 @@ class NotificationsRepository {
   }
 
   /// Delete all notifications for a user
-  Future<void> deleteAllNotifications(int userId) async {
+  Future<void> deleteAllNotifications(String userId) async {
     final db = await DatabaseHelper.instance.database;
     await NotificationsTable.deleteByUserId(db, userId);
   }
 
   /// Count unread notifications
-  Future<int> getUnreadCount(int userId) async {
+  Future<int> getUnreadCount(String userId) async {
     final db = await DatabaseHelper.instance.database;
     return await NotificationsTable.countUnread(db, userId);
   }
