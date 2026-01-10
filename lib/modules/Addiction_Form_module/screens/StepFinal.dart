@@ -9,6 +9,8 @@ import 'data_saving_screen.dart';
 import '../models/User_Info_model.dart';
 import '../../../presentation/app_routes.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../logic/services/notif_service.dart';
+import '../../../logic/services/background_service.dart';
 
 class StepFinal extends StatefulWidget {
   const StepFinal({super.key});
@@ -63,7 +65,6 @@ class _StepFinalState extends State<StepFinal>
     });
   }
 
-  /// Check if user already exists in the system
   Future<void> _checkExistingUser() async {
     final existingUserId = await SharedPreferencesHelper.getUserId();
     final existingUsername = await SharedPreferencesHelper.getUsername();
@@ -73,6 +74,26 @@ class _StepFinalState extends State<StepFinal>
         _isExistingUser = true;
         _existingUsername = existingUsername;
         _isUsernameValid = true; // Skip validation for existing users
+      });
+
+      // ✅ Fixed: Use instance method instead of static
+      //Send welcome back notification
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        NotificationService().showNotification(
+          id: 1,
+          title: 'Welcome back brave hero',
+          body: 'Good to see you again, $existingUsername!',
+        );
+      });
+    } else {
+      // ✅ Fixed: Use instance method instead of static
+      //Send welcome notification for new users
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        NotificationService().showNotification(
+          id: 2,
+          title: 'Welcome to your new journey',
+          body: 'Be strong, brave hero.',
+        );
       });
     }
   }
@@ -88,8 +109,8 @@ class _StepFinalState extends State<StepFinal>
   void _handleGetStarted() async {
     if (_isUsernameValid) {
       // For existing users, use the stored username; for new users, use the entered username
-      final username = _isExistingUser 
-          ? _existingUsername! 
+      final username = _isExistingUser
+          ? _existingUsername!
           : _usernameController.text.trim();
       final cubit = context.read<UserInfoCubit>();
 
@@ -133,6 +154,34 @@ class _StepFinalState extends State<StepFinal>
       // 2. Create addiction instance in database
       await UserDataService.createAddiction(userId, userInfo);
 
+      // 3. Save daily reminder time if set
+      if (userInfo.dailyReview != null) {
+        await SharedPreferencesHelper.saveDailyReminderTime(
+          userInfo.dailyReview!.hour,
+          userInfo.dailyReview!.minute,
+        );
+        
+        // Schedule the background service
+        await BackgroundService.scheduleDailyNotification(
+          userInfo.dailyReview!.hour,
+          userInfo.dailyReview!.minute,
+        );
+      }
+
+      // 4. Send instant welcome notification
+      // Check existing preference or use default logic for "hero" welcome
+      final isArabic = await SharedPreferencesHelper.getLanguage() == 'ar';
+      final title = isArabic ? 'أهلاً بك أيها البطل الشجاع' : 'Welcome brave hero';
+      final body = isArabic 
+          ? 'سعيد برؤيتك، $username' 
+          : 'Good to see you, $username';
+
+      await NotificationService().showNotification(
+        id: 100, // Distinct ID
+        title: title,
+        body: body,
+      );
+
       // Optional: Add a small delay to show the success animation
       await Future.delayed(Duration(milliseconds: 500));
     } catch (e) {
@@ -146,9 +195,7 @@ class _StepFinalState extends State<StepFinal>
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.saveFailed),
-        content: Text(
-          AppLocalizations.of(context)!.errorSavingData,
-        ),
+        content: Text(AppLocalizations.of(context)!.errorSavingData),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -228,7 +275,9 @@ class _StepFinalState extends State<StepFinal>
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          AppLocalizations.of(context)!.readyToBegin,
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.readyToBegin,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: isLandscape ? 32 : 40,
@@ -257,7 +306,9 @@ class _StepFinalState extends State<StepFinal>
                                         Text(
                                           _isExistingUser
                                               ? 'Welcome back, $_existingUsername!'
-                                              : AppLocalizations.of(context)!.chooseUsername,
+                                              : AppLocalizations.of(
+                                                  context,
+                                                )!.chooseUsername,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: isLandscape ? 20 : 22,
@@ -287,9 +338,8 @@ class _StepFinalState extends State<StepFinal>
                                               color: Colors.white.withOpacity(
                                                 0.15,
                                               ),
-                                              borderRadius: BorderRadius.circular(
-                                                16,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               border: Border.all(
                                                 color: Colors.white.withOpacity(
                                                   0.3,
@@ -298,9 +348,8 @@ class _StepFinalState extends State<StepFinal>
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.black.withOpacity(
-                                                    0.2,
-                                                  ),
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
                                                   blurRadius: 20,
                                                   offset: const Offset(0, 10),
                                                 ),
@@ -317,10 +366,11 @@ class _StepFinalState extends State<StepFinal>
                                               decoration: InputDecoration(
                                                 hintText: 'Enter your name',
                                                 hintStyle: TextStyle(
-                                                  fontSize: isLandscape ? 16 : 18,
-                                                  color: Colors.white.withOpacity(
-                                                    0.6,
-                                                  ),
+                                                  fontSize: isLandscape
+                                                      ? 16
+                                                      : 18,
+                                                  color: Colors.white
+                                                      .withOpacity(0.6),
                                                 ),
                                                 border: InputBorder.none,
                                                 contentPadding:
@@ -332,9 +382,8 @@ class _StepFinalState extends State<StepFinal>
                                                     ),
                                                 prefixIcon: Icon(
                                                   Icons.person_outline,
-                                                  color: Colors.white.withOpacity(
-                                                    0.8,
-                                                  ),
+                                                  color: Colors.white
+                                                      .withOpacity(0.8),
                                                   size: isLandscape ? 24 : 28,
                                                 ),
                                                 suffixIcon:
@@ -368,7 +417,9 @@ class _StepFinalState extends State<StepFinal>
                                             ),
                                           ),
                                         if (!_isExistingUser)
-                                          SizedBox(height: isLandscape ? 12 : 16),
+                                          SizedBox(
+                                            height: isLandscape ? 12 : 16,
+                                          ),
 
                                         // Validation message - Only for new users
                                         if (!_isExistingUser)
@@ -382,15 +433,18 @@ class _StepFinalState extends State<StepFinal>
                                                     .isNotEmpty
                                                 ? Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Icon(
                                                         _isUsernameValid
                                                             ? Icons.check_circle
-                                                            : Icons.error_outline,
+                                                            : Icons
+                                                                  .error_outline,
                                                         color: _isUsernameValid
                                                             ? Colors.green[300]
-                                                            : Colors.orange[300],
+                                                            : Colors
+                                                                  .orange[300],
                                                         size: isLandscape
                                                             ? 16
                                                             : 20,
@@ -404,8 +458,10 @@ class _StepFinalState extends State<StepFinal>
                                                           fontSize: isLandscape
                                                               ? 12
                                                               : 14,
-                                                          color: _isUsernameValid
-                                                              ? Colors.green[300]
+                                                          color:
+                                                              _isUsernameValid
+                                                              ? Colors
+                                                                    .green[300]
                                                               : Colors
                                                                     .orange[300],
                                                           fontWeight:
@@ -428,9 +484,8 @@ class _StepFinalState extends State<StepFinal>
                                               color: Colors.green.withOpacity(
                                                 0.2,
                                               ),
-                                              borderRadius: BorderRadius.circular(
-                                                12,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                               border: Border.all(
                                                 color: Colors.green.withOpacity(
                                                   0.5,
@@ -540,7 +595,7 @@ class _StepFinalState extends State<StepFinal>
                                               ),
                                             ),
                                           ),
-                                        
+
                                         // Welcome message for existing users
                                         if (!isLandscape && _isExistingUser)
                                           Padding(
@@ -579,7 +634,9 @@ class _StepFinalState extends State<StepFinal>
                                             ],
                                           ),
                                           child: ValidationButton(
-                                            label: AppLocalizations.of(context)!.getStarted,
+                                            label: AppLocalizations.of(
+                                              context,
+                                            )!.getStarted,
                                             onPressed: () => _isUsernameValid
                                                 ? _handleGetStarted()
                                                 : null,

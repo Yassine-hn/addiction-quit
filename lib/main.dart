@@ -7,14 +7,30 @@ import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
-// import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
+// For seeding - can remove after first run
 import 'logic/cubits/language_cubit.dart';
 import 'logic/cubits/auth_cubit.dart';
-import 'data/repositories/auth_repository.dart';
 import 'api/api_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'logic/services/android_alarm.dart';
+import 'data/repositories/auth_repository.dart';
+import 'logic/services/notif_service.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<bool> init_app() async {
+  //init timezone package
+  tz.initializeTimeZones(); // <-- important
+  final String timeZoneName = await tz.local.name;
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
+
+  // Firebase initialization
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    print("Firebase initialization error: $e");
+  }
+
   try {
     // Initialize SharedPreferences
     await SharedPreferences.getInstance();
@@ -33,11 +49,11 @@ Future<bool> init_app() async {
     // After running the app once successfully, DELETE or COMMENT OUT this entire
     // section (lines marked with "REMOVE AFTER FIRST RUN") to prevent re-seeding
     // on every app launch.
-    
-    // final seeder = DatabaseSeeder();                    // REMOVE AFTER FIRST RUN
-    // await seeder.seed();                                // REMOVE AFTER FIRST RUN
-    // print('✅ Local database seeded successfully!');    // REMOVE AFTER FIRST RUN
-    
+
+    //final seeder = DatabaseSeeder(); // REMOVE AFTER FIRST RUN
+    //await seeder.seed(); // REMOVE AFTER FIRST RUN
+    //print('✅ Local database seeded successfully!'); // REMOVE AFTER FIRST RUN
+
     // ============================================================================
     // END OF SEEDING SECTION
     // ============================================================================
@@ -65,19 +81,16 @@ Future<bool> init_app() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   await init_app();
-  
-  // Initialize services and repositories
-  final apiService = ApiService();
-  final authRepository = AuthRepositoryImpl(apiService);
-  
+  await initAndroidAlarm();
+  await NotificationService().init();
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => LanguageCubit()),
         BlocProvider(
-          create: (context) => AuthCubit(authRepository)..checkAuthStatus(),
+          create: (context) =>
+              AuthCubit(AuthRepositoryImpl(ApiService()))..checkAuthStatus(),
         ),
       ],
       child: const MyApp(),

@@ -4,7 +4,9 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
 import '../../logic/cubits/daily_checkin_cubit.dart';
+import '../../logic/services/notif_service.dart';
 import '../../logic/cubits/language_cubit.dart';
+import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,14 +16,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-  with SingleTickerProviderStateMixin { // SingleTickerProviderStateMixin Provides a Ticker (vsync) for AnimationController used in this screen's animations.
+    with SingleTickerProviderStateMixin {
+  // SingleTickerProviderStateMixin Provides a Ticker (vsync) for AnimationController used in this screen's animations.
 
   final TextEditingController _journalController = TextEditingController();
   AnimationController? _animationController;
   Animation<double>? _scaleAnimation;
   Animation<double>? _fadeAnimation;
-  late Future<Map<String, String>> _sobrietyFuture; // Holds async result for user's sobriety time (days, hours, minutes, slips)
-  late Future<Map<String, dynamic>> _savingsFuture; // Holds async result for user's savings stats (money saved, streak, time saved)
+  late Future<Map<String, String>>
+  _sobrietyFuture; // Holds async result for user's sobriety time (days, hours, minutes, slips)
+  late Future<Map<String, dynamic>>
+  _savingsFuture; // Holds async result for user's savings stats (money saved, streak, time saved)
   bool _isResetting = false;
   late DailyCheckInCubit _checkInCubit;
 
@@ -46,6 +51,22 @@ class _HomeScreenState extends State<HomeScreen>
         curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
       ),
     );
+    //Send welcome notification after initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Check last notification date
+      final lastDate = await SharedPreferencesHelper.getLastHomeNotifDate();
+      final today = DateTime.now().toIso8601String().split('T')[0];
+
+      if (lastDate != today) {
+        NotificationService().showNotification(
+          id: 12345, // Unique ID for welcome notification
+          title: 'Welcome among us!',
+          body: 'Glad to see you! Stay strong today.',
+        );
+        // Update last date
+        await SharedPreferencesHelper.saveLastHomeNotifDate(today);
+      }
+    });
   }
 
   @override
@@ -188,13 +209,13 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 24),
               // Notifications
               ListTile(
-                leading: const Icon(Icons.notifications, color: Color(0xFF00A3E0)),
+                leading: const Icon(
+                  Icons.notifications,
+                  color: Color(0xFF00A3E0),
+                ),
                 title: const Text(
                   'Notifications',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -206,10 +227,7 @@ class _HomeScreenState extends State<HomeScreen>
                 leading: const Icon(Icons.settings, color: Color(0xFF00A3E0)),
                 title: const Text(
                   'Parameters',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -221,10 +239,7 @@ class _HomeScreenState extends State<HomeScreen>
                 leading: const Icon(Icons.language, color: Color(0xFF00A3E0)),
                 title: const Text(
                   'Language',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   _showLanguageDialog(context);
@@ -236,10 +251,7 @@ class _HomeScreenState extends State<HomeScreen>
                 leading: const Icon(Icons.info, color: Color(0xFF00A3E0)),
                 title: const Text(
                   'About',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -251,10 +263,7 @@ class _HomeScreenState extends State<HomeScreen>
                 leading: const Icon(Icons.logout, color: Color(0xFF00A3E0)),
                 title: const Text(
                   'Logout',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   _showLogoutConfirmationDialog(context);
@@ -379,7 +388,10 @@ class _HomeScreenState extends State<HomeScreen>
                             color: Colors.grey[100],
                             fontWeight: FontWeight.w500,
                             shadows: [
-                              Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4),
+                              Shadow(
+                                color: Colors.black.withOpacity(0.5),
+                                blurRadius: 4,
+                              ),
                             ],
                           ),
                         ),
@@ -439,18 +451,26 @@ class _HomeScreenState extends State<HomeScreen>
                                   if (success) {
                                     _reloadStats();
                                     if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: const Text('Counter reset successfully'),
+                                          content: const Text(
+                                            'Counter reset successfully',
+                                          ),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
                                     }
                                   } else {
                                     if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: const Text('Failed to reset counter'),
+                                          content: const Text(
+                                            'Failed to reset counter',
+                                          ),
                                           backgroundColor: Colors.red[600],
                                         ),
                                       );
@@ -1027,9 +1047,7 @@ class _HomeScreenState extends State<HomeScreen>
         onPressed: isSubmitting
             ? null
             : () {
-                _checkInCubit.submitCheckIn(
-                  submitDailyCheckIn,
-                );
+                _checkInCubit.submitCheckIn(submitDailyCheckIn);
               },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00A3E0),

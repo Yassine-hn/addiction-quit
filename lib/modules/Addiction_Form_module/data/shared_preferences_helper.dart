@@ -132,4 +132,39 @@ class SharedPreferencesHelper {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_languageKey) ?? 'en';
   }
+
+  static const String _reminderHourKey = 'reminder_hour';
+  static const String _reminderMinuteKey = 'reminder_minute';
+
+  /// Save daily reminder time
+  static Future<void> saveDailyReminderTime(int hour, int minute) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_reminderHourKey, hour);
+    await prefs.setInt(_reminderMinuteKey, minute);
+  }
+
+  /// Get daily reminder time
+  static Future<Map<String, int>?> getDailyReminderTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hour = prefs.getInt(_reminderHourKey);
+    final minute = prefs.getInt(_reminderMinuteKey);
+    if (hour != null && minute != null) {
+      return {'hour': hour, 'minute': minute};
+    }
+    return null;
+  }
+
+  static const String _lastHomeNotifDateKey = 'last_home_notif_date';
+
+  /// Save last home screen notification date
+  static Future<void> saveLastHomeNotifDate(String dateIso) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastHomeNotifDateKey, dateIso);
+  }
+
+  /// Get last home screen notification date
+  static Future<String?> getLastHomeNotifDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_lastHomeNotifDateKey);
+  }
 }
