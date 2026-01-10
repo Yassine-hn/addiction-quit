@@ -288,25 +288,31 @@ class DashboardScreen extends StatelessWidget {
       return;
     }
 
+    // Capture parent context and cubit BEFORE showing dialog
+    final parentContext = context;
+    final dashboardCubit = context.read<DashboardCubit>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
-      builder: (context) => MilestoneSelector(
+      builder: (dialogContext) => MilestoneSelector(
         onMilestoneSelected: (targetDays, rewardPoints) async {
+          // Close dialog first
+          Navigator.of(dialogContext).pop();
+
           try {
             final milestoneRepo = MilestoneRepositoryImpl();
-            final l10n = AppLocalizations.of(context)!;
-            final title = _getMilestoneTitle(context, targetDays);
+            final l10n = AppLocalizations.of(parentContext)!;
+            final title = _getMilestoneTitle(parentContext, targetDays);
 
             // Check for existing pending milestone
             final existingMilestone = await milestoneRepo.getCurrentMilestone(addictionId);
             if (existingMilestone != null) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('You already have an active milestone. Complete or reset it first.'),
-                  ),
-                );
-              }
+              scaffoldMessenger.showSnackBar(
+                const SnackBar(
+                  content: Text('You already have an active milestone. Complete or reset it first.'),
+                ),
+              );
               return;
             }
 
@@ -317,22 +323,19 @@ class DashboardScreen extends StatelessWidget {
               rewardPoints,
             );
 
-            // Reload dashboard data
-            if (context.mounted) {
-              context.read<DashboardCubit>().loadDashboardData();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.milestoneStarted(title))),
-              );
-            }
+            // Reload dashboard data using captured cubit
+            await dashboardCubit.loadDashboardData();
+            
+            scaffoldMessenger.showSnackBar(
+              SnackBar(content: Text(l10n.milestoneStarted(title))),
+            );
           } catch (e) {
-            if (context.mounted) {
-              final l10n = AppLocalizations.of(context)!;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.errorCreatingMilestone(e.toString())),
-                ),
-              );
-            }
+            final l10n = AppLocalizations.of(parentContext)!;
+            scaffoldMessenger.showSnackBar(
+              SnackBar(
+                content: Text(l10n.errorCreatingMilestone(e.toString())),
+              ),
+            );
           }
         },
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
+import '../app_routes.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -224,7 +225,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: isLoading
                               ? null
                               : () {
-                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacementNamed(
+                                    AppRoutes.login,
+                                  );
                                 },
                           child: const Text(
                             'Login',

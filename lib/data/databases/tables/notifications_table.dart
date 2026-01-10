@@ -4,7 +4,7 @@ class NotificationsTable {
   static const String tableName = 'notifications';
 
   /// Insert a new notification
-  static Future<int> insert(Database db, Map<String, dynamic> notification) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> notification) async {
     return await db.insert(tableName, notification);
   }
 

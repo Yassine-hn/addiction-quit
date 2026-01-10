@@ -6,6 +6,8 @@ import './screens/profile_screen.dart';
 import 'screens/dashboard_screen.dart';
 import '../modules/community_module/screens/community_screen.dart';
 import './screens/loading_screen.dart';
+import './screens/login_screen.dart';
+import './screens/signup_screen.dart';
 import '../modules/Addiction_Form_module/screens/Step0Welcome.dart';
 import '../modules/Addiction_Form_module/data/user_data_service.dart';
 import 'package:addiction_quit/modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
@@ -20,6 +22,8 @@ class AppRoutes {
   static const String loading = '/loading';
   static const String welcome = '/welcome';
   static const String formStart = '/formStart';
+  static const String login = '/login';
+  static const String signup = '/signup';
 
   // Helper to check if user exists
   static Future<bool> checkUserExists() async {
@@ -77,6 +81,12 @@ class AppRoutes {
             child: const WelcomeScreen(),
           ),
         );
+
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+
+      case signup:
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
 
       // Add more routes here as needed
 

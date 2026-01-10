@@ -117,7 +117,6 @@ class MilestoneSelector extends StatelessWidget {
                       subtitle: Text('${milestone['points']} points'),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () {
-                        Navigator.pop(context);
                         onMilestoneSelected(milestone['days'] as int, milestone['points'] as int);
                       },
                     ),
