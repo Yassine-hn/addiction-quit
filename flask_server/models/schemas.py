@@ -4,10 +4,17 @@ from datetime import datetime
 
 # User models
 class UserRegister(BaseModel):
+    # Required fields
     name: str = Field(..., min_length=2, max_length=100)
     email: EmailStr
     password: str = Field(..., min_length=6)
+    
+    # Optional user profile fields (from local database)
     dob: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    language: Optional[str] = None
+    score: Optional[int] = Field(default=0, ge=0)
     
     @validator('password')
     def password_strength(cls, v):

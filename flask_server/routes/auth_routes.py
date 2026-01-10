@@ -31,7 +31,10 @@ def register():
             'email': data.email,
             'password_hash': hashed_password,
             'dob': data.dob,
-            'score': 0,
+            'bio': data.bio,
+            'avatar_url': data.avatar_url,
+            'language': data.language or 'en',
+            'score': data.score or 0,
             'is_active': True,
             'created_at': datetime.utcnow().isoformat()
         }
@@ -52,11 +55,7 @@ def register():
             'success': True,
             'message': 'User registered successfully',
             'data': {
-                'user': {
-                    'id': user['id'],
-                    'name': user['name'],
-                    'email': user['email']
-                },
+                'user': user,
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }
