@@ -1,16 +1,9 @@
 /// API Configuration for different environments
 class ApiConfig {
-  static const String environment = String.fromEnvironment(
-    'ENV',
-    defaultValue: 'development',
-  );
+  static const String environment = 'production';
 
   /// Production API URL (Render.com deployment)
-  /// Update this after deploying to Render
-  static const String productionUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'https://addiction-quit-api.onrender.com',
-  );
+  static const String productionUrl = 'https://addiction-quit-api.onrender.com';
 
   /// Development API URLs
   static const String developmentUrlAndroid = 'http://10.0.2.2:5000';

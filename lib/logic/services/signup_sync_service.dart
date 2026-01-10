@@ -46,17 +46,11 @@ class SignupSyncService {
     }
   }
 
-  /// Get current local user ID
+  /// Get current local user ID from SharedPreferences
+  /// Returns the ID of the currently active user, not just the first row in the table
   Future<String?> getCurrentLocalUserId() async {
     try {
-      final db = await DatabaseHelper.instance.database;
-      final users = await UsersTable.getAll(db);
-      
-      if (users.isEmpty) {
-        return null;
-      }
-      
-      return users.first['id']?.toString();
+      return await SharedPreferencesHelper.getUserId();
     } catch (e) {
       print('Error getting current local user ID: $e');
       return null;

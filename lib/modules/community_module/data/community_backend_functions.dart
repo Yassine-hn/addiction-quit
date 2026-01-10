@@ -4,21 +4,23 @@ import '../models/post_model.dart';
 
 final CommunityRepository _communityRepository = CommunityRepositoryImpl();
 
-Future<List<HeroModel>> getHeroesOfWeek() async {
+Future<({List<HeroModel> data, String? error})> getHeroesOfWeek() async {
   try {
-    return await _communityRepository.fetchHeroesOfWeek();
+    final data = await _communityRepository.fetchHeroesOfLastMonth();
+    return (data: data, error: null);
   } catch (e) {
     print('Error getting heroes: $e');
-    return getDefaultHeroes();
+    return (data: <HeroModel>[], error: 'Failed to load heroes. Please check your connection.');
   }
 }
 
-Future<List<PostModel>> getCommunityPosts() async {
+Future<({List<PostModel> data, String? error})> getCommunityPosts({int limit = 20, int offset = 0}) async {
   try {
-    return await _communityRepository.fetchCommunityPosts();
+    final data = await _communityRepository.fetchCommunityPosts(limit: limit, offset: offset);
+    return (data: data, error: null);
   } catch (e) {
     print('Error getting posts: $e');
-    return getDefaultPosts();
+    return (data: <PostModel>[], error: 'Failed to load posts. Please check your connection.');
   }
 }
 
@@ -59,26 +61,20 @@ Future<bool> commentOnPost({
   }
 }
 
-List<HeroModel> getDefaultHeroes() {
-  return [
-    HeroModel(name: 'Maria', days: 42, imageUrl: 'assets/images/default_avatar.png'),
-    HeroModel(name: 'David', days: 85, imageUrl: 'assets/images/default_avatar.png'),
-    HeroModel(name: 'Sophie', days: 61, imageUrl: 'assets/images/default_avatar.png'),
-    HeroModel(name: 'Chen', days: 76, imageUrl: 'assets/images/default_avatar.png'),
-  ];
+Future<bool> deletePost(int postId) async {
+  try {
+    return await _communityRepository.deletePost(postId);
+  } catch (e) {
+    print('Error deleting post: $e');
+    return false;
+  }
 }
 
-List<PostModel> getDefaultPosts() {
-  return [
-    PostModel(
-      authorName: 'Welcome',
-      authorImage: 'assets/images/default_avatar.png',
-      timeAgo: 'Just now',
-      content:
-          'Welcome to the community! Share your journey and support others in their recovery.',
-      likes: 0,
-      comments: 0,
-      badge: null,
-    ),
-  ];
+Future<bool> deleteComment(int commentId) async {
+  try {
+    return await _communityRepository.deleteComment(commentId);
+  } catch (e) {
+    print('Error deleting comment: $e');
+    return false;
+  }
 }

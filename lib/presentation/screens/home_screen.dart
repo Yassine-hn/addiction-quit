@@ -7,6 +7,8 @@ import '../../logic/cubits/daily_checkin_cubit.dart';
 import '../../logic/services/notif_service.dart';
 import '../../logic/cubits/language_cubit.dart';
 import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
+import '../../logic/cubits/auth_cubit.dart';
+import '../app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,6 +84,15 @@ class _HomeScreenState extends State<HomeScreen>
       _sobrietyFuture = getSobrietyTime();
       _savingsFuture = getSavingsStats();
     });
+  }
+
+  /// Helper method to localize time saved string
+  String _localizeTimeSaved(BuildContext context, String timeSaved) {
+    final l10n = AppLocalizations.of(context)!;
+    return timeSaved
+        .replaceAll(' min', ' ${l10n.min}')
+        .replaceAll(' h', ' ${l10n.h}')
+        .replaceAll(' d', ' ${l10n.d}');
   }
 
   @override
@@ -209,13 +220,13 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 24),
               // Notifications
               ListTile(
-                leading: const Icon(
-                  Icons.notifications,
-                  color: Color(0xFF00A3E0),
-                ),
-                title: const Text(
-                  'Notifications',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                leading: const Icon(Icons.notifications, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.notifications,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -225,9 +236,12 @@ class _HomeScreenState extends State<HomeScreen>
               // Parameters
               ListTile(
                 leading: const Icon(Icons.settings, color: Color(0xFF00A3E0)),
-                title: const Text(
-                  'Parameters',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                title: Text(
+                  AppLocalizations.of(context)!.parameters,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -237,9 +251,12 @@ class _HomeScreenState extends State<HomeScreen>
               // Language
               ListTile(
                 leading: const Icon(Icons.language, color: Color(0xFF00A3E0)),
-                title: const Text(
-                  'Language',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                title: Text(
+                  AppLocalizations.of(context)!.language,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 onTap: () {
                   _showLanguageDialog(context);
@@ -249,9 +266,12 @@ class _HomeScreenState extends State<HomeScreen>
               // About
               ListTile(
                 leading: const Icon(Icons.info, color: Color(0xFF00A3E0)),
-                title: const Text(
-                  'About',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                title: Text(
+                  AppLocalizations.of(context)!.about,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -261,9 +281,12 @@ class _HomeScreenState extends State<HomeScreen>
               // Logout
               ListTile(
                 leading: const Icon(Icons.logout, color: Color(0xFF00A3E0)),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                title: Text(
+                  AppLocalizations.of(context)!.logout,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 onTap: () {
                   _showLogoutConfirmationDialog(context);
@@ -308,25 +331,27 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _showLogoutConfirmationDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Logout'),
-          content: const Text('Are you sure you want to logout?'),
+          title: Text(l10n.confirmLogout),
+          content: Text(l10n.areYouSureWantToLogout),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Logout logic will be implemented later
+                context.read<AuthCubit>().logout();
+                Navigator.of(context).pushReplacementNamed(AppRoutes.home);
               },
-              child: const Text('Logout'),
+              child: Text(l10n.logout),
             ),
           ],
         );
@@ -421,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Slips',
+                        AppLocalizations.of(context)!.slips,
                         style: TextStyle(
                           color: Colors.grey[200],
                           fontSize: 12,
@@ -455,9 +480,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: const Text(
-                                            'Counter reset successfully',
-                                          ),
+                                          content: Text(AppLocalizations.of(context)!.counterResetSuccessfully),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
@@ -468,9 +491,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: const Text(
-                                            'Failed to reset counter',
-                                          ),
+                                          content: Text(AppLocalizations.of(context)!.failedToResetCounter),
                                           backgroundColor: Colors.red[600],
                                         ),
                                       );
@@ -496,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text('Reset'),
+                              : Text(AppLocalizations.of(context)!.reset),
                         ),
                       ),
                     ],
@@ -560,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen>
                 Expanded(
                   child: StatCard(
                     title: AppLocalizations.of(context)!.timeSaved,
-                    value: stats['timeSaved'] ?? '0 min',
+                    value: _localizeTimeSaved(context, stats['timeSaved'] ?? '0 min'),
                     unit: '',
                   ),
                 ),
@@ -925,9 +946,9 @@ class _HomeScreenState extends State<HomeScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Did you slip today?',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.didYouSlipToday,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -937,7 +958,7 @@ class _HomeScreenState extends State<HomeScreen>
         Row(
           children: [
             ChoiceChip(
-              label: const Text('No'),
+              label: Text(AppLocalizations.of(context)!.no),
               selected: !slipped,
               onSelected: (selected) {
                 if (selected) {
@@ -947,7 +968,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             const SizedBox(width: 8),
             ChoiceChip(
-              label: const Text('Yes'),
+              label: Text(AppLocalizations.of(context)!.yes),
               selected: slipped,
               onSelected: (selected) {
                 if (selected) {
@@ -961,9 +982,9 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(height: 12),
           Row(
             children: [
-              const Text(
-                'How many times?',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              Text(
+                AppLocalizations.of(context)!.howManyTimes,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(width: 12),
               Expanded(

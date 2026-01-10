@@ -243,19 +243,13 @@ class ApiService {
   // ============ Community Posts Endpoints ============
 
   Future<ApiResponse<List<Map<String, dynamic>>>> createPost({
-    required String title,
     required String content,
-    String? imageUrl,
-    String visibility = 'public',
   }) async {
     try {
       final response = await _dio.post(
         '/api/community/posts',
         data: {
-          'title': title,
           'content': content,
-          'image_url': imageUrl,
-          'visibility': visibility,
         },
       );
       return ApiResponse.fromJson(response.data);
@@ -279,12 +273,9 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<Map<String, dynamic>>>> getPostsSince(String since) async {
+  Future<ApiResponse<Map<String, dynamic>>> deletePost(int postId) async {
     try {
-      final response = await _dio.get(
-        '/api/community/posts/sync',
-        queryParameters: {'since': since},
-      );
+      final response = await _dio.delete('/api/community/posts/$postId');
       return ApiResponse.fromJson(response.data);
     } on DioException catch (e) {
       return _handleError(e);
@@ -292,6 +283,25 @@ class ApiService {
   }
 
   // ============ Comments Endpoints ============
+
+  Future<ApiResponse<List<Map<String, dynamic>>>> getComments({
+    required int postId,
+    int? limit,
+    int? offset,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '/api/community/posts/$postId/comments',
+        queryParameters: {
+          if (limit != null) 'limit': limit,
+          if (offset != null) 'offset': offset,
+        },
+      );
+      return ApiResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      return _handleError(e);
+    }
+  }
 
   Future<ApiResponse<Map<String, dynamic>>> createComment({
     required int postId,
@@ -308,12 +318,9 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<Map<String, dynamic>>>> getCommentsSince(String since) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteComment(int commentId) async {
     try {
-      final response = await _dio.get(
-        '/api/community/comments/sync',
-        queryParameters: {'since': since},
-      );
+      final response = await _dio.delete('/api/community/comments/$commentId');
       return ApiResponse.fromJson(response.data);
     } on DioException catch (e) {
       return _handleError(e);
@@ -331,35 +338,11 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<Map<String, dynamic>>>> getReactionsSince(String since) async {
-    try {
-      final response = await _dio.get(
-        '/api/community/reactions/sync',
-        queryParameters: {'since': since},
-      );
-      return ApiResponse.fromJson(response.data);
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
   // ============ Heroes/Leaderboard Endpoints ============
 
-  Future<ApiResponse<List<Map<String, dynamic>>>> getLeaderboard(String periodType) async {
+  Future<ApiResponse<List<Map<String, dynamic>>>> getHeroesLastMonth() async {
     try {
-      final response = await _dio.get('/api/leaderboard/$periodType');
-      return ApiResponse.fromJson(response.data);
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
-  Future<ApiResponse<List<Map<String, dynamic>>>> getHeroesSince(String since) async {
-    try {
-      final response = await _dio.get(
-        '/api/heroes/sync',
-        queryParameters: {'since': since},
-      );
+      final response = await _dio.get('/api/community/heroes/last-month');
       return ApiResponse.fromJson(response.data);
     } on DioException catch (e) {
       return _handleError(e);
@@ -444,10 +427,17 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    dynamic data = json['data'];
+    
+    // Handle List<Map<String, dynamic>> type
+    if (data is List) {
+      data = data.cast<Map<String, dynamic>>();
+    }
+    
     return ApiResponse<T>(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: json['data'] as T?,
+      data: data as T?,
       errors: json['errors'],
     );
   }

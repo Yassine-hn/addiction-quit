@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// No description provided for @days.
   ///
   /// In en, this message translates to:
-  /// **'DAYS'**
+  /// **'days'**
   String get days;
 
   /// No description provided for @hours.
@@ -1201,6 +1201,426 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Day 365 – One Year Victory'**
   String get milestone365Days;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameters'**
+  String get parameters;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Logout'**
+  String get confirmLogout;
+
+  /// No description provided for @areYouSureWantToLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get areYouSureWantToLogout;
+
+  /// No description provided for @addictionQuit.
+  ///
+  /// In en, this message translates to:
+  /// **'Addiction Quit'**
+  String get addictionQuit;
+
+  /// No description provided for @yourJourneyToRecovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Journey to Recovery'**
+  String get yourJourneyToRecovery;
+
+  /// No description provided for @aboutThisApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About This App'**
+  String get aboutThisApp;
+
+  /// No description provided for @aboutThisAppDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Addiction Quit is a comprehensive mobile application designed to help individuals overcome addiction and maintain sobriety. The app provides daily check-ins, progress tracking, financial savings calculations, and motivational support through quotes and milestones.'**
+  String get aboutThisAppDescription;
+
+  /// No description provided for @keyFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Features'**
+  String get keyFeatures;
+
+  /// No description provided for @sobrietyCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Sobriety Counter'**
+  String get sobrietyCounter;
+
+  /// No description provided for @sobrietyCounterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your sobriety progress in real-time'**
+  String get sobrietyCounterDescription;
+
+  /// No description provided for @dailyCheckIns.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Check-ins'**
+  String get dailyCheckIns;
+
+  /// No description provided for @dailyCheckInsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your mood, cravings, and journal entries'**
+  String get dailyCheckInsDescription;
+
+  /// No description provided for @progressTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Tracking'**
+  String get progressTracking;
+
+  /// No description provided for @progressTrackingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Visualize your achievements and milestones'**
+  String get progressTrackingDescription;
+
+  /// No description provided for @savingsCalculator.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings Calculator'**
+  String get savingsCalculator;
+
+  /// No description provided for @savingsCalculatorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See how much money you\'ve saved'**
+  String get savingsCalculatorDescription;
+
+  /// No description provided for @dailyInspiration.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Inspiration'**
+  String get dailyInspiration;
+
+  /// No description provided for @dailyInspirationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get motivated with daily quotes'**
+  String get dailyInspirationDescription;
+
+  /// No description provided for @cloudSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Sync'**
+  String get cloudSync;
+
+  /// No description provided for @cloudSyncDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync your data across devices securely'**
+  String get cloudSyncDescription;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App Version'**
+  String get appVersion;
+
+  /// No description provided for @buildNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Build Number'**
+  String get buildNumber;
+
+  /// No description provided for @releaseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date'**
+  String get releaseDate;
+
+  /// No description provided for @releaseDateValue.
+  ///
+  /// In en, this message translates to:
+  /// **'January 2026'**
+  String get releaseDateValue;
+
+  /// No description provided for @supportAndFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Feedback'**
+  String get supportAndFeedback;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @website.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get website;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @viewOurPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'View our privacy policy'**
+  String get viewOurPrivacyPolicy;
+
+  /// No description provided for @claimReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim Reward'**
+  String get claimReward;
+
+  /// No description provided for @congratulationsRewardClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! Reward claimed!'**
+  String get congratulationsRewardClaimed;
+
+  /// No description provided for @failedToClaimReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to claim reward'**
+  String get failedToClaimReward;
+
+  /// No description provided for @youAlreadyHaveActiveMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active milestone. Complete or reset it first.'**
+  String get youAlreadyHaveActiveMilestone;
+
+  /// No description provided for @signInOrCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account to sync your progress.'**
+  String get signInOrCreateAccount;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUp;
+
+  /// No description provided for @yourJourneyToBetterYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Your journey to a better you'**
+  String get yourJourneyToBetterYou;
+
+  /// No description provided for @current.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get current;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get welcomeBack;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @enterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterYourEmail;
+
+  /// No description provided for @pleaseEnterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get pleaseEnterYourEmail;
+
+  /// No description provided for @pleaseEnterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get pleaseEnterValidEmail;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @enterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
+
+  /// No description provided for @pleaseEnterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get pleaseEnterYourPassword;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? '**
+  String get dontHaveAccount;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @startYourRecoveryJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your recovery journey today'**
+  String get startYourRecoveryJourney;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @reEnterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get reEnterYourPassword;
+
+  /// No description provided for @pleaseConfirmYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get pleaseConfirmYourPassword;
+
+  /// No description provided for @passwordMustBeAtLeast6.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMustBeAtLeast6;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @slips.
+  ///
+  /// In en, this message translates to:
+  /// **'Slips'**
+  String get slips;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @counterResetSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter reset successfully'**
+  String get counterResetSuccessfully;
+
+  /// No description provided for @failedToResetCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset counter'**
+  String get failedToResetCounter;
+
+  /// No description provided for @didYouSlipToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you slip today?'**
+  String get didYouSlipToday;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @howManyTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'How many times?'**
+  String get howManyTimes;
+
+  /// No description provided for @min.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get min;
+
+  /// No description provided for @h.
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get h;
+
+  /// No description provided for @d.
+  ///
+  /// In en, this message translates to:
+  /// **'d'**
+  String get d;
 }
 
 class _AppLocalizationsDelegate

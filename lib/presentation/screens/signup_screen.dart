@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
 import '../app_routes.dart';
+import '../../l10n/app_localizations.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -40,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: Text(AppLocalizations.of(context)!.signUp),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -69,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     // Header
                     Text(
-                      'Create Account',
+                      AppLocalizations.of(context)!.createAccount,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -77,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Start your recovery journey today',
+                      AppLocalizations.of(context)!.startYourRecoveryJourney,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.grey,
                           ),
@@ -92,8 +93,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       textInputAction: TextInputAction.next,
                       enabled: !isLoading,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
+                        labelText: AppLocalizations.of(context)!.emailLabel,
+                        hintText: AppLocalizations.of(context)!.enterYourEmail,
                         prefixIcon: const Icon(Icons.email),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -101,10 +102,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return AppLocalizations.of(context)!.pleaseEnterYourEmail;
                         }
                         if (!value.contains('@') || !value.contains('.')) {
-                          return 'Please enter a valid email';
+                          return AppLocalizations.of(context)!.pleaseEnterValidEmail;
                         }
                         return null;
                       },
@@ -118,8 +119,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       textInputAction: TextInputAction.next,
                       enabled: !isLoading,
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
+                        labelText: AppLocalizations.of(context)!.password,
+                        hintText: AppLocalizations.of(context)!.enterYourPassword,
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -139,10 +140,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
+                          return AppLocalizations.of(context)!.pleaseEnterYourPassword;
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return AppLocalizations.of(context)!.passwordMustBeAtLeast6;
                         }
                         return null;
                       },
@@ -157,8 +158,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       enabled: !isLoading,
                       onFieldSubmitted: (_) => _handleSignup(),
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        hintText: 'Re-enter your password',
+                        labelText: AppLocalizations.of(context)!.confirmPassword,
+                        hintText: AppLocalizations.of(context)!.reEnterYourPassword,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -178,10 +179,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return AppLocalizations.of(context)!.pleaseConfirmYourPassword;
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return AppLocalizations.of(context)!.passwordsDoNotMatch;
                         }
                         return null;
                       },
@@ -206,9 +207,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
-                              'Sign Up',
-                              style: TextStyle(
+                          : Text(
+                              AppLocalizations.of(context)!.signUp,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -220,7 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Already have an account? '),
+                        Text(AppLocalizations.of(context)!.alreadyHaveAccount),
                         TextButton(
                           onPressed: isLoading
                               ? null
@@ -229,9 +230,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                     AppRoutes.login,
                                   );
                                 },
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.login,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),

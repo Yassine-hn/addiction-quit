@@ -99,7 +99,7 @@ class DashboardScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Start New Milestone'),
+                      child: Text(AppLocalizations.of(context)!.startNewMilestone),
                     ),
                   ],
                 ),
@@ -199,7 +199,7 @@ class DashboardScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.star),
-              label: const Text('Claim Reward'),
+              label: Text(AppLocalizations.of(context)!.claimReward),
             ),
           ),
         ],
@@ -254,8 +254,8 @@ class DashboardScreen extends StatelessWidget {
     if (success) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Congratulations! Reward claimed!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.congratulationsRewardClaimed),
             backgroundColor: Colors.green,
           ),
         );
@@ -263,8 +263,8 @@ class DashboardScreen extends StatelessWidget {
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to claim reward'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToClaimReward),
             backgroundColor: Colors.red,
           ),
         );
@@ -309,8 +309,8 @@ class DashboardScreen extends StatelessWidget {
             final existingMilestone = await milestoneRepo.getCurrentMilestone(addictionId);
             if (existingMilestone != null) {
               scaffoldMessenger.showSnackBar(
-                const SnackBar(
-                  content: Text('You already have an active milestone. Complete or reset it first.'),
+                SnackBar(
+                  content: Text(l10n.youAlreadyHaveActiveMilestone),
                 ),
               );
               return;

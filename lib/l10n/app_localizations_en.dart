@@ -149,7 +149,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get youAreSoberFor => 'You are sober for';
 
   @override
-  String get days => 'DAYS';
+  String get days => 'days';
 
   @override
   String get hours => 'HOURS';
@@ -591,4 +591,220 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestone365Days => 'Day 365 – One Year Victory';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get parameters => 'Parameters';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get confirmLogout => 'Confirm Logout';
+
+  @override
+  String get areYouSureWantToLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get addictionQuit => 'Addiction Quit';
+
+  @override
+  String get yourJourneyToRecovery => 'Your Journey to Recovery';
+
+  @override
+  String get aboutThisApp => 'About This App';
+
+  @override
+  String get aboutThisAppDescription =>
+      'Addiction Quit is a comprehensive mobile application designed to help individuals overcome addiction and maintain sobriety. The app provides daily check-ins, progress tracking, financial savings calculations, and motivational support through quotes and milestones.';
+
+  @override
+  String get keyFeatures => 'Key Features';
+
+  @override
+  String get sobrietyCounter => 'Sobriety Counter';
+
+  @override
+  String get sobrietyCounterDescription =>
+      'Track your sobriety progress in real-time';
+
+  @override
+  String get dailyCheckIns => 'Daily Check-ins';
+
+  @override
+  String get dailyCheckInsDescription =>
+      'Log your mood, cravings, and journal entries';
+
+  @override
+  String get progressTracking => 'Progress Tracking';
+
+  @override
+  String get progressTrackingDescription =>
+      'Visualize your achievements and milestones';
+
+  @override
+  String get savingsCalculator => 'Savings Calculator';
+
+  @override
+  String get savingsCalculatorDescription => 'See how much money you\'ve saved';
+
+  @override
+  String get dailyInspiration => 'Daily Inspiration';
+
+  @override
+  String get dailyInspirationDescription => 'Get motivated with daily quotes';
+
+  @override
+  String get cloudSync => 'Cloud Sync';
+
+  @override
+  String get cloudSyncDescription => 'Sync your data across devices securely';
+
+  @override
+  String get appVersion => 'App Version';
+
+  @override
+  String get buildNumber => 'Build Number';
+
+  @override
+  String get releaseDate => 'Release Date';
+
+  @override
+  String get releaseDateValue => 'January 2026';
+
+  @override
+  String get supportAndFeedback => 'Support & Feedback';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get viewOurPrivacyPolicy => 'View our privacy policy';
+
+  @override
+  String get claimReward => 'Claim Reward';
+
+  @override
+  String get congratulationsRewardClaimed => 'Congratulations! Reward claimed!';
+
+  @override
+  String get failedToClaimReward => 'Failed to claim reward';
+
+  @override
+  String get youAlreadyHaveActiveMilestone =>
+      'You already have an active milestone. Complete or reset it first.';
+
+  @override
+  String get signInOrCreateAccount =>
+      'Sign in or create an account to sync your progress.';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get yourJourneyToBetterYou => 'Your journey to a better you';
+
+  @override
+  String get current => 'Current';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get welcomeBack => 'Welcome Back';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get enterYourEmail => 'Enter your email';
+
+  @override
+  String get pleaseEnterYourEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get pleaseEnterYourPassword => 'Please enter your password';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? ';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get startYourRecoveryJourney => 'Start your recovery journey today';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get reEnterYourPassword => 'Re-enter your password';
+
+  @override
+  String get pleaseConfirmYourPassword => 'Please confirm your password';
+
+  @override
+  String get passwordMustBeAtLeast6 => 'Password must be at least 6 characters';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? ';
+
+  @override
+  String get slips => 'Slips';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get counterResetSuccessfully => 'Counter reset successfully';
+
+  @override
+  String get failedToResetCounter => 'Failed to reset counter';
+
+  @override
+  String get didYouSlipToday => 'Did you slip today?';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get howManyTimes => 'How many times?';
+
+  @override
+  String get min => 'min';
+
+  @override
+  String get h => 'h';
+
+  @override
+  String get d => 'd';
 }

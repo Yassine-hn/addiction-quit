@@ -8,6 +8,7 @@ from routes.auth_routes import auth_bp
 from routes.addiction_routes import addiction_bp
 from routes.survey_routes import survey_bp
 from routes.milestone_routes import milestone_bp
+from routes.community_routes import community_bp
 
 def create_app(config_name=None):
     """Application factory pattern"""
@@ -34,6 +35,7 @@ def create_app(config_name=None):
     app.register_blueprint(addiction_bp)
     app.register_blueprint(survey_bp)
     app.register_blueprint(milestone_bp)
+    app.register_blueprint(community_bp)
     
     # Health check endpoint
     @app.route('/health', methods=['GET'])
