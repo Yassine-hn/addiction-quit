@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/ValidationButton.dart';
 import '../data/user_data_service.dart';
+import '../data/shared_preferences_helper.dart';
 import 'data_saving_screen.dart';
 import '../models/User_Info_model.dart';
 import '../../../presentation/app_routes.dart';
@@ -22,12 +23,17 @@ class _StepFinalState extends State<StepFinal>
   final FocusNode _usernameFocusNode = FocusNode();
 
   bool _isUsernameValid = false;
+  bool _isExistingUser = false;
+  String? _existingUsername;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    // Check if user already exists
+    _checkExistingUser();
 
     // Load existing username from cubit
     final cubit = BlocProvider.of<UserInfoCubit>(context, listen: false);
@@ -51,8 +57,24 @@ class _StepFinalState extends State<StepFinal>
     // Start animation
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _animationController.forward();
-      _usernameFocusNode.requestFocus();
+      if (!_isExistingUser) {
+        _usernameFocusNode.requestFocus();
+      }
     });
+  }
+
+  /// Check if user already exists in the system
+  Future<void> _checkExistingUser() async {
+    final existingUserId = await SharedPreferencesHelper.getUserId();
+    final existingUsername = await SharedPreferencesHelper.getUsername();
+
+    if (existingUserId != null && existingUsername != null) {
+      setState(() {
+        _isExistingUser = true;
+        _existingUsername = existingUsername;
+        _isUsernameValid = true; // Skip validation for existing users
+      });
+    }
   }
 
   void _validateUsername(String value) {
@@ -65,7 +87,10 @@ class _StepFinalState extends State<StepFinal>
 
   void _handleGetStarted() async {
     if (_isUsernameValid) {
-      final username = _usernameController.text.trim();
+      // For existing users, use the stored username; for new users, use the entered username
+      final username = _isExistingUser 
+          ? _existingUsername! 
+          : _usernameController.text.trim();
       final cubit = context.read<UserInfoCubit>();
 
       // Update username in cubit
@@ -228,8 +253,11 @@ class _StepFinalState extends State<StepFinal>
                                         ),
                                         SizedBox(height: isLandscape ? 16 : 24),
 
+                                        // Conditional subtitle based on user type
                                         Text(
-                                          AppLocalizations.of(context)!.chooseUsername,
+                                          _isExistingUser
+                                              ? 'Welcome back, $_existingUsername!'
+                                              : AppLocalizations.of(context)!.chooseUsername,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: isLandscape ? 20 : 22,
@@ -252,142 +280,194 @@ class _StepFinalState extends State<StepFinal>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        // Username Input
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(
-                                              0.15,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            border: Border.all(
+                                        // Username Input - Only shown for new users
+                                        if (!_isExistingUser)
+                                          Container(
+                                            decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(
-                                                0.3,
+                                                0.15,
                                               ),
-                                              width: 1.5,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black.withOpacity(
-                                                  0.2,
-                                                ),
-                                                blurRadius: 20,
-                                                offset: const Offset(0, 10),
+                                              borderRadius: BorderRadius.circular(
+                                                16,
                                               ),
-                                            ],
-                                          ),
-                                          child: TextField(
-                                            controller: _usernameController,
-                                            focusNode: _usernameFocusNode,
-                                            style: TextStyle(
-                                              fontSize: isLandscape ? 18 : 20,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            decoration: InputDecoration(
-                                              hintText: 'Enter your name',
-                                              hintStyle: TextStyle(
-                                                fontSize: isLandscape ? 16 : 18,
+                                              border: Border.all(
                                                 color: Colors.white.withOpacity(
-                                                  0.6,
+                                                  0.3,
                                                 ),
+                                                width: 1.5,
                                               ),
-                                              border: InputBorder.none,
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                    horizontal: 20,
-                                                    vertical: isLandscape
-                                                        ? 16
-                                                        : 20,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(
+                                                    0.2,
                                                   ),
-                                              prefixIcon: Icon(
-                                                Icons.person_outline,
-                                                color: Colors.white.withOpacity(
-                                                  0.8,
+                                                  blurRadius: 20,
+                                                  offset: const Offset(0, 10),
                                                 ),
-                                                size: isLandscape ? 24 : 28,
-                                              ),
-                                              suffixIcon:
-                                                  _usernameController
-                                                      .text
-                                                      .isNotEmpty
-                                                  ? IconButton(
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          _usernameController
-                                                              .clear();
-                                                          _isUsernameValid =
-                                                              false;
-                                                        });
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.clear,
-                                                        color: Colors.white
-                                                            .withOpacity(0.8),
-                                                        size: isLandscape
-                                                            ? 20
-                                                            : 24,
-                                                      ),
-                                                    )
-                                                  : null,
+                                              ],
                                             ),
-                                            onChanged: _validateUsername,
-                                            textCapitalization:
-                                                TextCapitalization.words,
-                                            cursorColor: Colors.white,
-                                          ),
-                                        ),
-                                        SizedBox(height: isLandscape ? 12 : 16),
-
-                                        // Validation message
-                                        AnimatedSwitcher(
-                                          duration: const Duration(
-                                            milliseconds: 300,
-                                          ),
-                                          child:
-                                              _usernameController
-                                                  .text
-                                                  .isNotEmpty
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      _isUsernameValid
-                                                          ? Icons.check_circle
-                                                          : Icons.error_outline,
-                                                      color: _isUsernameValid
-                                                          ? Colors.green[300]
-                                                          : Colors.orange[300],
-                                                      size: isLandscape
+                                            child: TextField(
+                                              controller: _usernameController,
+                                              focusNode: _usernameFocusNode,
+                                              style: TextStyle(
+                                                fontSize: isLandscape ? 18 : 20,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              decoration: InputDecoration(
+                                                hintText: 'Enter your name',
+                                                hintStyle: TextStyle(
+                                                  fontSize: isLandscape ? 16 : 18,
+                                                  color: Colors.white.withOpacity(
+                                                    0.6,
+                                                  ),
+                                                ),
+                                                border: InputBorder.none,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: isLandscape
                                                           ? 16
                                                           : 20,
                                                     ),
-                                                    const SizedBox(width: 8),
-                                                    Text(
-                                                      _isUsernameValid
-                                                          ? 'Perfect! Ready to begin'
-                                                          : 'Enter at least 2 characters',
-                                                      style: TextStyle(
-                                                        fontSize: isLandscape
-                                                            ? 12
-                                                            : 14,
+                                                prefixIcon: Icon(
+                                                  Icons.person_outline,
+                                                  color: Colors.white.withOpacity(
+                                                    0.8,
+                                                  ),
+                                                  size: isLandscape ? 24 : 28,
+                                                ),
+                                                suffixIcon:
+                                                    _usernameController
+                                                        .text
+                                                        .isNotEmpty
+                                                    ? IconButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            _usernameController
+                                                                .clear();
+                                                            _isUsernameValid =
+                                                                false;
+                                                          });
+                                                        },
+                                                        icon: Icon(
+                                                          Icons.clear,
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          size: isLandscape
+                                                              ? 20
+                                                              : 24,
+                                                        ),
+                                                      )
+                                                    : null,
+                                              ),
+                                              onChanged: _validateUsername,
+                                              textCapitalization:
+                                                  TextCapitalization.words,
+                                              cursorColor: Colors.white,
+                                            ),
+                                          ),
+                                        if (!_isExistingUser)
+                                          SizedBox(height: isLandscape ? 12 : 16),
+
+                                        // Validation message - Only for new users
+                                        if (!_isExistingUser)
+                                          AnimatedSwitcher(
+                                            duration: const Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            child:
+                                                _usernameController
+                                                    .text
+                                                    .isNotEmpty
+                                                ? Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(
+                                                        _isUsernameValid
+                                                            ? Icons.check_circle
+                                                            : Icons.error_outline,
                                                         color: _isUsernameValid
                                                             ? Colors.green[300]
-                                                            : Colors
-                                                                  .orange[300],
-                                                        fontWeight:
-                                                            FontWeight.w500,
+                                                            : Colors.orange[300],
+                                                        size: isLandscape
+                                                            ? 16
+                                                            : 20,
                                                       ),
+                                                      const SizedBox(width: 8),
+                                                      Text(
+                                                        _isUsernameValid
+                                                            ? 'Perfect! Ready to begin'
+                                                            : 'Enter at least 2 characters',
+                                                        style: TextStyle(
+                                                          fontSize: isLandscape
+                                                              ? 12
+                                                              : 14,
+                                                          color: _isUsernameValid
+                                                              ? Colors.green[300]
+                                                              : Colors
+                                                                    .orange[300],
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : const SizedBox.shrink(),
+                                          ),
+
+                                        // Info message for existing users
+                                        if (_isExistingUser)
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: isLandscape ? 12 : 16,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.withOpacity(
+                                                0.2,
+                                              ),
+                                              borderRadius: BorderRadius.circular(
+                                                12,
+                                              ),
+                                              border: Border.all(
+                                                color: Colors.green.withOpacity(
+                                                  0.5,
+                                                ),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.check_circle,
+                                                  color: Colors.green[300],
+                                                  size: isLandscape ? 20 : 24,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Text(
+                                                    'Ready to add a new addiction to your profile?',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize: isLandscape
+                                                          ? 13
+                                                          : 14,
+                                                      color: Colors.green[300],
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
-                                                  ],
-                                                )
-                                              : const SizedBox.shrink(),
-                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
 
                                         // Welcome message
-                                        if (isLandscape)
+                                        if (isLandscape && !_isExistingUser)
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               top: 16,
@@ -430,7 +510,7 @@ class _StepFinalState extends State<StepFinal>
                                         if (!isLandscape) const Spacer(),
 
                                         // Welcome message (for portrait only)
-                                        if (!isLandscape)
+                                        if (!isLandscape && !_isExistingUser)
                                           AnimatedOpacity(
                                             opacity:
                                                 _usernameController
@@ -457,6 +537,23 @@ class _StepFinalState extends State<StepFinal>
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.w400,
                                                 ),
+                                              ),
+                                            ),
+                                          ),
+                                        
+                                        // Welcome message for existing users
+                                        if (!isLandscape && _isExistingUser)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 20,
+                                            ),
+                                            child: Text(
+                                              'Ready to track a new addiction?',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
                                               ),
                                             ),
                                           ),
