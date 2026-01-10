@@ -5,6 +5,8 @@ import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
 import '../../logic/cubits/daily_checkin_cubit.dart';
 import '../../logic/cubits/language_cubit.dart';
+import '../../logic/cubits/auth_cubit.dart';
+import '../app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -315,7 +317,8 @@ class _HomeScreenState extends State<HomeScreen>
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Logout logic will be implemented later
+                context.read<AuthCubit>().logout();
+                Navigator.of(context).pushReplacementNamed(AppRoutes.home);
               },
               child: const Text('Logout'),
             ),
