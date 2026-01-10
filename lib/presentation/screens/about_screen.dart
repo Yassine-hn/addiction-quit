@@ -6,23 +6,24 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text(l10n.about),
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildAppHeader(),
+            _buildAppHeader(l10n),
             const SizedBox(height: 32),
-            _buildAboutSection(context),
+            _buildAboutSection(context, l10n),
             const SizedBox(height: 24),
-            _buildFeaturesSection(context),
+            _buildFeaturesSection(context, l10n),
             const SizedBox(height: 24),
-            _buildVersionInfo(),
+            _buildVersionInfo(l10n),
             const SizedBox(height: 24),
-            _buildContactSection(context),
+            _buildContactSection(context, l10n),
             const SizedBox(height: 32),
           ],
         ),
@@ -30,7 +31,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppHeader() {
+  Widget _buildAppHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
       decoration: BoxDecoration(
@@ -57,18 +58,18 @@ class AboutScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Addiction Quit',
-            style: TextStyle(
+          Text(
+            l10n.addictionQuit,
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Your Journey to Recovery',
-            style: TextStyle(
+          Text(
+            l10n.yourJourneyToRecovery,
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.white70,
             ),
@@ -78,21 +79,21 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAboutSection(BuildContext context) {
+  Widget _buildAboutSection(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'About This App',
+            l10n.aboutThisApp,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 12),
           Text(
-            'Addiction Quit is a comprehensive mobile application designed to help individuals overcome addiction and maintain sobriety. The app provides daily check-ins, progress tracking, financial savings calculations, and motivational support through quotes and milestones.',
+            l10n.aboutThisAppDescription,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   height: 1.6,
                   color: Colors.grey[700],
@@ -103,14 +104,14 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesSection(BuildContext context) {
+  Widget _buildFeaturesSection(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Key Features',
+            l10n.keyFeatures,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -118,38 +119,38 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildFeatureItem(
             icon: Icons.timer,
-            title: 'Sobriety Counter',
-            description: 'Track your sobriety progress in real-time',
+            title: l10n.sobrietyCounter,
+            description: l10n.sobrietyCounterDescription,
           ),
           const SizedBox(height: 12),
           _buildFeatureItem(
             icon: Icons.check_circle,
-            title: 'Daily Check-ins',
-            description: 'Log your mood, cravings, and journal entries',
+            title: l10n.dailyCheckIns,
+            description: l10n.dailyCheckInsDescription,
           ),
           const SizedBox(height: 12),
           _buildFeatureItem(
             icon: Icons.trending_up,
-            title: 'Progress Tracking',
-            description: 'Visualize your achievements and milestones',
+            title: l10n.progressTracking,
+            description: l10n.progressTrackingDescription,
           ),
           const SizedBox(height: 12),
           _buildFeatureItem(
             icon: Icons.attach_money,
-            title: 'Savings Calculator',
-            description: 'See how much money you\'ve saved',
+            title: l10n.savingsCalculator,
+            description: l10n.savingsCalculatorDescription,
           ),
           const SizedBox(height: 12),
           _buildFeatureItem(
             icon: Icons.lightbulb,
-            title: 'Daily Inspiration',
-            description: 'Get motivated with daily quotes',
+            title: l10n.dailyInspiration,
+            description: l10n.dailyInspirationDescription,
           ),
           const SizedBox(height: 12),
           _buildFeatureItem(
             icon: Icons.sync,
-            title: 'Cloud Sync',
-            description: 'Sync your data across devices securely',
+            title: l10n.cloudSync,
+            description: l10n.cloudSyncDescription,
           ),
         ],
       ),
@@ -204,7 +205,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVersionInfo() {
+  Widget _buildVersionInfo(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Card(
@@ -220,7 +221,7 @@ class AboutScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'App Version',
+                    l10n.appVersion,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -241,7 +242,7 @@ class AboutScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Build Number',
+                    l10n.buildNumber,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -262,15 +263,15 @@ class AboutScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Release Date',
+                    l10n.releaseDate,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
                   ),
-                  const Text(
-                    'January 2026',
-                    style: TextStyle(
+                  Text(
+                    l10n.releaseDateValue,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -285,14 +286,14 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactSection(BuildContext context) {
+  Widget _buildContactSection(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Support & Feedback',
+            l10n.supportAndFeedback,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -309,20 +310,20 @@ class AboutScreen extends StatelessWidget {
                 children: [
                   _buildContactItem(
                     icon: Icons.email,
-                    label: 'Email',
+                    label: l10n.email,
                     value: 'support@addictionquit.com',
                   ),
                   const Divider(height: 16),
                   _buildContactItem(
                     icon: Icons.language,
-                    label: 'Website',
+                    label: l10n.website,
                     value: 'www.addictionquit.com',
                   ),
                   const Divider(height: 16),
                   _buildContactItem(
                     icon: Icons.description,
-                    label: 'Privacy Policy',
-                    value: 'View our privacy policy',
+                    label: l10n.privacyPolicy,
+                    value: l10n.viewOurPrivacyPolicy,
                   ),
                 ],
               ),

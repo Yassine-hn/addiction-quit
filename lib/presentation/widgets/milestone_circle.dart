@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class MilestoneCircle extends StatelessWidget {
   final double percentage; // 0.0 to 100.0
@@ -51,9 +52,11 @@ class MilestoneCircle extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        '$daysPassed / $targetDays days',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      Builder(
+                        builder: (context) => Text(
+                          '$daysPassed / $targetDays ${AppLocalizations.of(context)!.days}',
+                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        ),
                       ),
                     ],
                   ),

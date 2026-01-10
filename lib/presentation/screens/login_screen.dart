@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
 import '../app_routes.dart';
+import '../../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -37,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text(AppLocalizations.of(context)!.login),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Addiction Quit',
+                        AppLocalizations.of(context)!.addictionQuit,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -81,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Welcome Back',
+                        AppLocalizations.of(context)!.welcomeBack,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Colors.grey,
                             ),
@@ -96,8 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         textInputAction: TextInputAction.next,
                         enabled: !isLoading,
                         decoration: InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'Enter your email',
+                          labelText: AppLocalizations.of(context)!.emailLabel,
+                          hintText: AppLocalizations.of(context)!.enterYourEmail,
                           prefixIcon: const Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -105,10 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return AppLocalizations.of(context)!.pleaseEnterYourEmail;
                           }
                           if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                            return AppLocalizations.of(context)!.pleaseEnterValidEmail;
                           }
                           return null;
                         },
@@ -123,8 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabled: !isLoading,
                         onFieldSubmitted: (_) => _handleLogin(),
                         decoration: InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter your password',
+                          labelText: AppLocalizations.of(context)!.password,
+                          hintText: AppLocalizations.of(context)!.enterYourPassword,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -144,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return AppLocalizations.of(context)!.pleaseEnterYourPassword;
                           }
                           return null;
                         },
@@ -169,9 +170,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Login',
-                                style: TextStyle(
+                            : Text(
+                                AppLocalizations.of(context)!.login,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -183,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't have an account? "),
+                          Text(AppLocalizations.of(context)!.dontHaveAccount),
                           TextButton(
                             onPressed: isLoading
                                 ? null
@@ -192,9 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       AppRoutes.signup,
                                     );
                                   },
-                            child: const Text(
-                              'Sign Up',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)!.signUp,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

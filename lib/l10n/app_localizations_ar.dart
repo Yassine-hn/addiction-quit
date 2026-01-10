@@ -586,4 +586,219 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get milestone365Days => 'اليوم 365 – انتصار سنة واحدة';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get parameters => 'الإعدادات';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get about => 'حول';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get confirmLogout => 'تأكيد تسجيل الخروج';
+
+  @override
+  String get areYouSureWantToLogout => 'هل أنت متأكد من رغبتك في تسجيل الخروج؟';
+
+  @override
+  String get addictionQuit => 'الإقلاع عن الإدمان';
+
+  @override
+  String get yourJourneyToRecovery => 'رحلتك نحو التعافي';
+
+  @override
+  String get aboutThisApp => 'حول هذا التطبيق';
+
+  @override
+  String get aboutThisAppDescription =>
+      'الإقلاع عن الإدمان هو تطبيق جوال شامل مصمم لمساعدة الأفراد على التغلب على الإدمان والحفاظ على الرصانة. يوفر التطبيق تسجيلات وصول يومية وتتبع التقدم وحسابات التوفير المالي والدعم التحفيزي من خلال الاقتباسات والمعالم.';
+
+  @override
+  String get keyFeatures => 'الميزات الرئيسية';
+
+  @override
+  String get sobrietyCounter => 'عداد الرصانة';
+
+  @override
+  String get sobrietyCounterDescription => 'تتبع تقدم رصانتك في الوقت الفعلي';
+
+  @override
+  String get dailyCheckIns => 'التسجيلات اليومية';
+
+  @override
+  String get dailyCheckInsDescription => 'سجل مزاجك ورغباتك ويومياتك';
+
+  @override
+  String get progressTracking => 'تتبع التقدم';
+
+  @override
+  String get progressTrackingDescription => 'تصور إنجازاتك ومعالمك';
+
+  @override
+  String get savingsCalculator => 'حاسبة التوفير';
+
+  @override
+  String get savingsCalculatorDescription => 'شاهد كم وفرت من المال';
+
+  @override
+  String get dailyInspiration => 'الإلهام اليومي';
+
+  @override
+  String get dailyInspirationDescription =>
+      'احصل على الحافز مع الاقتباسات اليومية';
+
+  @override
+  String get cloudSync => 'المزامنة السحابية';
+
+  @override
+  String get cloudSyncDescription => 'زامن بياناتك عبر الأجهزة بشكل آمن';
+
+  @override
+  String get appVersion => 'إصدار التطبيق';
+
+  @override
+  String get buildNumber => 'رقم البناء';
+
+  @override
+  String get releaseDate => 'تاريخ الإصدار';
+
+  @override
+  String get releaseDateValue => 'يناير 2026';
+
+  @override
+  String get supportAndFeedback => 'الدعم والملاحظات';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get website => 'الموقع الإلكتروني';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get viewOurPrivacyPolicy => 'عرض سياسة الخصوصية الخاصة بنا';
+
+  @override
+  String get claimReward => 'اطلب المكافأة';
+
+  @override
+  String get congratulationsRewardClaimed => 'تهانينا! تم الحصول على المكافأة!';
+
+  @override
+  String get failedToClaimReward => 'فشل في الحصول على المكافأة';
+
+  @override
+  String get youAlreadyHaveActiveMilestone =>
+      'لديك بالفعل معلم نشط. أكمله أو أعد تعيينه أولاً.';
+
+  @override
+  String get signInOrCreateAccount =>
+      'سجل الدخول أو أنشئ حساباً لمزامنة تقدمك.';
+
+  @override
+  String get signUp => 'اشترك';
+
+  @override
+  String get yourJourneyToBetterYou => 'رحلتك نحو نسخة أفضل منك';
+
+  @override
+  String get current => 'الحالي';
+
+  @override
+  String get login => 'تسجيل الدخول';
+
+  @override
+  String get welcomeBack => 'مرحباً بعودتك';
+
+  @override
+  String get emailLabel => 'البريد الإلكتروني';
+
+  @override
+  String get enterYourEmail => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterYourEmail => 'يرجى إدخال بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterValidEmail => 'يرجى إدخال بريد إلكتروني صالح';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get enterYourPassword => 'أدخل كلمة المرور';
+
+  @override
+  String get pleaseEnterYourPassword => 'يرجى إدخال كلمة المرور';
+
+  @override
+  String get dontHaveAccount => 'ليس لديك حساب؟ ';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get startYourRecoveryJourney => 'ابدأ رحلة التعافي اليوم';
+
+  @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get reEnterYourPassword => 'أعد إدخال كلمة المرور';
+
+  @override
+  String get pleaseConfirmYourPassword => 'يرجى تأكيد كلمة المرور';
+
+  @override
+  String get passwordMustBeAtLeast6 =>
+      'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة';
+
+  @override
+  String get alreadyHaveAccount => 'لديك حساب بالفعل؟ ';
+
+  @override
+  String get slips => 'الانزلاقات';
+
+  @override
+  String get reset => 'إعادة تعيين';
+
+  @override
+  String get counterResetSuccessfully => 'تم إعادة تعيين العداد بنجاح';
+
+  @override
+  String get failedToResetCounter => 'فشل في إعادة تعيين العداد';
+
+  @override
+  String get didYouSlipToday => 'هل انزلقت اليوم؟';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
+  String get howManyTimes => 'كم مرة؟';
+
+  @override
+  String get min => 'د';
+
+  @override
+  String get h => 'س';
+
+  @override
+  String get d => 'ي';
 }

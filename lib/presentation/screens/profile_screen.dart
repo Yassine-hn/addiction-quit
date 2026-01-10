@@ -10,8 +10,6 @@ import '../../data/repositories/settings_repository.dart';
 import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 import '../app_routes.dart';
 
-import 'login_screen.dart';
-import 'signup_screen.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
 
@@ -158,7 +156,7 @@ class UserProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Sign in or create an account to sync your progress.',
+                          AppLocalizations.of(context)!.signInOrCreateAccount,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white70,
@@ -174,7 +172,7 @@ class UserProfileScreen extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Sign up'),
+                    child: Text(AppLocalizations.of(context)!.signUp),
                   ),
                 ],
               ),
@@ -257,7 +255,7 @@ class UserProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                profile['tagline'] ?? 'Your journey to a better you',
+                profile['tagline'] ?? AppLocalizations.of(context)!.yourJourneyToBetterYou,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -454,10 +452,10 @@ class UserProfileScreen extends StatelessWidget {
     required Color color,
     int? addictionId,
     bool isCurrent = false,
-    BuildContext? context,
+    required BuildContext context,
   }) {
     return InkWell(
-      onTap: addictionId != null && context != null
+      onTap: addictionId != null
           ? () async {
               // Switch to this addiction
               final settingsRepo = SettingsRepository();
@@ -519,12 +517,12 @@ class UserProfileScreen extends StatelessWidget {
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.check_circle, size: 14, color: Color(0xFF00C853)),
-                              SizedBox(width: 4),
+                            children: [
+                              const Icon(Icons.check_circle, size: 14, color: Color(0xFF00C853)),
+                              const SizedBox(width: 4),
                               Text(
-                                'Current',
-                                style: TextStyle(
+                                AppLocalizations.of(context)!.current,
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xFF00C853),
