@@ -427,10 +427,17 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    dynamic data = json['data'];
+    
+    // Handle List<Map<String, dynamic>> type
+    if (data is List) {
+      data = data.cast<Map<String, dynamic>>();
+    }
+    
     return ApiResponse<T>(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: json['data'] as T?,
+      data: data as T?,
       errors: json['errors'],
     );
   }

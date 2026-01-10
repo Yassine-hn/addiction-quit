@@ -30,11 +30,9 @@ class CommunityRepositoryImpl implements CommunityRepository {
         return [];
       }
 
-      final List<dynamic> heroesData = response.data is List ? response.data as List : [];
-      
-      return heroesData.map((hero) {
-        return HeroModel.fromMap(hero as Map<String, dynamic>);
-      }).toList();
+      return (response.data as List<dynamic>)
+          .map((hero) => HeroModel.fromMap(hero as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       print('Error fetching heroes: $e');
       rethrow;
@@ -54,11 +52,9 @@ class CommunityRepositoryImpl implements CommunityRepository {
         return [];
       }
 
-      final List<dynamic> postsData = response.data is List ? response.data as List : [];
-      
-      return postsData.map((post) {
-        return PostModel.fromMap(post as Map<String, dynamic>);
-      }).toList();
+      return (response.data as List<dynamic>)
+          .map((post) => PostModel.fromMap(post as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       print('Error fetching posts: $e');
       rethrow;
