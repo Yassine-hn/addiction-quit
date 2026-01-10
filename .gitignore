@@ -11,6 +11,10 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+SEEDING_GUIDE.md
+DEPLOYMENT_GUIDE.md
+QUICK_DEVELOPMENT_REFERENCE.md
+DEVELOPMENT.md
 
 # IntelliJ related
 *.iml

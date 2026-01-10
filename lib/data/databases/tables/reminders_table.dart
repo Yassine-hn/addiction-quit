@@ -4,7 +4,7 @@ class RemindersTable {
   static const String tableName = 'reminders';
 
   /// Insert a new reminder
-  static Future<int> insert(Database db, Map<String, dynamic> reminder) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> reminder) async {
     return await db.insert(tableName, reminder);
   }
 
@@ -22,12 +22,12 @@ class RemindersTable {
   /// Get all reminders for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId,
+    Object userId,
   ) async {
     return await db.query(
       tableName,
       where: 'user_id = ?',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'reminder_time ASC',
     );
   }
@@ -48,12 +48,12 @@ class RemindersTable {
   /// Get daily reminders
   static Future<List<Map<String, dynamic>>> getDailyReminders(
     Database db,
-    int userId,
+    Object userId,
   ) async {
     return await db.query(
       tableName,
       where: 'user_id = ? AND repeat_daily = 1',
-      whereArgs: [userId],
+      whereArgs: [userId.toString()],
       orderBy: 'reminder_time ASC',
     );
   }

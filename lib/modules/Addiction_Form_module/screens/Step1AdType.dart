@@ -7,6 +7,7 @@ import '../widgets/AddictionListItem.dart';
 import '../widgets/SearchBarWidget.dart';
 import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
+import '../../../l10n/app_localizations.dart';
 
 class StepAddictionType extends StatefulWidget {
   const StepAddictionType({super.key});
@@ -93,10 +94,10 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Title Section
-                          const SectionTitle(
-                            title: 'Select Addiction',
+                          SectionTitle(
+                            title: AppLocalizations.of(context)!.selectAddiction,
                             subtitle:
-                                'What type of addiction\ndo you want to quit?',
+                                AppLocalizations.of(context)!.whatTypeOfAddiction,
                           ),
                           const SizedBox(height: 32),
 
@@ -104,7 +105,7 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
                           SearchBarWidget(
                             controller: _searchController,
                             onChanged: _filterList,
-                            hintText: 'Search for an addiction...',
+                            hintText: AppLocalizations.of(context)!.searchForAddiction,
                           ),
                           const SizedBox(height: 24),
                         ],
@@ -138,7 +139,7 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
                 ],
               ),
               child: ValidationButton(
-                label: 'Continue',
+                label: AppLocalizations.of(context)!.continueLabel,
                 onPressed: () =>
                     _selectedItem != null ? _handleContinue() : null,
                 enabled: _selectedItem != null,
@@ -152,12 +153,12 @@ class _StepAddictionTypeState extends State<StepAddictionType> {
 
   Widget _buildAddictionList() {
     if (_filteredList.isEmpty) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
           child: Text(
-            'No addictions found',
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            AppLocalizations.of(context)!.noAddictionsFoundText,
+            style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
         ),
       );

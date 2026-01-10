@@ -5,25 +5,16 @@ import '../databases/tables/addictions_table.dart';
 import 'user_repository_abstract.dart';
 import 'user_repository.dart';
 import 'check_in_repository_abstract.dart';
+import 'milestone_repository.dart';
 
 /// Implementation of CheckInRepository
 class CheckInRepositoryImpl implements CheckInRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   final UserRepository _userRepository = UserRepositoryImpl();
-
-  /// Map mood labels to database values
-  String _mapMoodToDbValue(String mood) {
-    final moodMap = {
-      'Awful': 'bad',
-      'Sad': 'bad',
-      'Okay': 'neutral',
-      'Good': 'good',
-    };
-    return moodMap[mood] ?? 'neutral';
-  }
+  final MilestoneRepository _milestoneRepository = MilestoneRepositoryImpl();
 
   /// Get the primary active addiction for a user
-  Future<Map<String, dynamic>?> _getPrimaryAddiction(int userId) async {
+  Future<Map<String, dynamic>?> _getPrimaryAddiction(Object userId) async {
     try {
       final db = await _dbHelper.database;
       final addictions = await AddictionsTable.getActiveByUserId(db, userId);
@@ -46,7 +37,9 @@ class CheckInRepositoryImpl implements CheckInRepository {
     required String mood,
     required double cravingLevel,
     required String journalEntry,
-    int? userId,
+    required bool slipped,
+    required int slipAmount,
+    String? userId,
     int? addictionId,
   }) async {
     try {
@@ -72,7 +65,6 @@ class CheckInRepositoryImpl implements CheckInRepository {
       }
 
       final today = _getCurrentDate();
-      final dbMood = _mapMoodToDbValue(mood);
 
       // Convert craving level (0.0-1.0) to urge level (0-10)
       final urgeLevel = (cravingLevel * 10).round();
@@ -84,13 +76,19 @@ class CheckInRepositoryImpl implements CheckInRepository {
         today,
       );
 
+      // Handle slip amount based on slipped status
+      // If slipped, slip_amount must be > 0
+      // If not slipped, slip_amount should be null (not 0)
+      final normalizedSlipAmount = slipped ? (slipAmount <= 0 ? 1 : slipAmount) : null;
+
       final checkInData = {
         'addiction_id': addictionId,
         'date': today,
-        'mood': dbMood,
+        'mood': mood,
         'urge_level': urgeLevel,
         'note': journalEntry.isNotEmpty ? journalEntry : null,
-        'slipped': 0,
+        'slipped': slipped ? 1 : 0,
+        'slip_amount': normalizedSlipAmount,
         'created_at': DateTime.now().toIso8601String(),
       };
 
@@ -103,8 +101,16 @@ class CheckInRepositoryImpl implements CheckInRepository {
         await DailySurveysTable.insert(db, checkInData);
       }
 
-      // Update streak if not already updated today
-      // (This logic can be enhanced based on your requirements)
+      // If slipped, increment slip counter and reset streak
+      if (slipped) {
+        await AddictionsTable.recordSlip(
+          db,
+          addictionId,
+          amount: slipAmount,
+        );
+        // Reset milestone on slip
+        await _milestoneRepository.resetMilestoneOnSlip(addictionId);
+      }
 
       return true;
     } catch (e) {
@@ -116,7 +122,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
   /// Get today's check-in if it exists
   @override
   Future<Map<String, dynamic>?> getTodayCheckIn({
-    int? userId,
+    String? userId,
     int? addictionId,
   }) async {
     try {
@@ -149,7 +155,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
   /// Check if user has already checked in today
   @override
-  Future<bool> hasCheckedInToday({int? userId, int? addictionId}) async {
+  Future<bool> hasCheckedInToday({String? userId, int? addictionId}) async {
     final checkIn = await getTodayCheckIn(
       userId: userId,
       addictionId: addictionId,

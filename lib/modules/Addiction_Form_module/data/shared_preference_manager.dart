@@ -25,13 +25,24 @@ class SharedPreferencesManager {
   }
 
   /// Get user ID
-  static int? getUserId() {
-    return _prefs.getInt(_userIdKey);
+  static String? getUserId() {
+    // Prefer the string value; fall back to legacy int and migrate to string
+    final stored = _prefs.getString(_userIdKey);
+    if (stored != null) return stored;
+
+    final legacyInt = _prefs.getInt(_userIdKey);
+    if (legacyInt != null) {
+      final migrated = legacyInt.toString();
+      _prefs.setString(_userIdKey, migrated);
+      return migrated;
+    }
+
+    return null;
   }
 
   /// Set user ID
-  static Future<void> setUserId(int userId) async {
-    await _prefs.setInt(_userIdKey, userId);
+  static Future<void> setUserId(String userId) async {
+    await _prefs.setString(_userIdKey, userId);
   }
 
   /// Check if first launch

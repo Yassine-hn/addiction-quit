@@ -17,44 +17,63 @@ class CheckInInProgress extends DailyCheckInState {
   final String selectedMood;
   final double cravingLevel;
   final String journalEntry;
+  final bool slipped;
+  final int slipAmount;
 
   CheckInInProgress({
     this.selectedMood = '',
     this.cravingLevel = 0.5,
     this.journalEntry = '',
+    this.slipped = false,
+    this.slipAmount = 0,
   });
 
   @override
-  List<Object?> get props => [selectedMood, cravingLevel, journalEntry];
+  List<Object?> get props => [selectedMood, cravingLevel, journalEntry, slipped, slipAmount];
 
   CheckInInProgress copyWith({
     String? selectedMood,
     double? cravingLevel,
     String? journalEntry,
+    bool? slipped,
+    int? slipAmount,
   }) {
     return CheckInInProgress(
       selectedMood: selectedMood ?? this.selectedMood,
       cravingLevel: cravingLevel ?? this.cravingLevel,
       journalEntry: journalEntry ?? this.journalEntry,
+      slipped: slipped ?? this.slipped,
+      slipAmount: slipAmount ?? this.slipAmount,
     );
   }
 
-  bool get isValid => selectedMood.isNotEmpty && cravingLevel > 0;
+  bool get isValid {
+    final hasMood = selectedMood.isNotEmpty;
+    if (!hasMood) return false;
+    if (slipped) {
+      return slipAmount > 0;
+    }
+    return true;
+  }
 }
 
 class CheckInSubmitting extends DailyCheckInState {
   final String selectedMood;
   final double cravingLevel;
   final String journalEntry;
+  final bool slipped;
+  final int slipAmount;
 
   CheckInSubmitting({
     required this.selectedMood,
     required this.cravingLevel,
     required this.journalEntry,
+    required this.slipped,
+    required this.slipAmount,
   });
 
   @override
-  List<Object?> get props => [selectedMood, cravingLevel, journalEntry];
+  List<Object?> get props => [selectedMood, cravingLevel, journalEntry, slipped, slipAmount];
 }
 
 class CheckInCompleted extends DailyCheckInState {
@@ -124,6 +143,28 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
     }
   }
 
+  void updateSlipped(bool slipped) {
+    if (state is CheckInInProgress) {
+      final currentState = state as CheckInInProgress;
+      // Reset slip amount when toggling off
+      emit(
+        currentState.copyWith(
+          slipped: slipped,
+          slipAmount: slipped
+              ? (currentState.slipAmount <= 0 ? 1 : currentState.slipAmount)
+              : 0,
+        ),
+      );
+    }
+  }
+
+  void updateSlipAmount(int amount) {
+    if (state is CheckInInProgress) {
+      final currentState = state as CheckInInProgress;
+      emit(currentState.copyWith(slipAmount: amount));
+    }
+  }
+
   void updateJournalEntry(String entry) {
     if (state is CheckInInProgress) {
       final currentState = state as CheckInInProgress;
@@ -136,6 +177,8 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
       required String mood,
       required double cravingLevel,
       required String journalEntry,
+      required bool slipped,
+      required int slipAmount,
     })
     submitFunction,
   ) async {
@@ -158,6 +201,8 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
         selectedMood: currentState.selectedMood,
         cravingLevel: currentState.cravingLevel,
         journalEntry: currentState.journalEntry,
+        slipped: currentState.slipped,
+        slipAmount: currentState.slipAmount,
       ),
     );
 
@@ -166,6 +211,8 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
         mood: currentState.selectedMood,
         cravingLevel: currentState.cravingLevel,
         journalEntry: currentState.journalEntry,
+        slipped: currentState.slipped,
+        slipAmount: currentState.slipAmount,
       );
 
       if (success) {
@@ -188,18 +235,5 @@ class DailyCheckInCubit extends Cubit<DailyCheckInState> {
 
   void resetCheckIn() {
     emit(CheckInInProgress());
-  }
-
-  // Helper method to check if completed today
-  bool isCompletedToday() {
-    if (state is CheckInCompleted) {
-      final completedState = state as CheckInCompleted;
-      final now = DateTime.now();
-      final completedDate = completedState.completedAt;
-      return now.year == completedDate.year &&
-          now.month == completedDate.month &&
-          now.day == completedDate.day;
-    }
-    return false;
   }
 }

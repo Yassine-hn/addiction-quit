@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/ValidationButton.dart';
 import 'StepFinal.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step9ReviewHour extends StatefulWidget {
   const Step9ReviewHour({super.key});
@@ -88,7 +89,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Daily Review Time',
+                          AppLocalizations.of(context)!.dailyReviewTime,
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -97,7 +98,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'When would you like to\ndo your daily review?',
+                          AppLocalizations.of(context)!.whenWouldYouLikeDailyReview,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -122,7 +123,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Choose a time when you can reflect quietly. We\'ll send a gentle reminder.',
+                                  AppLocalizations.of(context)!.chooseTimeForReflection,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey.shade700,
@@ -155,7 +156,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            _selectedHour < 12 ? 'Morning' : 'Afternoon',
+                            _selectedHour < 12 ? AppLocalizations.of(context)!.morning : AppLocalizations.of(context)!.afternoon,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -191,7 +192,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                               children: [
                                 const SizedBox(height: 10),
                                 Text(
-                                  'HOUR',
+                                  AppLocalizations.of(context)!.hour,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -250,7 +251,7 @@ class _Step9ReviewHourState extends State<Step9ReviewHour> {
                               children: [
                                 const SizedBox(height: 10),
                                 Text(
-                                  'MINUTE',
+                                  AppLocalizations.of(context)!.minute,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,

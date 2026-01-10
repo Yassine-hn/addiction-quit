@@ -1,102 +1,189 @@
 import '../models/hero_model.dart';
 import '../models/post_model.dart';
+import '../../../api/api_service.dart';
+import '../../../data/repositories/user_repository.dart';
 
 abstract class CommunityRepository {
-  Future<List<HeroModel>> fetchHeroesOfWeek();
-  Future<List<PostModel>> fetchCommunityPosts();
-  Future<bool> createPost({required String content, required bool isAnonymous});
-  Future<bool> likePost(String postId);
-  Future<bool> commentOnPost({required String postId, required String comment});
-  Future<bool> deletePost(String postId);
-  Future<bool> reportPost(String postId, String reason);
+  Future<List<HeroModel>> fetchHeroesOfLastMonth();
+  Future<List<PostModel>> fetchCommunityPosts({int limit = 20, int offset = 0});
+  Future<bool> createPost({required String content});
+  Future<bool> likePost(int postId);
+  Future<bool> commentOnPost({required int postId, required String comment});
+  Future<bool> deletePost(int postId);
+  Future<bool> deleteComment(int commentId);
 }
 
 class CommunityRepositoryImpl implements CommunityRepository {
-  Future<void> _simulateDelay() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+  final ApiService _apiService = ApiService();
+  final UserRepositoryImpl _userRepo = UserRepositoryImpl();
+
+  @override
+  Future<List<HeroModel>> fetchHeroesOfLastMonth() async {
+    try {
+      final response = await _apiService.getHeroesLastMonth();
+      
+      if (!response.success) {
+        throw Exception(response.message);
+      }
+
+      if (response.data == null) {
+        return [];
+      }
+
+      return (response.data as List<dynamic>)
+          .map((hero) => HeroModel.fromMap(hero as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching heroes: $e');
+      rethrow;
+    }
   }
 
   @override
-  Future<List<HeroModel>> fetchHeroesOfWeek() async {
-    await _simulateDelay();
-    return [
-      HeroModel(name: 'Maria', days: 42, imageUrl: 'assets/images/maria.jpg'),
-      HeroModel(name: 'David', days: 85, imageUrl: 'assets/images/david.jpg'),
-      HeroModel(name: 'Sophie', days: 61, imageUrl: 'assets/images/sophie.jpg'),
-      HeroModel(name: 'Chen', days: 76, imageUrl: 'assets/images/chen.jpg'),
-    ];
+  Future<List<PostModel>> fetchCommunityPosts({int limit = 20, int offset = 0}) async {
+    try {
+      final response = await _apiService.getPublicPosts(limit: limit, offset: offset);
+      
+      if (!response.success) {
+        throw Exception(response.message);
+      }
+
+      if (response.data == null) {
+        return [];
+      }
+
+      return (response.data as List<dynamic>)
+          .map((post) => PostModel.fromMap(post as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching posts: $e');
+      rethrow;
+    }
   }
 
   @override
-  Future<List<PostModel>> fetchCommunityPosts() async {
-    await _simulateDelay();
-    return [
-      PostModel(
-        authorName: 'Dr. Emily Carter',
-        authorImage: 'assets/images/emily.jpg',
-        timeAgo: '2 hours ago',
-        content:
-            'Remember that recovery is a journey, not a destination. Each step, no matter how small, is a victory. Be kind to yourself today. #Motivation #ExpertAdvice',
-        likes: 125,
-        comments: 18,
-        badge: 'Expert',
-      ),
-      PostModel(
-        authorName: 'John S.',
-        authorImage: 'assets/images/john.jpg',
-        timeAgo: '7 hours ago',
-        content:
-            'Just hit my 30-day milestone. It\'s been tough, but this community has been a huge help. Thank you all for the support. We can do this!',
-        likes: 247,
-        comments: 42,
-        badge: null,
-      ),
-      PostModel(
-        authorName: 'Sarah K.',
-        authorImage: 'assets/images/sarah.jpg',
-        timeAgo: '1 day ago',
-        content:
-            'Feeling a bit down today, but reading everyone\'s stories is really inspiring. Does anyone have tips for dealing with cravings in social situations?',
-        likes: 98,
-        comments: 27,
-        badge: null,
-      ),
-    ];
+  Future<bool> createPost({required String content}) async {
+    try {
+      // Check if user is logged in
+      final userId = await _userRepo.getCurrentUserId();
+      if (userId == null) {
+        print('No user logged in');
+        return false;
+      }
+
+      final response = await _apiService.createPost(content: content);
+      
+      if (!response.success) {
+        print('Error creating post: ${response.message}');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error creating post: $e');
+      return false;
+    }
   }
 
   @override
-  Future<bool> createPost({
-    required String content,
-    required bool isAnonymous,
-  }) async {
-    await _simulateDelay();
-    return true;
-  }
+  Future<bool> likePost(int postId) async {
+    try {
+      // Check if user is logged in
+      final userId = await _userRepo.getCurrentUserId();
+      if (userId == null) {
+        print('No user logged in');
+        return false;
+      }
 
-  @override
-  Future<bool> likePost(String postId) async {
-    await _simulateDelay();
-    return true;
+      final response = await _apiService.togglePostReaction(postId);
+      
+      if (!response.success) {
+        print('Error liking post: ${response.message}');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error liking post: $e');
+      return false;
+    }
   }
 
   @override
   Future<bool> commentOnPost({
-    required String postId,
+    required int postId,
     required String comment,
   }) async {
-    await _simulateDelay();
-    return true;
+    try {
+      // Check if user is logged in
+      final userId = await _userRepo.getCurrentUserId();
+      if (userId == null) {
+        print('No user logged in');
+        return false;
+      }
+
+      final response = await _apiService.createComment(
+        postId: postId,
+        content: comment,
+      );
+      
+      if (!response.success) {
+        print('Error commenting on post: ${response.message}');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error commenting on post: $e');
+      return false;
+    }
   }
 
   @override
-  Future<bool> deletePost(String postId) async {
-    await _simulateDelay();
-    return true;
+  Future<bool> deletePost(int postId) async {
+    try {
+      // Check if user is logged in
+      final userId = await _userRepo.getCurrentUserId();
+      if (userId == null) {
+        print('No user logged in');
+        return false;
+      }
+
+      final response = await _apiService.deletePost(postId);
+      
+      if (!response.success) {
+        print('Error deleting post: ${response.message}');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error deleting post: $e');
+      return false;
+    }
   }
 
   @override
-  Future<bool> reportPost(String postId, String reason) async {
-    await _simulateDelay();
-    return true;
+  Future<bool> deleteComment(int commentId) async {
+    try {
+      // Check if user is logged in
+      final userId = await _userRepo.getCurrentUserId();
+      if (userId == null) {
+        print('No user logged in');
+        return false;
+      }
+
+      final response = await _apiService.deleteComment(commentId);
+      
+      if (!response.success) {
+        print('Error deleting comment: ${response.message}');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error deleting comment: $e');
+      return false;
+    }
   }
 }

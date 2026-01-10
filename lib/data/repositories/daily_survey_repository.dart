@@ -4,7 +4,7 @@ import '../databases/tables/daily_surveys_table.dart';
 
 abstract class DailySurveyRepository {
   /// Get last 30 days of daily surveys
-  Future<List<Map<String, dynamic>>> getLast30Days(int userId, int addictionId);
+  Future<List<Map<String, dynamic>>> getLast30Days(Object userId, int addictionId);
 }
 
 class DailySurveyRepositoryImpl implements DailySurveyRepository {
@@ -12,7 +12,7 @@ class DailySurveyRepositoryImpl implements DailySurveyRepository {
 
   @override
   Future<List<Map<String, dynamic>>> getLast30Days(
-    int userId,
+    Object userId,
     int addictionId,
   ) async {
     try {

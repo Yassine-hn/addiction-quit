@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
-import '../../logic/cubit/dashboard_cubit.dart';
-import '../../logic/cubit/dashboard_state.dart';
+import '../../logic/cubits/dashboard_cubit.dart';
+import '../../logic/cubits/dashboard_state.dart';
 import '../../data/repositories/milestone_repository.dart';
 import '../../data/repositories/daily_survey_repository.dart';
 import '../../data/repositories/addiction_repository.dart';
@@ -99,7 +99,7 @@ class DashboardScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Start New Milestone'),
+                      child: Text(AppLocalizations.of(context)!.startNewMilestone),
                     ),
                   ],
                 ),
@@ -115,12 +115,13 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ROW 1: MILESTONE PROGRESS CIRCLE
-                      _buildMilestoneRow(context, state),
+                      _buildMilestoneCard(context, state),
                       const SizedBox(height: 24),
-
-                      // ROW 2: THREE EQUAL-WIDTH CARDS
-                      _buildThreeCardsRow(context, state),
+                      _buildProgressGridCard(context, state),
+                      const SizedBox(height: 16),
+                      _buildStreakChartCard(context, state),
+                      const SizedBox(height: 16),
+                      _buildMoodTrackerCard(context, state),
                       const SizedBox(height: 80), // Space for bottom nav
                     ],
                   ),
@@ -135,7 +136,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMilestoneRow(BuildContext context, DashboardLoaded state) {
+  Widget _buildMilestoneCard(BuildContext context, DashboardLoaded state) {
     final hasMilestone = state.milestoneData.isNotEmpty;
 
     if (!hasMilestone) {
@@ -172,46 +173,113 @@ class DashboardScreen extends StatelessWidget {
 
     final milestone = state.milestoneData['milestone'] as Map<String, dynamic>?;
     final title = milestone?['title'] as String? ?? 'Milestone';
+    final milestoneId = milestone?['id'] as int? ?? 0;
     final daysPassed = state.milestoneData['days_passed'] as int? ?? 0;
     final targetDays = state.milestoneData['target_days'] as int? ?? 1;
+    final isCompleted = state.milestonePercentage >= 100.0;
 
-    return Center(
-      child: MilestoneCircle(
-        percentage: state.milestonePercentage,
-        daysPassed: daysPassed,
-        targetDays: targetDays,
-        title: title,
+    return Column(
+      children: [
+        Center(
+          child: MilestoneCircle(
+            percentage: state.milestonePercentage,
+            daysPassed: daysPassed,
+            targetDays: targetDays,
+            title: title,
+          ),
+        ),
+        if (isCompleted) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _handleClaimReward(context, state, milestoneId),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[600],
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.star),
+              label: Text(AppLocalizations.of(context)!.claimReward),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildProgressGridCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ProgressGrid(dailySurveys: state.dailySurveys, daysToShow: 30),
       ),
     );
   }
 
-  Widget _buildThreeCardsRow(BuildContext context, DashboardLoaded state) {
-    return Column(
-      children: [
-        // CARD 1: DAILY SURVEY HISTORY
-        ProgressGrid(dailySurveys: state.dailySurveys, daysToShow: 30),
-        const SizedBox(height: 16),
-        // CARD 2: STREAK CHART
-        StreakChart(
+  Widget _buildStreakChartCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: StreakChart(
           streakHistory: state.streakHistory,
           height: 200,
           lineColor: const Color(0xFF4361EE),
         ),
-        const SizedBox(height: 16),
-        // CARD 3: MOOD TRACKER
-        const MoodTracker(),
-      ],
+      ),
     );
+  }
+
+  Widget _buildMoodTrackerCard(BuildContext context, DashboardLoaded state) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: const MoodTracker(),
+      ),
+    );
+  }
+
+  Future<void> _handleClaimReward(
+    BuildContext context,
+    DashboardLoaded state,
+    int milestoneId,
+  ) async {
+    final success = await context.read<DashboardCubit>().claimMilestoneReward(milestoneId);
+
+    if (success) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.congratulationsRewardClaimed),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToClaimReward),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _showMilestoneSelector(
     BuildContext context,
     DashboardLoaded state,
   ) async {
-    final userId = await SharedPreferencesHelper.getUserId();
     final addictionId = state.selectedAddictionId;
 
-    if (userId == null) {
+    // Validate addictionId
+    if (addictionId <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.unableToCreateMilestone),
@@ -220,32 +288,54 @@ class DashboardScreen extends StatelessWidget {
       return;
     }
 
+    // Capture parent context and cubit BEFORE showing dialog
+    final parentContext = context;
+    final dashboardCubit = context.read<DashboardCubit>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
-      builder: (context) => MilestoneSelector(
-        onMilestoneSelected: (targetDays) async {
+      builder: (dialogContext) => MilestoneSelector(
+        onMilestoneSelected: (targetDays, rewardPoints) async {
+          // Close dialog first
+          Navigator.of(dialogContext).pop();
+
           try {
             final milestoneRepo = MilestoneRepositoryImpl();
-            final l10n = AppLocalizations.of(context)!;
-            final title = _getMilestoneTitle(context, targetDays);
-            await milestoneRepo.createMilestone(addictionId, targetDays, title);
+            final l10n = AppLocalizations.of(parentContext)!;
+            final title = _getMilestoneTitle(parentContext, targetDays);
 
-            // Reload dashboard data
-            if (context.mounted) {
-              context.read<DashboardCubit>().loadDashboardData();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.milestoneStarted(title))),
-              );
-            }
-          } catch (e) {
-            if (context.mounted) {
-              final l10n = AppLocalizations.of(context)!;
-              ScaffoldMessenger.of(context).showSnackBar(
+            // Check for existing pending milestone
+            final existingMilestone = await milestoneRepo.getCurrentMilestone(addictionId);
+            if (existingMilestone != null) {
+              scaffoldMessenger.showSnackBar(
                 SnackBar(
-                  content: Text(l10n.errorCreatingMilestone(e.toString())),
+                  content: Text(l10n.youAlreadyHaveActiveMilestone),
                 ),
               );
+              return;
             }
+
+            await milestoneRepo.createMilestone(
+              addictionId,
+              targetDays,
+              title,
+              rewardPoints,
+            );
+
+            // Reload dashboard data using captured cubit
+            await dashboardCubit.loadDashboardData();
+            
+            scaffoldMessenger.showSnackBar(
+              SnackBar(content: Text(l10n.milestoneStarted(title))),
+            );
+          } catch (e) {
+            final l10n = AppLocalizations.of(parentContext)!;
+            scaffoldMessenger.showSnackBar(
+              SnackBar(
+                content: Text(l10n.errorCreatingMilestone(e.toString())),
+              ),
+            );
           }
         },
       ),
@@ -254,14 +344,47 @@ class DashboardScreen extends StatelessWidget {
 
   String _getMilestoneTitle(BuildContext context, int days) {
     final l10n = AppLocalizations.of(context)!;
-    if (days == 1) return l10n.oneDayMilestone;
-    if (days == 7) return l10n.oneWeekMilestone;
-    if (days == 14) return l10n.twoWeeksMilestone;
-    if (days == 30) return l10n.oneMonthMilestone;
-    if (days == 60) return l10n.twoMonthsMilestone;
-    if (days == 90) return l10n.threeMonthsMilestone;
-    if (days == 180) return l10n.sixMonthsMilestone;
-    if (days == 365) return l10n.oneYearMilestone;
-    return l10n.daysMilestone(days);
+    switch (days) {
+      case 1:
+        return l10n.milestone1Day;
+      case 3:
+        return l10n.milestone3Days;
+      case 7:
+        return l10n.milestone7Days;
+      case 14:
+        return l10n.milestone14Days;
+      case 21:
+        return l10n.milestone21Days;
+      case 30:
+        return l10n.milestone30Days;
+      case 40:
+        return l10n.milestone40Days;
+      case 50:
+        return l10n.milestone50Days;
+      case 60:
+        return l10n.milestone60Days;
+      case 75:
+        return l10n.milestone75Days;
+      case 90:
+        return l10n.milestone90Days;
+      case 100:
+        return l10n.milestone100Days;
+      case 120:
+        return l10n.milestone120Days;
+      case 150:
+        return l10n.milestone150Days;
+      case 180:
+        return l10n.milestone180Days;
+      case 200:
+        return l10n.milestone200Days;
+      case 250:
+        return l10n.milestone250Days;
+      case 300:
+        return l10n.milestone300Days;
+      case 365:
+        return l10n.milestone365Days;
+      default:
+        return l10n.daysMilestone(days);
+    }
   }
 }

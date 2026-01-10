@@ -6,6 +6,7 @@ import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
 import '../widgets/NumberInputField.dart';
 import '../screens/Step5Objectives.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step4PerDay extends StatefulWidget {
   const Step4PerDay({super.key});
@@ -112,16 +113,16 @@ class _Step4PerDayState extends State<Step4PerDay> {
               // Header
               const SizedBox(height: 8),
 
-              const SectionTitle(
+              SectionTitle(
                 title:
-                    'How many times per day do you fall into\nthis addiction?',
+                    AppLocalizations.of(context)!.howManyTimesPerDay,
               ),
               const SizedBox(height: 32),
 
               // Quick Selection Options
-              const Text(
-                'Quick selection:',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.quickSelection,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
@@ -132,20 +133,20 @@ class _Step4PerDayState extends State<Step4PerDay> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildQuickOption('When I feel deprived', 'option1'),
+                    child: _buildQuickOption(AppLocalizations.of(context)!.whenIFeelDeprived, 'option1'),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildQuickOption('Sometimes', 'option2')),
+                  Expanded(child: _buildQuickOption(AppLocalizations.of(context)!.sometimes, 'option2')),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildQuickOption('Often', 'option3')),
+                  Expanded(child: _buildQuickOption(AppLocalizations.of(context)!.often, 'option3')),
                 ],
               ),
               const SizedBox(height: 24),
 
               // Custom Input
               NumberInputField(
-                label: 'Or enter specific number:',
-                hintText: 'e.g., 5',
+                label: AppLocalizations.of(context)!.orEnterSpecificNumber,
+                hintText: AppLocalizations.of(context)!.egFive,
                 controller: _numberController,
                 onChanged: (value) {
                   _validateInput(value);

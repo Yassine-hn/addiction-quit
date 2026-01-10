@@ -3,37 +3,36 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/useful_widgets.dart';
 import '../../logic/services/home_backend_functions.dart';
-import '../../logic/cubits/daily_chekcin_cubit.dart';
+import '../../logic/cubits/daily_checkin_cubit.dart';
+import '../../logic/cubits/language_cubit.dart';
+import '../../logic/cubits/auth_cubit.dart';
+import '../app_routes.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DailyCheckInCubit(),
-      child: const DailyCheckInScreen(),
-    );
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class DailyCheckInScreen extends StatefulWidget {
-  const DailyCheckInScreen({super.key});
+class _HomeScreenState extends State<HomeScreen>
+  with SingleTickerProviderStateMixin { // SingleTickerProviderStateMixin Provides a Ticker (vsync) for AnimationController used in this screen's animations.
 
-  @override
-  State<DailyCheckInScreen> createState() => _DailyCheckInScreenState();
-}
-
-class _DailyCheckInScreenState extends State<DailyCheckInScreen>
-    with SingleTickerProviderStateMixin {
-  final TextEditingController journalController = TextEditingController();
+  final TextEditingController _journalController = TextEditingController();
   AnimationController? _animationController;
   Animation<double>? _scaleAnimation;
   Animation<double>? _fadeAnimation;
+  late Future<Map<String, String>> _sobrietyFuture; // Holds async result for user's sobriety time (days, hours, minutes, slips)
+  late Future<Map<String, dynamic>> _savingsFuture; // Holds async result for user's savings stats (money saved, streak, time saved)
+  bool _isResetting = false;
+  late DailyCheckInCubit _checkInCubit;
 
   @override
   void initState() {
     super.initState();
+    _checkInCubit = DailyCheckInCubit();
+    _sobrietyFuture = getSobrietyTime();
+    _savingsFuture = getSavingsStats();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -53,40 +52,60 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
   @override
   void dispose() {
-    journalController.dispose();
+    _journalController.dispose();
     _animationController?.dispose();
+    _checkInCubit.close();
     super.dispose();
+  }
+
+  void _reloadStats() {
+    setState(() {
+      _sobrietyFuture = getSobrietyTime();
+      _savingsFuture = getSavingsStats();
+    });
+  }
+
+  /// Helper method to localize time saved string
+  String _localizeTimeSaved(BuildContext context, String timeSaved) {
+    final l10n = AppLocalizations.of(context)!;
+    return timeSaved
+        .replaceAll(' min', ' ${l10n.min}')
+        .replaceAll(' h', ' ${l10n.h}')
+        .replaceAll(' d', ' ${l10n.d}');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildSobrietyCounter(),
-                    const SizedBox(height: 16),
-                    _buildStatsRow(),
-                    const SizedBox(height: 24),
-                    _buildCheckInCard(),
-                    const SizedBox(height: 16),
-                    _buildQuoteCard(),
-                    const SizedBox(height: 80),
-                  ],
+    return BlocProvider.value(
+      value: _checkInCubit,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildSobrietyCounter(context),
+                      const SizedBox(height: 16),
+                      _buildStatsRow(),
+                      const SizedBox(height: 24),
+                      _buildCheckInCard(),
+                      const SizedBox(height: 16),
+                      _buildQuoteCard(),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(activeIndex: 0),
     );
   }
 
@@ -100,7 +119,10 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           Expanded(
             child: Row(
               children: [
-                Icon(Icons.menu, color: Colors.grey[600]),
+                GestureDetector(
+                  onTap: () => _showMenu(context),
+                  child: Icon(Icons.menu, color: Colors.grey[600]),
+                ),
                 const SizedBox(width: 12),
                 Flexible(
                   child: FutureBuilder<String>(
@@ -153,10 +175,173 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
     );
   }
 
-  Widget _buildSobrietyCounter() {
+  void _showMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Notifications
+              ListTile(
+                leading: const Icon(Icons.notifications, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.notifications,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/notifications');
+                },
+              ),
+              // Parameters
+              ListTile(
+                leading: const Icon(Icons.settings, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.parameters,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/parameters');
+                },
+              ),
+              // Language
+              ListTile(
+                leading: const Icon(Icons.language, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.language,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  _showLanguageDialog(context);
+                },
+              ),
+              const Divider(height: 20),
+              // About
+              ListTile(
+                leading: const Icon(Icons.info, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.about,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/about');
+                },
+              ),
+              // Logout
+              ListTile(
+                leading: const Icon(Icons.logout, color: Color(0xFF00A3E0)),
+                title: Text(
+                  AppLocalizations.of(context)!.logout,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  _showLogoutConfirmationDialog(context);
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Language'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('English'),
+                onTap: () {
+                  context.read<LanguageCubit>().changeLanguage('en');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('العربية (Arabic)'),
+                onTap: () {
+                  context.read<LanguageCubit>().changeLanguage('ar');
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(l10n.confirmLogout),
+          content: Text(l10n.areYouSureWantToLogout),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.read<AuthCubit>().logout();
+                Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+              },
+              child: Text(l10n.logout),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSobrietyCounter(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 180,
+      height: 220,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(
@@ -164,110 +349,180 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           fit: BoxFit.cover,
         ),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.3),
-              Colors.black.withOpacity(0.5),
-            ],
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.youAreSoberFor,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[100],
-                fontWeight: FontWeight.w500,
-                shadows: [
-                  Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            FutureBuilder<Map<String, String>>(
-              future: getSobrietyTime(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(color: Colors.white);
-                }
-
-                final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
-
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['days'] ?? '42',
-                            AppLocalizations.of(context)!.days,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['hours'] ?? '11',
-                            AppLocalizations.of(context)!.hours,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: _buildTimeUnit(
-                            context,
-                            sobrietyTime['minutes'] ?? '23',
-                            AppLocalizations.of(context)!.minutes,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
+      foregroundDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withOpacity(0.0),
+            Colors.black.withOpacity(0.0),
           ],
         ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: FutureBuilder<Map<String, String>>(
+        future: _sobrietyFuture,
+        builder: (context, snapshot) {
+          final isLoading = snapshot.connectionState == ConnectionState.waiting;
+          final sobrietyTime = snapshot.data ?? getDefaultSobrietyTime();
+          final slips = sobrietyTime['slips'] ?? '0';
+
+          if (isLoading && !_isResetting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
+          }
+
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.youAreSoberFor,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[100],
+                            fontWeight: FontWeight.w500,
+                            shadows: [
+                              Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['days'] ?? '42',
+                          AppLocalizations.of(context)!.days,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['hours'] ?? '11',
+                          AppLocalizations.of(context)!.hours,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildTimeUnit(
+                          context,
+                          sobrietyTime['minutes'] ?? '23',
+                          AppLocalizations.of(context)!.minutes,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.slips,
+                        style: TextStyle(
+                          color: Colors.grey[200],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        slips,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 32,
+                        child: ElevatedButton(
+                          onPressed: _isResetting
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    _isResetting = true;
+                                  });
+                                  final success = await resetSobrietyCounter();
+                                  if (success) {
+                                    _reloadStats();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(AppLocalizations.of(context)!.counterResetSuccessfully),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(AppLocalizations.of(context)!.failedToResetCounter),
+                                          backgroundColor: Colors.red[600],
+                                        ),
+                                      );
+                                    }
+                                  }
+                                  if (mounted) {
+                                    setState(() {
+                                      _isResetting = false;
+                                    });
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.12),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                          child: _isResetting
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppLocalizations.of(context)!.reset),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
 
   Widget _buildTimeUnit(BuildContext context, String value, String label) {
-    return Column(
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1,
-            ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1,
           ),
         ),
-        const SizedBox(height: 4),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[200],
-              fontWeight: FontWeight.w500,
-            ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[200],
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -276,7 +531,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
   Widget _buildStatsRow() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getSavingsStats(),
+      future: _savingsFuture,
       builder: (context, snapshot) {
         final stats = snapshot.data ?? getDefaultSavingsStats();
         final moneySaved = stats['moneySaved'] as String?;
@@ -298,7 +553,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                 Expanded(
                   child: StatCard(
                     title: AppLocalizations.of(context)!.timeSaved,
-                    value: stats['timeSaved'] ?? '0 min',
+                    value: _localizeTimeSaved(context, stats['timeSaved'] ?? '0 min'),
                     unit: '',
                   ),
                 ),
@@ -325,6 +580,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
       listener: (context, state) {
         if (state is CheckInCompleted) {
           _animationController?.forward();
+          _reloadStats();
         } else if (state is CheckInError) {
           final l10n = AppLocalizations.of(context)!;
           String errorMessage;
@@ -434,8 +690,8 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             opacity: _fadeAnimation!,
             child: TextButton.icon(
               onPressed: () {
-                context.read<DailyCheckInCubit>().resetCheckIn();
-                journalController.clear();
+                _checkInCubit.resetCheckIn();
+                _journalController.clear();
                 _animationController?.reset();
               },
               icon: const Icon(Icons.refresh),
@@ -487,6 +743,11 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
           _buildMoodSection(currentState?.selectedMood ?? ''),
           const SizedBox(height: 24),
           _buildCravingSection(currentState?.cravingLevel ?? 0.5),
+          const SizedBox(height: 24),
+          _buildSlipSection(
+            currentState?.slipped ?? false,
+            currentState?.slipAmount ?? 0,
+          ),
           const SizedBox(height: 24),
           _buildJournalSection(),
           const SizedBox(height: 24),
@@ -567,7 +828,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
 
     return GestureDetector(
       onTap: () {
-        context.read<DailyCheckInCubit>().updateMood(label);
+        _checkInCubit.updateMood(label);
       },
       child: Container(
         constraints: const BoxConstraints(minWidth: 60, maxWidth: 80),
@@ -638,7 +899,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
                 child: Slider(
                   value: cravingLevel,
                   onChanged: (value) {
-                    context.read<DailyCheckInCubit>().updateCravingLevel(value);
+                    _checkInCubit.updateCravingLevel(value);
                   },
                 ),
               ),
@@ -649,6 +910,86 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             ),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildSlipSection(bool slipped, int slipAmount) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.didYouSlipToday,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            ChoiceChip(
+              label: Text(AppLocalizations.of(context)!.no),
+              selected: !slipped,
+              onSelected: (selected) {
+                if (selected) {
+                  _checkInCubit.updateSlipped(false);
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: Text(AppLocalizations.of(context)!.yes),
+              selected: slipped,
+              onSelected: (selected) {
+                if (selected) {
+                  _checkInCubit.updateSlipped(true);
+                }
+              },
+            ),
+          ],
+        ),
+        if (slipped) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text(
+                AppLocalizations.of(context)!.howManyTimes,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Slider(
+                  value: slipAmount.clamp(1, 10).toDouble(),
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  label: slipAmount.toString(),
+                  onChanged: (value) {
+                    _checkInCubit.updateSlipAmount(value.round());
+                  },
+                ),
+              ),
+              Container(
+                width: 48,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  slipAmount.toString(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -673,10 +1014,10 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: TextField(
-            controller: journalController,
+            controller: _journalController,
             maxLines: 4,
             onChanged: (value) {
-              context.read<DailyCheckInCubit>().updateJournalEntry(value);
+              _checkInCubit.updateJournalEntry(value);
             },
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.writeAboutYourDay,
@@ -699,7 +1040,7 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen>
         onPressed: isSubmitting
             ? null
             : () {
-                context.read<DailyCheckInCubit>().submitCheckIn(
+                _checkInCubit.submitCheckIn(
                   submitDailyCheckIn,
                 );
               },

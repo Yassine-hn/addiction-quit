@@ -5,6 +5,7 @@ import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/ValidationButton.dart';
 import '../widgets/FrequencyOption.dart';
 import 'Step4PerDay.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step3PerWeek extends StatefulWidget {
   const Step3PerWeek({super.key});
@@ -77,7 +78,7 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
               children: [
                 // Title Section
                 Text(
-                  'How often do you fall into your addiction per week?',
+                  AppLocalizations.of(context)!.howOftenPerWeek,
                   style: TextStyle(
                     fontSize: isLandscape ? 26 : 32,
                     fontWeight: FontWeight.bold,
@@ -90,7 +91,7 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
                 Container(
                   margin: const EdgeInsets.only(bottom: 24),
                   child: FrequencyOption(
-                    text: 'Irregularly',
+                    text: AppLocalizations.of(context)!.irregularly,
                     isSelected: _selectedValue == -1,
                     onTap: () => _selectValue(-1),
                     isIrregular: true,
@@ -101,7 +102,7 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    'Select number of days:',
+                    AppLocalizations.of(context)!.selectNumberOfDays,
                     style: TextStyle(
                       fontSize: isLandscape ? 16 : 18,
                       fontWeight: FontWeight.w500,
@@ -122,7 +123,7 @@ class _Step3PerWeekState extends State<Step3PerWeek> {
                     bottom: MediaQuery.of(context).padding.bottom + 20,
                   ),
                   child: ValidationButton(
-                    label: 'Continue',
+                    label: AppLocalizations.of(context)!.continueLabel,
                     onPressed: () =>
                         _selectedValue != null ? _handleContinue() : null,
                     enabled: _selectedValue != null,

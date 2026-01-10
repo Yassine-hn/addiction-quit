@@ -10,14 +10,14 @@ class DatabaseService {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   /// Save user information to database (for new user OR new addiction)
-  Future<Map<String, int>> saveUserInfo(UserInfoModel userInfo) async {
+  Future<Map<String, dynamic>> saveUserInfo(UserInfoModel userInfo) async {
     final db = await _dbHelper.database;
 
     try {
       await db.execute('BEGIN TRANSACTION');
 
       // Check if user already exists
-      int userId;
+      String userId;
       final existingUserId = SharedPreferencesManager.getUserId();
 
       if (existingUserId != null) {
@@ -59,19 +59,25 @@ class DatabaseService {
   }
 
   /// Save user to users table
-  Future<int> _saveUser(Database db, UserInfoModel userInfo) async {
-    return await db.insert('users', {
+  Future<String> _saveUser(Database db, UserInfoModel userInfo) async {
+    // user_id is TEXT primary key; generate a simple unique string
+    final userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+
+    await db.insert('users', {
+      'id': userId,
       'name': userInfo.username,
       'created_at': DateTime.now().toIso8601String(),
       'score': 0,
       'is_active': 1,
     });
+
+    return userId;
   }
 
   /// Update existing user
   Future<void> _updateUser(
     Database db,
-    int userId,
+    String userId,
     UserInfoModel userInfo,
   ) async {
     await db.update(
@@ -89,7 +95,7 @@ class DatabaseService {
   Future<int> _saveAddiction(
     Database db,
     UserInfoModel userInfo,
-    int userId,
+    String userId,
   ) async {
     // Calculate consumption per week
     final consumptionPerWeek =
@@ -98,7 +104,7 @@ class DatabaseService {
 
     return await db.insert('addictions', {
       'user_id': userId,
-      'type': userInfo.addictionType,
+      'addiction_type': userInfo.addictionType,
       'start_date': userInfo.startDate?.toIso8601String(),
       'counter_start_at': userInfo.startDate?.toIso8601String(),
       'slips': 0,
@@ -134,7 +140,7 @@ class DatabaseService {
   /// Update addiction order
   Future<void> _updateAddictionOrder(
     Database db,
-    int userId,
+    String userId,
     int newAddictionId,
   ) async {
     // Get existing addictions for this user
@@ -169,7 +175,7 @@ class DatabaseService {
     Database db,
     UserInfoModel userInfo,
     int addictionId,
-    int userId,
+    String userId,
   ) async {
     final milestones = <Map<String, dynamic>>[];
 
@@ -222,7 +228,7 @@ class DatabaseService {
   Future<void> _createReminders(
     Database db,
     UserInfoModel userInfo,
-    int userId,
+    String userId,
     int addictionId,
   ) async {
     if (userInfo.dailyReview != null) {
@@ -243,7 +249,7 @@ class DatabaseService {
   /// Log initial activity
   Future<void> _logInitialActivity(
     Database db,
-    int userId,
+    String userId,
     UserInfoModel userInfo,
   ) async {
     await db.insert('activity_logs', {
@@ -334,7 +340,7 @@ class DatabaseService {
         final userId = SharedPreferencesManager.getUserId();
         final otherAddictions = await AddictionsTable.getByUserId(
           db,
-          userId ?? -1,
+          userId ?? '',
         );
 
         if (otherAddictions.isNotEmpty) {

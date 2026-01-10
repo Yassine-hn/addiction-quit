@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: addiction-quit-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:create_app() --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGINS
+        value: "*"
+      # Add these in Render Dashboard (sensitive):
+      # - SUPABASE_URL
+      # - SUPABASE_KEY
+      # - SECRET_KEY
+      # - JWT_SECRET_KEY
+    plan: free
+    region: oregon
+    healthCheckPath: /health

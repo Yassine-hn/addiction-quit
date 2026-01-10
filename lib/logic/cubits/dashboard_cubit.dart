@@ -96,12 +96,12 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   Future<void> _loadAddictionData(
-    int userId,
+    String userId,
     int addictionId,
     List<Map<String, dynamic>> allAddictions,
   ) async {
     final addiction = allAddictions.firstWhere((a) => a['id'] == addictionId);
-    final addictionName = addiction['type'] as String;
+    final addictionName = addiction['addiction_type'] as String? ?? '';
 
     // Check and mark completed milestones first
     await _milestoneRepository.checkAndMarkCompletedMilestones(addictionId);
@@ -151,5 +151,27 @@ class DashboardCubit extends Cubit<DashboardState> {
         moodEmoji: '🙂', // Static as requested
       ),
     );
+  }
+
+  Future<bool> claimMilestoneReward(int milestoneId) async {
+    try {
+      final userId = await SharedPreferencesHelper.getUserId();
+      if (userId == null) return false;
+
+      final success = await _milestoneRepository.claimMilestoneReward(
+        userId,
+        milestoneId,
+      );
+
+      if (success) {
+        // Reload dashboard to reflect updated score and milestone status
+        await loadDashboardData();
+      }
+
+      return success;
+    } catch (e) {
+      print('Error claiming reward: $e');
+      return false;
+    }
   }
 }

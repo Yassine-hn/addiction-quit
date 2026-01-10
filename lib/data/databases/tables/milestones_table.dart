@@ -4,7 +4,7 @@ class MilestonesTable {
   static const String tableName = 'milestones';
 
   /// Insert a new milestone
-  static Future<int> insert(Database db, Map<String, dynamic> milestone) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> milestone) async {
     return await db.insert(tableName, milestone);
   }
 
@@ -73,6 +73,16 @@ class MilestonesTable {
     return await db.update(
       tableName,
       {'achieved_at': DateTime.now().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  /// Reset milestone timer (set created_at to now)
+  static Future<int> resetCreatedAt(Database db, int id) async {
+    return await db.update(
+      tableName,
+      {'created_at': DateTime.now().toIso8601String()},
       where: 'id = ?',
       whereArgs: [id],
     );

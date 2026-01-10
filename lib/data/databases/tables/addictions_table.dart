@@ -4,7 +4,7 @@ class AddictionsTable {
   static const String tableName = 'addictions';
 
   /// Insert a new addiction
-  static Future<int> insert(Database db, Map<String, dynamic> addiction) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> addiction) async {
     return await db.insert(tableName, addiction);
   }
 
@@ -22,11 +22,14 @@ class AddictionsTable {
   /// Get all addictions for a user
   static Future<List<Map<String, dynamic>>> getByUserId(
     Database db,
-    int userId, {
+    Object userId, {
     String? status,
   }) async {
+    // user_id is stored as TEXT; normalize to string to avoid type mismatches
+    final userIdArg = userId.toString();
+
     String? whereClause = 'user_id = ?';
-    List<dynamic> whereArgs = [userId];
+    List<dynamic> whereArgs = [userIdArg];
 
     if (status != null) {
       whereClause += ' AND status = ?';
@@ -44,7 +47,7 @@ class AddictionsTable {
   /// Get active addictions for a user
   static Future<List<Map<String, dynamic>>> getActiveByUserId(
     Database db,
-    int userId,
+    Object userId,
   ) async {
     return await getByUserId(db, userId, status: 'active');
   }
@@ -79,18 +82,33 @@ class AddictionsTable {
   }
 
   /// Record a slip
-  static Future<int> recordSlip(Database db, int id) async {
+  static Future<int> recordSlip(Database db, int id, {int amount = 1}) async {
     final addiction = await getById(db, id);
     if (addiction == null) return 0;
 
     final currentSlips = addiction['slips'] as int? ?? 0;
-    
+    final newSlipTotal = currentSlips + (amount <= 0 ? 1 : amount);
+
     return await db.update(
       tableName,
       {
-        'slips': currentSlips + 1,
+        'slips': newSlipTotal,
         'streak': 0,
         'last_slip_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<int> resetCounter(Database db, int id) async {
+    return await db.update(
+      tableName,
+      {
+        'counter_start_at': DateTime.now().toIso8601String(),
+        'slips': 0,
+        'streak': 0,
+        'last_slip_at': null,
       },
       where: 'id = ?',
       whereArgs: [id],

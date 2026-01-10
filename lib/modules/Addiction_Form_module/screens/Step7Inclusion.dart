@@ -5,6 +5,7 @@ import '../data/Cubit/UserInfoCubit.dart';
 import 'selection_step_screen.dart';
 import '../models/SelectionStepConfif.dart';
 import 'Step8Money.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step7Inclusion extends StatelessWidget {
   const Step7Inclusion({super.key});
@@ -16,18 +17,18 @@ class Step7Inclusion extends StatelessWidget {
 
     return SelectionStepScreen(
       config: SelectionStepConfig(
-        stepTitle: 'Inclusion',
-        screenTitle: 'People Involved',
-        mainQuestion: 'Who is involved in your journey?',
-        options: const [
-          'Just me',
-          'My partner',
-          'My family',
-          'My friends',
-          'My colleagues',
-          'A support group',
-          'My Community',
-          'Everyone around me',
+        stepTitle: AppLocalizations.of(context)!.inclusion,
+        screenTitle: AppLocalizations.of(context)!.peopleInvolved,
+        mainQuestion: AppLocalizations.of(context)!.whoIsInvolvedInYourJourney,
+        options: [
+          AppLocalizations.of(context)!.justMe,
+          AppLocalizations.of(context)!.myPartner,
+          AppLocalizations.of(context)!.myFamily,
+          AppLocalizations.of(context)!.myFriends,
+          AppLocalizations.of(context)!.myColleagues,
+          AppLocalizations.of(context)!.aSupportGroup,
+          AppLocalizations.of(context)!.myCommunity,
+          AppLocalizations.of(context)!.everyoneAroundMe,
         ],
         selectedValue: currentValue,
       ),

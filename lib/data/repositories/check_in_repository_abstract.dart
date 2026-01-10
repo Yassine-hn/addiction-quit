@@ -6,17 +6,19 @@ abstract class CheckInRepository {
     required String mood,
     required double cravingLevel,
     required String journalEntry,
-    int? userId,
+    required bool slipped,
+    required int slipAmount,
+    String? userId,
     int? addictionId,
   });
   
   Future<Map<String, dynamic>?> getTodayCheckIn({
-    int? userId,
+    String? userId,
     int? addictionId,
   });
   
   Future<bool> hasCheckedInToday({
-    int? userId,
+    String? userId,
     int? addictionId,
   });
 }

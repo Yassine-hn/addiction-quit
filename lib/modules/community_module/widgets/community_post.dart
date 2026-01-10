@@ -3,8 +3,15 @@ import '../models/post_model.dart';
 
 class CommunityPost extends StatelessWidget {
   final PostModel post;
+  final VoidCallback? onLike;
+  final VoidCallback? onRefresh;
 
-  const CommunityPost({super.key, required this.post});
+  const CommunityPost({
+    super.key,
+    required this.post,
+    this.onLike,
+    this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +36,17 @@ class CommunityPost extends StatelessWidget {
           Row(
             children: [
               _buildInteractionButton(
-                Icons.thumb_up_outlined,
+                post.isLikedByUser ? Icons.thumb_up : Icons.thumb_up_outlined,
                 post.likes,
                 const Color(0xFF00A3E0),
+                onTap: onLike,
               ),
               const SizedBox(width: 24),
               _buildInteractionButton(
                 Icons.chat_bubble_outline,
                 post.comments,
                 Colors.grey[600]!,
+                onTap: null,
               ),
             ],
           ),
@@ -113,8 +122,13 @@ class CommunityPost extends StatelessWidget {
     );
   }
 
-  Widget _buildInteractionButton(IconData icon, int count, Color color) {
-    return Row(
+  Widget _buildInteractionButton(
+    IconData icon,
+    int count,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    final button = Row(
       children: [
         Icon(icon, size: 20, color: color),
         const SizedBox(width: 6),
@@ -128,5 +142,14 @@ class CommunityPost extends StatelessWidget {
         ),
       ],
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: button,
+      );
+    }
+
+    return button;
   }
 }

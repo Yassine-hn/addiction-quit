@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/app_localizations.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -34,7 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -81,25 +82,29 @@ class CustomBottomNavBar extends StatelessWidget {
     required int index,
   }) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => _onNavItemTapped(context, index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
-            size: 26,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
               color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              size: 26,
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: isActive ? const Color(0xFF00A3E0) : Colors.grey[400],
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

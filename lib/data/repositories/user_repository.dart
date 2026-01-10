@@ -35,7 +35,7 @@ class UserRepositoryImpl implements UserRepository {
 
   /// Get current user ID
   @override
-  Future<int?> getCurrentUserId() async {
+  Future<String?> getCurrentUserId() async {
     // Get directly from SharedPreferences for consistency
     return await SharedPreferencesHelper.getUserId();
   }

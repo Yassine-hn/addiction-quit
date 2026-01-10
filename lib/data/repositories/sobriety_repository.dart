@@ -11,7 +11,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   final UserRepository _userRepository = UserRepositoryImpl();
 
   /// Get the primary active addiction for a user
-  Future<Map<String, dynamic>?> _getPrimaryAddiction(int userId) async {
+  Future<Map<String, dynamic>?> _getPrimaryAddiction(Object userId) async {
     try {
       final db = await _dbHelper.database;
       final addictions = await AddictionsTable.getActiveByUserId(db, userId);
@@ -41,7 +41,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
   /// Get sobriety time for the user's primary addiction
   @override
   Future<Map<String, String>> getSobrietyTime({
-    int? userId,
+    String? userId,
     int? addictionId,
   }) async {
     try {
@@ -63,7 +63,7 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
       }
 
       if (addiction == null) {
-        return {'days': '0', 'hours': '0', 'minutes': '0'};
+        return {'days': '0', 'hours': '0', 'minutes': '0', 'slips': '0'};
       }
 
       // Get counter_start_at or start_date
@@ -72,14 +72,43 @@ class SobrietyRepositoryImpl implements SobrietyRepository {
           addiction['start_date'] as String?;
 
       if (startDateStr == null) {
-        return {'days': '0', 'hours': '0', 'minutes': '0'};
+        return {'days': '0', 'hours': '0', 'minutes': '0', 'slips': '0'};
       }
 
       final startDate = DateTime.parse(startDateStr);
-      return _calculateTimeDifference(startDate);
+      final base = _calculateTimeDifference(startDate);
+      base['slips'] = (addiction['slips'] as int? ?? 0).toString();
+      return base;
     } catch (e) {
       print('Error getting sobriety time: $e');
-      return {'days': '0', 'hours': '0', 'minutes': '0'};
+      return {'days': '0', 'hours': '0', 'minutes': '0', 'slips': '0'};
+    }
+  }
+
+  /// Reset counter_start_at and slips/streak for the active addiction
+  Future<bool> resetCounter({String? userId, int? addictionId}) async {
+    try {
+      final db = await _dbHelper.database;
+      userId ??= await _userRepository.getCurrentUserId();
+
+      if (userId == null) return false;
+
+      Map<String, dynamic>? addiction;
+
+      if (addictionId != null) {
+        addiction = await AddictionsTable.getById(db, addictionId);
+      } else {
+        addiction = await _getPrimaryAddiction(userId);
+      }
+
+      final targetId = addiction?['id'] as int?;
+      if (targetId == null) return false;
+
+      await AddictionsTable.resetCounter(db, targetId);
+      return true;
+    } catch (e) {
+      print('Error resetting counter: $e');
+      return false;
     }
   }
 }

@@ -4,7 +4,7 @@ class DailySurveysTable {
   static const String tableName = 'daily_surveys';
 
   /// Insert a new daily survey
-  static Future<int> insert(Database db, Map<String, dynamic> survey) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> survey) async {
     return await db.insert(
       tableName,
       survey,

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/Cubit/UserInfoCubit.dart';
 import 'Step9ReviewHour.dart';
 import '../widgets/ValidationButton.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step8Money extends StatefulWidget {
   const Step8Money({super.key});
@@ -130,7 +131,7 @@ class _Step8MoneyState extends State<Step8Money> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Financial Savings',
+                      AppLocalizations.of(context)!.financialSavings,
                       style: TextStyle(
                         fontSize: isLandscape ? 28 : 32,
                         fontWeight: FontWeight.bold,
@@ -139,7 +140,7 @@ class _Step8MoneyState extends State<Step8Money> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'How much money do you think you can spare per day if you stop?',
+                      AppLocalizations.of(context)!.howMuchMoneySavedPerDay,
                       style: TextStyle(
                         fontSize: isLandscape ? 16 : 18,
                         fontWeight: FontWeight.w500,
@@ -170,7 +171,7 @@ class _Step8MoneyState extends State<Step8Money> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'This helps us track your financial progress.',
+                              AppLocalizations.of(context)!.thisHelpsTrackFinancialProgress,
                               style: TextStyle(
                                 fontSize: isLandscape ? 12 : 13,
                                 color: Colors.black87,

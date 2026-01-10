@@ -1,7 +1,5 @@
-// Fonctions to implement for home_screen backend
 // Now using repositories to fetch data from database
 
-// Note: Localization is handled in UI layer, not in backend functions
 import '../../data/repositories/user_repository.dart';
 import '../../data/repositories/sobriety_repository.dart';
 import '../../data/repositories/savings_repository.dart';
@@ -28,6 +26,21 @@ Future<Map<String, String>> getSobrietyTime() async {
   } catch (e) {
     print('Error getting sobriety time: $e');
     return getDefaultSobrietyTime();
+  }
+}
+
+/// Reset sobriety counter and slips for the active addiction
+Future<bool> resetSobrietyCounter() async {
+  try {
+    final userId = await SharedPreferencesHelper.getUserId();
+    final addictionId = await SharedPreferencesHelper.getAddictionId();
+    return await _sobrietyRepository.resetCounter(
+      userId: userId,
+      addictionId: addictionId,
+    );
+  } catch (e) {
+    print('Error resetting counter: $e');
+    return false;
   }
 }
 
@@ -61,16 +74,20 @@ Future<bool> submitDailyCheckIn({
   required String mood,
   required double cravingLevel,
   required String journalEntry,
+  required bool slipped,
+  required int slipAmount,
 }) async {
   try {
     print(
-      'Submitting check-in: Mood: $mood, Craving: $cravingLevel, Journal: $journalEntry',
+      'Submitting check-in: Mood: $mood, Craving: $cravingLevel, Journal: $journalEntry, Slipped: $slipped, SlipAmount: $slipAmount',
     );
 
     final success = await _checkInRepository.submitCheckIn(
       mood: mood,
       cravingLevel: cravingLevel,
       journalEntry: journalEntry,
+      slipped: slipped,
+      slipAmount: slipAmount,
     );
 
     return success;
@@ -111,7 +128,7 @@ Future<String> getGreetingMessage() async {
 // Default values: fallback if repositories fail
 
 Map<String, String> getDefaultSobrietyTime() {
-  return {'days': '0', 'hours': '0', 'minutes': '0'};
+  return {'days': '0', 'hours': '0', 'minutes': '0', 'slips': '0'};
 }
 
 Map<String, dynamic> getDefaultSavingsStats() {

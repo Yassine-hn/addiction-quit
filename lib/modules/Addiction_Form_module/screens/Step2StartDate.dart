@@ -6,6 +6,7 @@ import '../data/Cubit/UserInfoCubit.dart';
 import '../widgets/SectionTitle.dart';
 import '../widgets/ValidationButton.dart';
 import '../widgets/WheelPicker.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step2StartDate extends StatefulWidget {
   const Step2StartDate({super.key});
@@ -72,9 +73,9 @@ class _Step2StartDateState extends State<Step2StartDate> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title Section
-                    const SectionTitle(
-                      title: 'When did your journey begin?',
-                      subtitle: 'Starting Date',
+                    SectionTitle(
+                      title: AppLocalizations.of(context)!.whenDidYourJourneyBegin,
+                      subtitle: AppLocalizations.of(context)!.startingDate,
                     ),
                     const SizedBox(height: 40),
 
@@ -140,7 +141,7 @@ class _Step2StartDateState extends State<Step2StartDate> {
                 ],
               ),
               child: ValidationButton(
-                label: 'Continue',
+                label: AppLocalizations.of(context)!.continueLabel,
                 onPressed: _handleContinue,
                 enabled: _selectedDate != null,
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/community_backend_functions.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -10,7 +11,7 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _postController = TextEditingController();
-  bool _isAnonymous = false;
+  bool _isPublishing = false;
 
   @override
   void dispose() {
@@ -29,30 +30,39 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           icon: const Icon(Icons.close, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Create Post',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.createPost,
+          style: const TextStyle(
             color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: _postController.text.isEmpty
-                ? null
-                : () => _publishPost(),
-            child: Text(
-              'Post',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: _postController.text.isEmpty
-                    ? Colors.grey[400]
-                    : const Color(0xFF00A3E0),
-              ),
-            ),
-          ),
+          _isPublishing
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : TextButton(
+                  onPressed: _postController.text.isEmpty
+                      ? null
+                      : () => _publishPost(),
+                  child: Text(
+                    AppLocalizations.of(context)!.post,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _postController.text.isEmpty
+                          ? Colors.grey[400]
+                          : const Color(0xFF00A3E0),
+                    ),
+                  ),
+                ),
           const SizedBox(width: 8),
         ],
       ),
@@ -70,8 +80,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     const SizedBox(height: 20),
                     _buildPostInput(),
                     const SizedBox(height: 24),
-                    _buildAnonymousToggle(),
-                    const SizedBox(height: 24),
                     _buildSuggestions(),
                   ],
                 ),
@@ -87,12 +95,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget _buildUserInfo() {
     return Row(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFFE8F4F8),
+          backgroundColor: Color(0xFFE8F4F8),
           child: Icon(
-            _isAnonymous ? Icons.person_outline : Icons.person,
-            color: const Color(0xFF00A3E0),
+            Icons.person,
+            color: Color(0xFF00A3E0),
             size: 28,
           ),
         ),
@@ -100,16 +108,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _isAnonymous ? 'Anonymous' : 'Alex',
-              style: const TextStyle(
+            const Text(
+              'You',
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
             ),
             Text(
-              'Posting to Community',
+              AppLocalizations.of(context)!.postingToCommunity,
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
           ],
@@ -127,7 +135,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       onChanged: (value) => setState(() {}),
       style: const TextStyle(fontSize: 16, color: Colors.black87, height: 1.5),
       decoration: InputDecoration(
-        hintText: 'Share your thoughts, experiences, or ask for support...',
+        hintText: AppLocalizations.of(context)!.shareYourThoughts,
         hintStyle: TextStyle(
           fontSize: 16,
           color: Colors.grey[400],
@@ -139,58 +147,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  Widget _buildAnonymousToggle() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.visibility_off_outlined,
-            color: Colors.grey[700],
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Post anonymously',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Your identity will be hidden',
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: _isAnonymous,
-            onChanged: (value) => setState(() => _isAnonymous = value),
-            activeThumbColor: const Color(0xFF00A3E0),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSuggestions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular topics',
+          AppLocalizations.of(context)!.popularTopics,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -250,11 +212,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _buildToolbarButton(Icons.image_outlined, 'Photo'),
+          _buildToolbarButton(Icons.image_outlined, AppLocalizations.of(context)!.photo),
           const SizedBox(width: 20),
-          _buildToolbarButton(Icons.poll_outlined, 'Poll'),
+          _buildToolbarButton(Icons.poll_outlined, AppLocalizations.of(context)!.poll),
           const SizedBox(width: 20),
-          _buildToolbarButton(Icons.emoji_emotions_outlined, 'Emoji'),
+          _buildToolbarButton(Icons.emoji_emotions_outlined, AppLocalizations.of(context)!.emoji),
         ],
       ),
     );
@@ -265,7 +227,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$label feature coming soon!'),
+            content: Text(AppLocalizations.of(context)!.featureComingSoon(label)),
             backgroundColor: const Color(0xFF00A3E0),
             duration: const Duration(seconds: 1),
           ),
@@ -281,25 +243,33 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  void _publishPost() {
+  void _publishPost() async {
     if (_postController.text.trim().isEmpty) return;
 
-    createPost(
-      content: _postController.text.trim(),
-      isAnonymous: _isAnonymous,
-    ).then((success) {
-      if (success) {
-        Navigator.pop(context);
-        Future.delayed(const Duration(milliseconds: 300), () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Post published successfully!'),
-              backgroundColor: Color(0xFF00A3E0),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        });
-      }
+    setState(() {
+      _isPublishing = true;
     });
+
+    final success = await createPost(
+      content: _postController.text.trim(),
+    );
+
+    if (mounted) {
+      setState(() {
+        _isPublishing = false;
+      });
+
+      if (success) {
+        Navigator.pop(context, true); // Return true to indicate success
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to publish post'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 }

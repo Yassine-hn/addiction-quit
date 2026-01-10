@@ -9,6 +9,7 @@ import '../widgets/MultiSelectChip.dart';
 import '../widgets/MotivationTextField.dart';
 import '../data/Repositories/GoalsRepo.dart';
 import 'Step6Importance.dart';
+import '../../../l10n/app_localizations.dart';
 
 class Step5Objectives extends StatefulWidget {
   const Step5Objectives({super.key});
@@ -119,11 +120,11 @@ class _Step5ObjectivesState extends State<Step5Objectives> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              const SectionTitle(title: 'Main Goals'),
+              SectionTitle(title: AppLocalizations.of(context)!.mainGoals),
               const SizedBox(height: 8),
-              const Text(
-                'What are your main goals?',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.whatAreYourMainGoals,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
@@ -135,7 +136,7 @@ class _Step5ObjectivesState extends State<Step5Objectives> {
               SearchBarWidget(
                 controller: _searchController,
                 onChanged: _filterGoals,
-                hintText: 'Search for a goal...',
+                hintText: AppLocalizations.of(context)!.searchForGoal,
               ),
               const SizedBox(height: 20),
 
@@ -156,7 +157,7 @@ class _Step5ObjectivesState extends State<Step5Objectives> {
 
               // Continue Button
               ValidationButton(
-                label: 'Continue',
+                label: AppLocalizations.of(context)!.continueLabel,
                 onPressed: () => _isValid ? _handleContinue() : null,
                 enabled: _isValid,
               ),

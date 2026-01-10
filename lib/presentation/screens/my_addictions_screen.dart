@@ -186,9 +186,9 @@ class _MyAddictionsScreenState extends State<MyAddictionsScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           color: isCurrent ? Colors.blue[50] : null,
           child: ListTile(
-            leading: _buildAddictionIcon(addiction['type']),
+            leading: _buildAddictionIcon(addiction['addiction_type']),
             title: Text(
-              addiction['type']?.toString() ?? 'Unknown',
+              addiction['addiction_type']?.toString() ?? 'Unknown',
               style: TextStyle(
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
               ),
