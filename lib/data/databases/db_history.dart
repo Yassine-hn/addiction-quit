@@ -11,6 +11,8 @@ class DatabaseHistory {
   static const String databaseName = 'addiction_quit.db';
   
   /// Migration from version 0 to 1 (initial creation)
+  /// Creates all base tables including notifications to ensure fresh installs
+  /// have complete schema regardless of version number
   static Future<void> migrateV0ToV1(Database db) async {
     await _createUsersTable(db);
     await _createAddictionsTable(db);
@@ -18,6 +20,7 @@ class DatabaseHistory {
     await _createMilestonesTable(db);
     await _createRemindersTable(db);
     await _createActivityLogsTable(db);
+    await _createNotificationsTable(db);
   }
   
   /// Execute migrations based on version
@@ -48,9 +51,11 @@ class DatabaseHistory {
     ''');
   }
 
-  /// Migration from version 2 to 3 (add notifications)
+  /// Migration from version 2 to 3 (reserved for future notifications schema changes)
+  /// Currently a no-op since notifications table is created in migrateV0ToV1
   static Future<void> migrateV2ToV3(Database db) async {
-    await _createNotificationsTable(db);
+    // Reserved for future schema alterations to notifications table
+    // (e.g., adding new columns). Table creation is handled in migrateV0ToV1.
   }
   
   // Table creation methods

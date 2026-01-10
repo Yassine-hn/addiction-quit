@@ -380,10 +380,17 @@ class UserProfileScreen extends StatelessWidget {
   }
 
   Widget _buildJourneySection() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: getUserJourneys(),
+    // Fetch journeys and the currently selected addiction ID
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([
+        getUserJourneys(),
+        SharedPreferencesHelper.getAddictionId(),
+      ]),
       builder: (context, snapshot) {
-        final journeys = snapshot.data ?? getDefaultJourneys();
+        final journeys = (snapshot.hasData && snapshot.data![0] is List<Map<String, dynamic>>)
+            ? snapshot.data![0] as List<Map<String, dynamic>>
+            : getDefaultJourneys();
+        final currentAddictionId = (snapshot.hasData) ? snapshot.data![1] as int? : null;
 
         return Container(
           width: double.infinity,
@@ -428,6 +435,9 @@ class UserProfileScreen extends StatelessWidget {
                       ),
                       color: const Color(0xFF00A3E0),
                       addictionId: journey['addiction_id'] as int?,
+                      isCurrent: (journey['addiction_id'] != null &&
+                          currentAddictionId != null &&
+                          (journey['addiction_id'] as int) == currentAddictionId),
                       context: context,
                     ),
                   ],
@@ -447,6 +457,7 @@ class UserProfileScreen extends StatelessWidget {
     required String days,
     required Color color,
     int? addictionId,
+    bool isCurrent = false,
     BuildContext? context,
   }) {
     return InkWell(
@@ -465,9 +476,11 @@ class UserProfileScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.05),
+          color: isCurrent ? const Color(0xFF00C853).withOpacity(0.08) : color.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(
+            color: isCurrent ? const Color(0xFF00C853).withOpacity(0.6) : Colors.grey[200]!,
+          ),
         ),
         child: Row(
           children: [
@@ -475,23 +488,57 @@ class UserProfileScreen extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: isCurrent ? const Color(0xFF00C853).withOpacity(0.15) : color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: isCurrent ? const Color(0xFF00C853) : color, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isCurrent) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00C853).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: const Color(0xFF00C853).withOpacity(0.6)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.check_circle, size: 14, color: Color(0xFF00C853)),
+                              SizedBox(width: 4),
+                              Text(
+                                'Current',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF00C853),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
