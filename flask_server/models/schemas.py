@@ -15,6 +15,9 @@ class UserRegister(BaseModel):
     avatar_url: Optional[str] = None
     language: Optional[str] = None
     score: Optional[int] = Field(default=0, ge=0)
+    is_active: Optional[bool] = True
+    last_login_at: Optional[str] = None
+    created_at: Optional[str] = None
     
     @validator('password')
     def password_strength(cls, v):

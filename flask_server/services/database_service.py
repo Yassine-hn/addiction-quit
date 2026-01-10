@@ -31,8 +31,8 @@ class DatabaseService:
         return response.data[0] if response.data else None
     
     def create_user(self, user_data: dict):
-        """Create new user"""
-        response = self.client.table('users').insert(user_data).execute()
+        """Create new user and return full representation (including defaults like created_at)."""
+        response = self.client.table('users').insert(user_data, returning='representation').execute()
         return response.data[0] if response.data else None
     
     def update_user(self, user_id: str, user_data: dict):
@@ -69,6 +69,24 @@ class DatabaseService:
     def delete_addiction(self, addiction_id: int):
         """Delete addiction"""
         response = self.client.table('addictions').delete().eq('id', addiction_id).execute()
+        return response.data
+
+    # Reminder operations
+    def get_user_reminders(self, user_id: str):
+        """Get all reminders for a user"""
+        response = self.client.table('reminders').select('*').eq('user_id', user_id).execute()
+        return response.data
+
+    # Activity log operations
+    def get_user_activity_logs(self, user_id: str):
+        """Get all activity logs for a user"""
+        response = self.client.table('activity_logs').select('*').eq('user_id', user_id).execute()
+        return response.data
+
+    # Notification operations
+    def get_user_notifications(self, user_id: str):
+        """Get all notifications for a user"""
+        response = self.client.table('notifications').select('*').eq('user_id', user_id).execute()
         return response.data
     
     # Survey operations (check-ins)

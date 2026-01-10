@@ -5,6 +5,15 @@ from models.schemas import UserRegister, UserLogin
 from pydantic import ValidationError
 from datetime import datetime
 
+
+def _sanitize_user(user: dict | None):
+    """Remove sensitive fields before returning user data to clients."""
+    if not user:
+        return None
+    sanitized = dict(user)
+    sanitized.pop('password_hash', None)
+    return sanitized
+
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 @auth_bp.route('/register', methods=['POST'])
@@ -25,7 +34,8 @@ def register():
         # Hash password
         hashed_password = hash_password(data.password)
         
-        # Create user
+        # Create user - use client-provided values when available (from local state)
+        # created_at from local is preserved; updated_at will be set by Supabase DEFAULT
         user_data = {
             'name': data.name,
             'email': data.email,
@@ -35,8 +45,9 @@ def register():
             'avatar_url': data.avatar_url,
             'language': data.language or 'en',
             'score': data.score or 0,
-            'is_active': True,
-            'created_at': datetime.utcnow().isoformat()
+            'is_active': data.is_active if data.is_active is not None else True,
+            'last_login_at': data.last_login_at,
+            'created_at': data.created_at or datetime.utcnow().isoformat()
         }
         
         user = db_service.create_user(user_data)
@@ -55,7 +66,7 @@ def register():
             'success': True,
             'message': 'User registered successfully',
             'data': {
-                'user': user,
+                'user': _sanitize_user(user),
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }
@@ -109,12 +120,7 @@ def login():
             'success': True,
             'message': 'Login successful',
             'data': {
-                'user': {
-                    'id': user['id'],
-                    'name': user['name'],
-                    'email': user['email'],
-                    'score': user.get('score', 0)
-                },
+                'user': _sanitize_user(user),
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }
