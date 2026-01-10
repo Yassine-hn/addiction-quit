@@ -8,10 +8,10 @@ import '../../modules/Addiction_Form_module/screens/Step0Welcome.dart';
 import '../../modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
+import '../../data/services/user_switcher_service.dart';
+import '../../modules/Addiction_Form_module/data/user_data_service.dart';
 import '../app_routes.dart';
 
-import 'login_screen.dart';
-import 'signup_screen.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
 
@@ -31,6 +31,8 @@ class UserProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    _buildUserSwitcher(context),
+                    const SizedBox(height: 16),
                     _buildProfileHeader(),
                     const SizedBox(height: 16),
                     _buildAuthCta(context),
@@ -211,6 +213,316 @@ class UserProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildUserSwitcher(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: UserSwitcherService.getAllUsers(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox.shrink();
+        }
+
+        final users = snapshot.data ?? [];
+        if (users.isEmpty) return const SizedBox.shrink();
+
+        return FutureBuilder<String?>(
+          future: UserSwitcherService.getCurrentUserId(),
+          builder: (context, currentUserSnapshot) {
+            final currentUserId = currentUserSnapshot.data;
+
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Switch User',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Column(
+                    children: users.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final user = entry.value;
+                      final userId = user['id'].toString();
+                      final userName = user['name'] ?? 'Unknown User';
+                      final isCurrentUser = userId == currentUserId;
+
+                      return Column(
+                        children: [
+                          if (index > 0) const Divider(height: 1),
+                          InkWell(
+                            onTap: isCurrentUser
+                                ? null
+                                : () => _showSwitchUserDialog(context, userId, userName),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isCurrentUser
+                                          ? const Color(0xFF00A3E0).withOpacity(0.15)
+                                          : Colors.grey.withOpacity(0.1),
+                                      border: isCurrentUser
+                                          ? Border.all(
+                                              color: const Color(0xFF00A3E0),
+                                              width: 2,
+                                            )
+                                          : null,
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.person,
+                                        color: isCurrentUser
+                                            ? const Color(0xFF00A3E0)
+                                            : Colors.grey,
+                                        size: 22,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          userName,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: isCurrentUser ? FontWeight.w600 : FontWeight.w500,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        if (isCurrentUser)
+                                          Text(
+                                            'Current account',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isCurrentUser)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF00C853).withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(999),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: const [
+                                          Icon(
+                                            Icons.check_circle,
+                                            size: 12,
+                                            color: Color(0xFF00C853),
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Active',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF00C853),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Colors.grey[400],
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (isCurrentUser)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8, left: 56),
+                              child: TextButton(
+                                onPressed: () => _showDeleteAccountDialog(context),
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(0, 24),
+                                ),
+                                child: const Text(
+                                  'Delete Account',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                  const Divider(height: 16),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () => _navigateToAddUser(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFF4361EE).withOpacity(0.15),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.add,
+                                color: Color(0xFF4361EE),
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Add User',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF4361EE),
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.grey[400],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSwitchUserDialog(BuildContext context, String userId, String userName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Switch User'),
+        content: Text(
+          'Switch to $userName? You will be logged out from your current account.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              // Switch user
+              context.read<AuthCubit>().switchUser(userId);
+              // Return to dashboard or home
+              Future.delayed(const Duration(milliseconds: 500), () {
+                Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+              });
+            },
+            child: const Text('Switch', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text(
+          'Are you sure you want to delete this account? This action cannot be undone and will delete all your addictions and data.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final success = await UserDataService.deleteCurrentUser();
+              if (success) {
+                // Show success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Account deleted successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Navigate back to profile or home
+                Navigator.pushReplacementNamed(context, AppRoutes.profile);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Error deleting account'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToAddUser(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (BuildContext context) => UserInfoCubit(),
+          child: const WelcomeScreen(),
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildProfileHeader() {
     return FutureBuilder<Map<String, String>>(
