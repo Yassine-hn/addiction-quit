@@ -4,7 +4,7 @@ class AddictionsTable {
   static const String tableName = 'addictions';
 
   /// Insert a new addiction
-  static Future<int> insert(Database db, Map<String, dynamic> addiction) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> addiction) async {
     return await db.insert(tableName, addiction);
   }
 

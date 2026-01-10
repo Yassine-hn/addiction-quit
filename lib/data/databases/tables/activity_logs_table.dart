@@ -4,7 +4,7 @@ class ActivityLogsTable {
   static const String tableName = 'activity_logs';
 
   /// Insert a new activity log
-  static Future<int> insert(Database db, Map<String, dynamic> log) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> log) async {
     return await db.insert(tableName, log);
   }
 

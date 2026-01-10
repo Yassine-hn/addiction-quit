@@ -4,7 +4,7 @@ class RemindersTable {
   static const String tableName = 'reminders';
 
   /// Insert a new reminder
-  static Future<int> insert(Database db, Map<String, dynamic> reminder) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> reminder) async {
     return await db.insert(tableName, reminder);
   }
 

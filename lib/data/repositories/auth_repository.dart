@@ -135,6 +135,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      // Preflight: quick health check to avoid long timeouts and give clearer feedback
+      final isHealthy = await _apiService.healthCheck();
+      if (!isHealthy) {
+        return AuthResult.failure(
+          'Server unreachable. Please verify your network or API base URL: ${ApiService.baseUrl}',
+        );
+      }
+
       final response = await _apiService.login(
         email: email,
         password: password,
@@ -146,11 +154,24 @@ class AuthRepositoryImpl implements AuthRepository {
         final accessToken = data['access_token'] as String;
         final refreshToken = data['refresh_token'] as String;
 
-        // Save tokens and user info to secure storage
+        // Save tokens to secure storage
         await TokenStorage.saveTokens(
           accessToken: accessToken,
           refreshToken: refreshToken,
         );
+
+        // Sync cloud user data into local database
+        final oldLocalUserId = await _signupSyncService.getCurrentLocalUserId();
+        if (oldLocalUserId == null) {
+          return AuthResult.failure('No local user data found. Please complete onboarding first.');
+        }
+
+        await _signupSyncService.updateLocalAfterSignup(
+          oldLocalUserId: oldLocalUserId,
+          cloudUserData: user,
+        );
+
+        // Save user info to secure storage (cloud UUID)
         await TokenStorage.saveUserInfo(
           userId: user['id'].toString(),
           email: user['email'],

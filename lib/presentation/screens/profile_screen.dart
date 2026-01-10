@@ -114,9 +114,7 @@ class UserProfileScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
+              Navigator.of(context).pushNamed(AppRoutes.login);
             },
             borderRadius: BorderRadius.circular(12),
             child: Container(
@@ -171,9 +169,7 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      );
+                      Navigator.of(context).pushNamed(AppRoutes.signup);
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,

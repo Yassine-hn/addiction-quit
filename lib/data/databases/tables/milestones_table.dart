@@ -4,7 +4,7 @@ class MilestonesTable {
   static const String tableName = 'milestones';
 
   /// Insert a new milestone
-  static Future<int> insert(Database db, Map<String, dynamic> milestone) async {
+  static Future<int> insert(DatabaseExecutor db, Map<String, dynamic> milestone) async {
     return await db.insert(tableName, milestone);
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/cubits/auth_cubit.dart';
 import '../../logic/cubits/auth_state.dart';
-import 'signup_screen.dart';
+import '../app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,6 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -45,6 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 backgroundColor: Colors.red,
               ),
             );
+          } else if (state is AuthAuthenticated) {
+            Navigator.of(context).pushReplacementNamed(AppRoutes.profile);
           }
         },
         builder: (context, state) {
@@ -183,10 +188,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: isLoading
                                 ? null
                                 : () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const SignupScreen(),
-                                      ),
+                                    Navigator.of(context).pushReplacementNamed(
+                                      AppRoutes.signup,
                                     );
                                   },
                             child: const Text(

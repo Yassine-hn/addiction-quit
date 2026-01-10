@@ -14,7 +14,8 @@ import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart'
 /// 3. Managing user ID transitions from local to cloud UUID
 class SignupSyncService {
   /// Get local user data to send to cloud during signup
-  /// Returns user data map with all fields except id
+  /// Returns user data map with all fields except id and updated_at
+  /// Keeps created_at, is_active, last_login_at and all profile fields
   Future<Map<String, dynamic>?> getLocalUserData() async {
     try {
       final db = await DatabaseHelper.instance.database;
@@ -33,11 +34,11 @@ class SignupSyncService {
       // Remove id field - cloud will generate new UUID
       user.remove('id');
       
-      // Remove created_at and updated_at - cloud will set these
-      user.remove('created_at');
+      // Remove updated_at - cloud will set this
+      // Keep created_at - client-provided timestamp for when user was created locally
       user.remove('updated_at');
       
-      print('Retrieved local user data: name=${user['name']}, email=${user['email']}');
+      print('Retrieved local user data: name=${user['name']}, email=${user['email']}, created_at=${user['created_at']}');
       return user;
     } catch (e) {
       print('Error getting local user data: $e');
@@ -92,6 +93,11 @@ class SignupSyncService {
           convertedUserData[key] = value ? 1 : 0;
         }
       });
+
+      // Ensure required defaults so SQLite NOT NULL constraints are satisfied
+      convertedUserData['created_at'] ??= DateTime.now().toIso8601String();
+      convertedUserData['language'] ??= 'en';
+      convertedUserData['is_active'] ??= 1; // already int/bool converted above
       
       await UsersTable.insert(db, convertedUserData);
       print('Inserted cloud user: $newCloudUserId');

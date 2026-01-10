@@ -4,7 +4,7 @@ class UsersTable {
   static const String tableName = 'users';
 
   /// Insert a new user; ensures string primary key
-  static Future<String> insert(Database db, Map<String, dynamic> user) async {
+  static Future<String> insert(DatabaseExecutor db, Map<String, dynamic> user) async {
     final data = Map<String, dynamic>.from(user);
     final id = data['id']?.toString() ?? 'user_${DateTime.now().microsecondsSinceEpoch}';
     data['id'] = id;
@@ -51,7 +51,7 @@ class UsersTable {
   }
 
   /// Delete user
-  static Future<int> delete(Database db, Object id) async {
+  static Future<int> delete(DatabaseExecutor db, Object id) async {
     return await db.delete(
       tableName,
       where: 'id = ?',
