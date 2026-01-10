@@ -17,8 +17,8 @@ class CommunityScreen extends StatefulWidget {
 }
 
 class _CommunityScreenState extends State<CommunityScreen> {
-  Future<List<PostModel>>? _postsFuture;
-  Future<List<HeroModel>>? _heroesFuture;
+  Future<({List<PostModel> data, String? error})>? _postsFuture;
+  Future<({List<HeroModel> data, String? error})>? _heroesFuture;
 
   @override
   void initState() {
@@ -105,10 +105,113 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   Widget _buildHeroesSection() {
-    return FutureBuilder<List<HeroModel>>(
+    return FutureBuilder<({List<HeroModel> data, String? error})>(
       future: _heroesFuture,
       builder: (context, snapshot) {
-        final heroes = snapshot.data ?? getDefaultHeroes();
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    AppLocalizations.of(context)!.heroesOfTheWeek,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const SizedBox(
+                  height: 115,
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(0xFF00A3E0)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final result = snapshot.data;
+        final heroes = result?.data ?? [];
+        final error = result?.error;
+
+        if (error != null) {
+          return Container(
+            width: double.infinity,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    AppLocalizations.of(context)!.heroesOfTheWeek,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    error,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (heroes.isEmpty) {
+          return Container(
+            width: double.infinity,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    AppLocalizations.of(context)!.heroesOfTheWeek,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'No heroes yet for this month',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
 
         return Container(
           width: double.infinity,
@@ -153,7 +256,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   Widget _buildPostsList() {
-    return FutureBuilder<List<PostModel>>(
+    return FutureBuilder<({List<PostModel> data, String? error})>(
       future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -163,15 +266,44 @@ class _CommunityScreenState extends State<CommunityScreen> {
           );
         }
 
-        final posts = snapshot.data ?? getDefaultPosts();
+        final result = snapshot.data;
+        final posts = result?.data ?? [];
+        final error = result?.error;
+
+        if (error != null) {
+          return Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red[400], size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    error,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.red[400], fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
         if (posts.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(32.0),
             child: Center(
-              child: Text(
-                'No posts yet. Be the first to share!',
-                style: TextStyle(color: Colors.grey[600]),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.message_outlined, color: Colors.grey[400], size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'There are no posts yet',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
               ),
             ),
           );

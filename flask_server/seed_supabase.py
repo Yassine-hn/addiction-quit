@@ -293,30 +293,44 @@ def seed_posts(users):
 
 
 def seed_heroes(users, addictions):
-    """Create heroes of the week"""
+    """Create heroes of the last month"""
     print("\n⭐ Creating heroes...")
     
+    # Calculate last month's date range
     today = datetime.now().date()
-    week_start = today - timedelta(days=today.weekday())
-    week_end = week_start + timedelta(days=6)
+    # First day of current month
+    first_day_current = today.replace(day=1)
+    # Last day of previous month
+    last_day_previous = first_day_current - timedelta(days=1)
+    # First day of previous month
+    first_day_previous = last_day_previous.replace(day=1)
     
     heroes_data = [
         {
             'user_id': users[2]['id'],  # David with 85 days
-            'period_type': 'weekly',
-            'period_start': week_start.isoformat(),
-            'period_end': week_end.isoformat(),
+            'period_type': 'monthly',
+            'period_start': first_day_previous.isoformat(),
+            'period_end': last_day_previous.isoformat(),
             'score': 85,
             'rank': 1,
             'metric_source': 'streak'
         },
         {
             'user_id': users[1]['id'],  # Maria with 42 days
-            'period_type': 'weekly',
-            'period_start': week_start.isoformat(),
-            'period_end': week_end.isoformat(),
+            'period_type': 'monthly',
+            'period_start': first_day_previous.isoformat(),
+            'period_end': last_day_previous.isoformat(),
             'score': 42,
             'rank': 2,
+            'metric_source': 'streak'
+        },
+        {
+            'user_id': users[0]['id'],  # Sophie with 61 days
+            'period_type': 'monthly',
+            'period_start': first_day_previous.isoformat(),
+            'period_end': last_day_previous.isoformat(),
+            'score': 61,
+            'rank': 3,
             'metric_source': 'streak'
         }
     ]

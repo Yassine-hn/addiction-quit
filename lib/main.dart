@@ -7,7 +7,7 @@ import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
-// import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
+import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
 import 'logic/cubits/language_cubit.dart';
 import 'logic/cubits/auth_cubit.dart';
 import 'data/repositories/auth_repository.dart';
@@ -34,9 +34,9 @@ Future<bool> init_app() async {
     // section (lines marked with "REMOVE AFTER FIRST RUN") to prevent re-seeding
     // on every app launch.
     
-    // final seeder = DatabaseSeeder();                    // REMOVE AFTER FIRST RUN
-    // await seeder.seed();                                // REMOVE AFTER FIRST RUN
-    // print('✅ Local database seeded successfully!');    // REMOVE AFTER FIRST RUN
+     final seeder = DatabaseSeeder();                    // REMOVE AFTER FIRST RUN
+     await seeder.seed();                                // REMOVE AFTER FIRST RUN
+     print('✅ Local database seeded successfully!');    // REMOVE AFTER FIRST RUN
     
     // ============================================================================
     // END OF SEEDING SECTION
