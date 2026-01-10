@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/repositories/auth_repository.dart';
+import '../../data/services/user_switcher_service.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -81,5 +82,22 @@ class AuthCubit extends Cubit<AuthState> {
     await _authRepository.logout();
     
     emit(AuthUnauthenticated());
+  }
+
+  // Switch to another user
+  // - Updates SharedPreferences with new user ID
+  // - Clears all tokens (logout)
+  // - Emits AuthUnauthenticated state
+  Future<void> switchUser(String userId) async {
+    emit(AuthLoading());
+    
+    final success = await UserSwitcherService.switchUser(userId);
+    
+    if (success) {
+      emit(AuthUnauthenticated());
+    } else {
+      emit(const AuthError('Failed to switch user'));
+      emit(AuthUnauthenticated());
+    }
   }
 }

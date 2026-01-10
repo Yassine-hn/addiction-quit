@@ -173,6 +173,14 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: OutlinedButton(
+                    onPressed: _loadData,
+                    child: const Text('Refresh'),
+                  ),
+                ),
               ],
             ),
           );
@@ -283,6 +291,11 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     error,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.red[400], fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: _loadData,
+                    child: const Text('Refresh'),
                   ),
                 ],
               ),
