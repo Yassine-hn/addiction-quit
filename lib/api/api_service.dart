@@ -3,8 +3,11 @@ import '../data/storage/token_storage.dart';
 import 'api_config.dart';
 
 class ApiService {
+  // A single, static instance of ApiService is created when the class is loaded
   static final ApiService _instance = ApiService._internal();
+  // Factory constructor returns the same instance every time
   factory ApiService() => _instance;
+  // Private named constructor prevents external instantiation
   ApiService._internal();
 
   // Base URL from ApiConfig - supports environment switching
@@ -52,20 +55,19 @@ class ApiService {
 
   // Auth endpoints
   Future<ApiResponse<Map<String, dynamic>>> register({
-    required String name,
     required String email,
     required String password,
-    String? dob,
+    required Map<String, dynamic> userData,
   }) async {
     try {
+      // Merge user data with email and password
+      final requestData = Map<String, dynamic>.from(userData);
+      requestData['email'] = email;
+      requestData['password'] = password;
+      
       final response = await _dio.post(
         '/api/auth/register',
-        data: {
-          'name': name,
-          'email': email,
-          'password': password,
-          if (dob != null) 'dob': dob,
-        },
+        data: requestData,
       );
       return ApiResponse.fromJson(response.data);
     } on DioException catch (e) {
@@ -97,6 +99,32 @@ class ApiService {
       return ApiResponse.fromJson(response.data);
     } on DioException catch (e) {
       return _handleError(e);
+    }
+  }
+
+  // Health check with short timeouts to quickly detect unreachable backend
+  Future<bool> healthCheck({
+    Duration connectTimeout = const Duration(seconds: 5),
+    Duration receiveTimeout = const Duration(seconds: 5),
+  }) async {
+    try {
+      final response = await _dio.get(
+        '/health',
+        options: Options(
+          sendTimeout: connectTimeout,
+          receiveTimeout: receiveTimeout,
+        ),
+      );
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map<String, dynamic>) {
+          return (data['success'] == true);
+        }
+        return true;
+      }
+      return false;
+    } on DioException catch (_) {
+      return false;
     }
   }
 

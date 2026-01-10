@@ -83,4 +83,71 @@ class UsersTable {
       whereArgs: [id.toString()],
     );
   }
+
+  /// Update authentication info (email and password hash)
+  static Future<int> updateAuthInfo(
+    Database db,
+    Object id, {
+    String? email,
+    String? passwordHash,
+  }) async {
+    final data = <String, dynamic>{};
+    
+    if (email != null) {
+      data['email'] = email;
+    }
+    if (passwordHash != null) {
+      data['password_hash'] = passwordHash;
+    }
+    
+    if (data.isEmpty) {
+      return 0;
+    }
+    
+    data['updated_at'] = DateTime.now().toIso8601String();
+    
+    return await db.update(
+      tableName,
+      data,
+      where: 'id = ?',
+      whereArgs: [id.toString()],
+    );
+  }
+
+  /// Update user name
+  static Future<int> updateName(Database db, Object id, String name) async {
+    return await db.update(
+      tableName,
+      {
+        'name': name,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id.toString()],
+    );
+  }
+
+  /// Update user ID (used when migrating from local ID to cloud UUID)
+  /// Note: This is a complex operation that should be followed by updating
+  /// all foreign keys in related tables
+  static Future<void> updateUserId(
+    Database db,
+    Object oldId,
+    Object newId,
+  ) async {
+    // Get the user data
+    final user = await getById(db, oldId);
+    
+    if (user == null) {
+      throw Exception('User with id $oldId not found');
+    }
+    
+    // Update the id
+    user['id'] = newId.toString();
+    user['updated_at'] = DateTime.now().toIso8601String();
+    
+    // Delete old record and insert with new ID
+    await delete(db, oldId);
+    await db.insert(tableName, user, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
 }

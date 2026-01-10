@@ -7,9 +7,10 @@ import 'l10n/app_localizations.dart';
 import 'presentation/app_routes.dart';
 import 'modules/Addiction_Form_module/data/user_data_service.dart';
 import 'data/databases/db_helper.dart';
-import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
+// import 'data/utils/database_seeder.dart'; // For seeding - can remove after first run
 import 'logic/cubits/language_cubit.dart';
 import 'logic/cubits/auth_cubit.dart';
+import 'data/repositories/auth_repository.dart';
 import 'api/api_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -66,11 +67,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await init_app();
+  
+  // Initialize services and repositories
+  final apiService = ApiService();
+  final authRepository = AuthRepositoryImpl(apiService);
+  
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => LanguageCubit()),
-        BlocProvider(create: (context) => AuthCubit(ApiService())..checkAuthStatus()),
+        BlocProvider(
+          create: (context) => AuthCubit(authRepository)..checkAuthStatus(),
+        ),
       ],
       child: const MyApp(),
     ),

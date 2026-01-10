@@ -9,9 +9,11 @@ import '../../modules/Addiction_Form_module/data/Cubit/UserInfoCubit.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../modules/Addiction_Form_module/data/shared_preferences_helper.dart';
 import '../app_routes.dart';
-import '../../data/storage/token_storage.dart';
+
 import 'login_screen.dart';
 import 'signup_screen.dart';
+import '../../logic/cubits/auth_cubit.dart';
+import '../../logic/cubits/auth_state.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -49,25 +51,10 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<Map<String, dynamic>> _getAuthStatus() async {
-    final loggedIn = await TokenStorage.isLoggedIn();
-    if (!loggedIn) return {'loggedIn': false};
-
-    final name = await TokenStorage.getUserName();
-    final email = await TokenStorage.getUserEmail();
-    return {
-      'loggedIn': true,
-      'name': name,
-      'email': email,
-    };
-  }
-
   Widget _buildAuthCta(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _getAuthStatus(),
-      builder: (context, snapshot) {
-        final data = snapshot.data ?? {'loggedIn': false};
-        final loggedIn = data['loggedIn'] == true;
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final loggedIn = state is AuthAuthenticated;
 
         if (loggedIn) {
           return Card(
@@ -96,20 +83,19 @@ class UserProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          data['name'] ?? AppLocalizations.of(context)!.profile,
+                          state.name,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (data['email'] != null)
-                          Text(
-                            data['email'],
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[600],
-                            ),
+                        Text(
+                          state.email,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
                           ),
+                        ),
                       ],
                     ),
                   ),
