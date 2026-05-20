@@ -39,8 +39,8 @@ Start Command:  gunicorn wsgi:app --bind 0.0.0.0:$PORT
 
 ### **Environment Variables:**
 ```
-SUPABASE_URL      = https://xleobapbuybenhoasomx.supabase.co
-SUPABASE_KEY      = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZW9iYXBidXliZW5ob2Fzb214Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzYyNzQ3OCwiZXhwIjoyMDgzMjAzNDc4fQ.1G9fKU20lwWWmpi0jRIBa7UozqUgmvXvpkk07OOo4uE
+SUPABASE_URL      = YOUR_SUPABASE_PROJECT_URL
+SUPABASE_KEY      = YOUR_SUPABASE_ANON_KEY
 SECRET_KEY        = [your generated key from step 1]
 JWT_SECRET_KEY    = [your generated key from step 1]
 FLASK_ENV         = production

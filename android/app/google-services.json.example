@@ -1,0 +1,20 @@
+{
+  "project_info": {
+    "project_id": "YOUR_FIREBASE_PROJECT_ID"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "android_client_info": {
+          "package_name": "com.yourdomain.addiction_quit"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "YOUR_FIREBASE_API_KEY"
+        }
+      ]
+    }
+  ]
+}
